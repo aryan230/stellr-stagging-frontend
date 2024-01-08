@@ -67,7 +67,7 @@ const ExportChemicalDrawings = ({ setLoader }) => {
   }, [cd]);
 
   const singleConvert = async (p) => {
-    triggerBase64Download(p.data[0].image, "image");
+    triggerBase64Download(p.data[0].image, `${p.name} - Chemical Drawing`);
   };
 
   const bulkExport = async () => {

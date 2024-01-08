@@ -30,6 +30,7 @@ import {
   ClipboardCheck,
   Cloud,
   CloudCog,
+  FileInput,
   FileText,
   Info,
   LayoutPanelTop,
@@ -37,6 +38,7 @@ import {
   LockKeyhole,
   Table2,
   Trash,
+  UploadCloud,
   Vote,
 } from "lucide-react";
 import { Fragment } from "react";
@@ -106,6 +108,8 @@ import { addEntryLogs } from "../Functions/addEntryLogs";
 import ViewDetails from "../Approval/ViewDetails";
 import { addNotification } from "../Functions/addNotification";
 import CustomLogs from "../CustomLogs/CustomLogs";
+import InsertFileEditor from "./EditorSettings/InsertFileEditor";
+import FilePreview from "../Preview/FilePreview";
 
 const zip = new JSZip();
 
@@ -248,9 +252,12 @@ function TextEditorTwo({
   const [mainLoader, setMainLoader] = useState(true);
   const [users, setUsers] = useState([]);
   const [chemicalDrawing, setChemicalDrawing] = useState(false);
+  const [insertFile, setInsertFile] = useState(false);
   const [logs, setLogs] = useState(false);
   const [savingData, setSavingData] = useState(false);
   const [customLogs, setCustomLogs] = useState(false);
+  const [filePreview, setFilePreview] = useState(false);
+  const [fileData, setFileData] = useState();
   const sampleListMy = useSelector((state) => state.sampleListMy);
   const {
     samples,
@@ -535,7 +542,14 @@ function TextEditorTwo({
           e.setAttribute("contenteditable", "false");
           e.setAttribute("class", "custom-element-mention");
           e.addEventListener("click", (el) => {
-            el.preventDefault();
+            if (e.getAttribute("href").split("#")[2] == "file") {
+              el.preventDefault();
+              setFileData(e.getAttribute("href").split("#")[3]);
+              setFilePreview(true);
+              // window.open(e.getAttribute("href").split("#")[3], "_blank");
+            } else {
+              el.preventDefault();
+            }
           });
         });
       }
@@ -826,6 +840,16 @@ function TextEditorTwo({
         tab={tab}
         project={project}
         setCreateDrawingModal={setCreateDrawingModal}
+      />
+      <InsertFileEditor
+        open={insertFile}
+        setOpen={setInsertFile}
+        quill={quill}
+      />
+      <FilePreview
+        open={filePreview}
+        setOpen={setFilePreview}
+        data={fileData}
       />
       <div
         className={`editor-holder-reactjs-new ${active && "active"}`}
@@ -1189,6 +1213,65 @@ function TextEditorTwo({
                                 aria-hidden="true"
                               />
                               Chemical Drawing
+                            </a>
+                          )}
+                        </Menu.Item>
+                        {/* <Menu.Item>
+                          {({ active }) => (
+                            <a
+                              href="#"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                const editor = quill.current.editor;
+                                setChemicalDrawing(true);
+                                
+                              }}
+                              className={classNames(
+                                active
+                                  ? "bg-gray-100 text-gray-900"
+                                  : "text-gray-700",
+                                "group flex items-center px-4 py-2 text-base"
+                              )}
+                            >
+                              <Table2
+                                className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                                aria-hidden="true"
+                              />
+                              Lab Sheet
+                            </a>
+                          )}
+                        </Menu.Item> */}
+                      </div>
+                      <div className="py-1">
+                        <Menu.Item>
+                          {({ active }) => (
+                            <a
+                              href="#"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                const editor = quill.current.editor;
+                                setInsertFile(true);
+                                //
+                                // const imageUrl =
+                                //   "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885_1280.jpg";
+                                // editor.insertEmbed(
+                                //   quill.current.getSelection(),
+                                //   "image",
+                                //   imageUrl
+                                // );
+                              }}
+                              className={classNames(
+                                active
+                                  ? "bg-gray-100 text-gray-900"
+                                  : "text-gray-700",
+                                "group flex items-center px-4 py-2 text-base"
+                              )}
+                            >
+                              <UploadCloud
+                                className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                                aria-hidden="true"
+                              />
+                              Attach File
                             </a>
                           )}
                         </Menu.Item>

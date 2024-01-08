@@ -55,7 +55,7 @@ function ExportSOP({ setLoader }) {
     //   .from(html)
     //   .saveAs("protoco");
     var converted = await htmlDocx.asBlob(html);
-    entry.file(`${p.title}-${p._id}.docx`, converted);
+    entry.file(`${p.title}-SOP.docx`, converted);
     const doc = new jsPDF();
     const templateOptions =
       p.logs &&
@@ -72,11 +72,14 @@ function ExportSOP({ setLoader }) {
     });
     let finalDoc = doc.output("arraybuffer");
     if (auditLog) {
-      entry.file(`${JSON.parse(p.data).sampleName}-${p._id}.pdf`, finalDoc);
+      entry.file(
+        `${JSON.parse(p.data).sampleName}-SOP-Audit-logs.pdf`,
+        finalDoc
+      );
     }
 
     zip.generateAsync({ type: "blob" }).then((content) => {
-      saveAs(content, `sops-stellr-${userInfo._id}.zip`);
+      saveAs(content, `sops.zip`);
     });
   };
 

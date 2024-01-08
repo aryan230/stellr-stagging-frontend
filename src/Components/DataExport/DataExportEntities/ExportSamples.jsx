@@ -64,7 +64,7 @@ function ExportSamples({ setLoader }) {
       link.download = "product_data.csv";
 
       URL.revokeObjectURL(csvUrl);
-      entry.file(`${JSON.parse(p.data).sampleName}-${p._id}.csv`, csvBlob);
+      entry.file(`${JSON.parse(p.data).sampleName}-Sample.csv`, csvBlob);
 
       const doc = new jsPDF();
       const templateOptions =
@@ -82,11 +82,14 @@ function ExportSamples({ setLoader }) {
       });
       let finalDoc = doc.output("arraybuffer");
       if (auditLog) {
-        entry.file(`${JSON.parse(p.data).sampleName}-${p._id}.pdf`, finalDoc);
+        entry.file(
+          `${JSON.parse(p.data).sampleName}-Sample-Audit-logs.pdf`,
+          finalDoc
+        );
       }
 
       zip.generateAsync({ type: "blob" }).then((content) => {
-        saveAs(content, `samples-stellr-${userInfo._id}.zip`);
+        saveAs(content, `${JSON.parse(p.data).sampleName}-Sample.zip`);
       });
     } else if (type === "XLSX") {
       const DATA = Object.entries(JSON.parse(p.data)).map((e) => ({
@@ -115,7 +118,7 @@ function ExportSamples({ setLoader }) {
       //   .from(html)
       //   .saveAs("protoco");
       var converted = await htmlDocx.asBlob(html);
-      entry.file(`${JSON.parse(p.data).sampleName}-${p._id}.docx`, converted);
+      entry.file(`${JSON.parse(p.data).sampleName}-Sample.docx`, converted);
       const doc = new jsPDF();
       const templateOptions =
         p.logs &&
@@ -132,11 +135,14 @@ function ExportSamples({ setLoader }) {
       });
       let finalDoc = doc.output("arraybuffer");
       if (auditLog) {
-        entry.file(`${JSON.parse(p.data).sampleName}-${p._id}.pdf`, finalDoc);
+        entry.file(
+          `${JSON.parse(p.data).sampleName}-Sample-Audit-logs.pdf`,
+          finalDoc
+        );
       }
 
       zip.generateAsync({ type: "blob" }).then((content) => {
-        saveAs(content, `samples-stellr-${userInfo._id}.zip`);
+        saveAs(content, `${JSON.parse(p.data).sampleName}-Sample.zip`);
       });
     }
   };
@@ -152,7 +158,7 @@ function ExportSamples({ setLoader }) {
           Object.entries(JSON.parse(d.data));
         let html = await `${data.map((d) => `<h1>${d[0]}</h1> <br/> ${d[1]}`)}`;
         var converted = await htmlDocx.asBlob(html);
-        entry.file(`${JSON.parse(d.data).sampleName}-${d._id}.docx`, converted);
+        entry.file(`${JSON.parse(d.data).sampleName}-Sample.docx`, converted);
         if (index === array.length - 1) resolve();
       });
     });
@@ -160,7 +166,7 @@ function ExportSamples({ setLoader }) {
       window.setTimeout(() => {
         setLoader(false);
         zip.generateAsync({ type: "blob" }).then((content) => {
-          saveAs(content, `samples-stellr-${userInfo._id}.zip`);
+          saveAs(content, `${userInfo.name}-Sample-Export-${userInfo._id}.zip`);
         });
       }, 3000);
     });

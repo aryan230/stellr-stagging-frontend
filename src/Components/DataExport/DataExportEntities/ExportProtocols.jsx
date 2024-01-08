@@ -58,7 +58,7 @@ function ExportProtocols({ setLoader }) {
     //   .from(html)
     //   .saveAs("protoco");
     var converted = await htmlDocx.asBlob(html);
-    entry.file(`${p.title}-${p._id}.docx`, converted);
+    entry.file(`${p.title}-Protocol.docx`, converted);
     const doc = new jsPDF();
     const templateOptions =
       p.logs &&
@@ -75,11 +75,14 @@ function ExportProtocols({ setLoader }) {
     });
     let finalDoc = doc.output("arraybuffer");
     if (auditLog) {
-      entry.file(`${JSON.parse(p.data).sampleName}-${p._id}.pdf`, finalDoc);
+      entry.file(
+        `${JSON.parse(p.data).sampleName}-Protocol-Audit-logs.pdf`,
+        finalDoc
+      );
     }
 
     zip.generateAsync({ type: "blob" }).then((content) => {
-      saveAs(content, `protocols-stellr-${userInfo._id}.zip`);
+      saveAs(content, `protocols.zip`);
     });
   };
 
@@ -96,7 +99,7 @@ function ExportProtocols({ setLoader }) {
       ${data && data.map((d) => `<h1>${d[0]}</h1> <br/> ${d[1]}`)}
       `;
         var converted = await htmlDocx.asBlob(html);
-        entry.file(`${p.title}-${p._id}.docx`, converted);
+        entry.file(`${p.title}-Protocol.docx`, converted);
         if (index === array.length - 1) resolve();
       });
     });
@@ -104,7 +107,7 @@ function ExportProtocols({ setLoader }) {
       window.setTimeout(() => {
         setLoader(false);
         zip.generateAsync({ type: "blob" }).then((content) => {
-          saveAs(content, `protocols-stellr.zip`);
+          saveAs(content, `protocols.zip`);
         });
       }, 3000);
     });
