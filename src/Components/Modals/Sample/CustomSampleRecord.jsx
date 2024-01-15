@@ -4,6 +4,8 @@ import Select from "react-select";
 import { createSample } from "../../../redux/actions/sampleActions";
 import { SAMPLE_CREATE_RESET } from "../../../redux/constants/sampleConstants";
 import ReactQuill from "react-quill";
+import DefaultRTE from "../../../UI/RichTextEditor/DefaultRTE";
+import DefaultButton from "../../../UI/Button/DefaultButton";
 
 function CustomSampleRecord({
   projects,
@@ -177,20 +179,13 @@ function CustomSampleRecord({
         {insdieFormData.map(
           (t) =>
             t.type === "Rich Text Editor" && (
-              <div>
-                <ReactQuill
-                  theme="snow"
-                  placeholder={
-                    t.placeholder ? t.placeholder : `Field Placeholder`
-                  }
-                  onChange={(e) => {
-                    handleChange(t.name, e);
-                  }}
-                />
+              <div className="label-input">
+                {" "}
+                <DefaultRTE label={t.placeholder} />
               </div>
             )
         )}
-        <button type="submit">Submit</button>
+        <DefaultButton label="Create New Sample" />
       </form>
     </div>
   );

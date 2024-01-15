@@ -171,13 +171,19 @@ function SearchPage({
     axios(config)
       .then(function(response) {
         console.log(response.data);
-        setProjectStats(response.data);
+        let entriesArray = [];
+        response.data.stats.map((e) => {
+          e.entries.map((p) => {
+            entriesArray.push(p);
+          });
+        });
+        setProjectStats(entriesArray);
       })
       .catch(function(error) {
         console.log(error);
       });
   };
-
+  console.log(projectStats);
   useEffect(() => {
     if (newArrProjects) {
       if (!projectStats) {
@@ -298,6 +304,57 @@ function SearchPage({
                 </tr>
               </thead>
               <tbody>
+                {projectStats &&
+                  projectStats.length > 0 &&
+                  projectStats
+                    .filter(
+                      (entry) =>
+                        entry.name
+                          .toLowerCase()
+                          .includes(inputSearch.toLowerCase()) ||
+                        entry._id
+                          .toLowerCase()
+                          .includes(inputSearch.toLowerCase())
+                    )
+                    .map((p) => {
+                      <tr className="bg-white border-b">
+                        <th
+                          scope="row"
+                          className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                        >
+                          {p._id}
+                        </th>
+                        <td className="px-6 py-4">{p.name}</td>
+                        <td className="px-6 py-4">Entry</td>
+                        <td className="px-6 py-4">
+                          {
+                            new Date(p.createdAt)
+                              .toLocaleString("en-GB")
+                              .split(",")[0]
+                          }
+                        </td>
+                        <td className="px-6 py-4">
+                          {
+                            new Date(p.updatedAt)
+                              .toLocaleString("en-GB")
+                              .split(",")[0]
+                          }
+                        </td>
+                        <td className="px-6 py-4">
+                          <a
+                            href="#"
+                            className="text-indigo-600"
+                            onClick={async (e) => {
+                              e.preventDefault();
+                              // setSopContent(s);
+                              // setSopModal(true);
+                            }}
+                          >
+                            View
+                          </a>
+                        </td>
+                      </tr>;
+                    })}
                 {newArrProjects &&
                   newArrProjects
                     .filter(
@@ -601,48 +658,6 @@ function SearchPage({
                         </td>
                       </tr>
                     ))}
-                {projectStats &&
-                  projectStats.stats.map((p) => {
-                    p.entries.map((s) => (
-                      <tr className="bg-white border-b">
-                        <th
-                          scope="row"
-                          className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
-                        >
-                          {s._id}
-                        </th>
-                        <td className="px-6 py-4">{s.name}</td>
-                        <td className="px-6 py-4">Entry</td>
-                        <td className="px-6 py-4">
-                          {
-                            new Date(s.createdAt)
-                              .toLocaleString("en-GB")
-                              .split(",")[0]
-                          }
-                        </td>
-                        <td className="px-6 py-4">
-                          {
-                            new Date(s.updatedAt)
-                              .toLocaleString("en-GB")
-                              .split(",")[0]
-                          }
-                        </td>
-                        <td className="px-6 py-4">
-                          <a
-                            href="#"
-                            className="text-indigo-600"
-                            onClick={async (e) => {
-                              e.preventDefault();
-                              // setSopContent(s);
-                              // setSopModal(true);
-                            }}
-                          >
-                            View
-                          </a>
-                        </td>
-                      </tr>
-                    ));
-                  })}
               </tbody>
             </table>
           </div>

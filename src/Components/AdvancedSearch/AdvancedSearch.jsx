@@ -12,12 +12,14 @@ import URL from "./../../Data/data.json";
 import SOPSearchResult from "./SearchResults/SOPSearchResutl";
 import { toast } from "sonner";
 import DrawingSearchResult from "./SearchResults/DrawingSearchResult";
+import EntrySearchResult from "./SearchResults/EntrySearchResult";
 function AdvancedSearch({
   setAdvancedSearch,
   samples,
   projects,
   protocols,
   tasks,
+  entries,
   sops,
   drawings,
   setSampleContent,
@@ -33,6 +35,7 @@ function AdvancedSearch({
   console.log(protocols);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [responseTwo, setResponseTwo] = useState();
   const [apikey, setApikey] = useState();
   const [responseType, setResponseType] = useState();
   const [searchResult, setSearchResult] = useState();
@@ -118,6 +121,26 @@ function AdvancedSearch({
   ["", ""]
   `;
 
+  const newPromptforEntriesOne = `${message} using the data ${JSON.stringify(
+    entries.map((e) => ({
+      _id: e._id,
+      createdAt: e.createdAt,
+      updatedAt: e.updatedAt,
+    }))
+  )} and do not include any explanations, only return output as ids in RFC8259 compliant JSON response without deviation and without missing brackets using following format.
+  
+  The JSON response: 
+  ["", ""]
+  `;
+
+  const newPromptforEntriesTwo = `${message} using the data ${JSON.stringify(
+    responseTwo
+  )} and do not include any explanations, only return output as ids in RFC8259 compliant JSON response without deviation and without missing brackets using following format.
+  
+  The JSON response: 
+  ["", ""]
+  `;
+
   const fetchOpenAIResultCase = async () => {
     if (message.includes("samples") || message.includes("sample")) {
       setLoading(true);
@@ -136,6 +159,42 @@ function AdvancedSearch({
       setLoading(false);
       console.log("data is ", data);
       console.log(data.choices[0].message);
+    } else if (message.includes("entries") || message.includes("entry")) {
+      setLoading(true);
+      const response = await openai.createChatCompletion({
+        model: "gpt-3.5-turbo-16k",
+        messages: [
+          {
+            role: "user",
+            content: newPromptforEntriesOne,
+          },
+        ],
+      });
+      const searchResult = response.data.choices[0].message;
+      const filteredEntries = JSON.parse(searchResult.content)
+        .map((e) => {
+          return entries.find((ele) => ele._id == e);
+        })
+        .map((entry) => ({
+          _id: entry._id,
+          data: entry.data[0].block,
+        }));
+      console.log(filteredEntries);
+      setResponseTwo(filteredEntries);
+      const finalResponse = await openai.createChatCompletion({
+        model: "gpt-3.5-turbo-16k",
+        messages: [
+          {
+            role: "user",
+            content: newPromptforEntriesTwo,
+          },
+        ],
+      });
+      const { data } = finalResponse;
+      console.log(data.choices[0].message);
+      setResponseType("Entry");
+      setSearchResult(data.choices[0].message);
+      setLoading(false);
     } else if (message.includes("protocols") || message.includes("protocol")) {
       console.log("Protocol");
       setLoading(true);
@@ -344,6 +403,22 @@ function AdvancedSearch({
                     </tr>
                   </thead>
                   <tbody>
+                    {responseType === "Entry" &&
+                      searchResult &&
+                      searchResult.content &&
+                      JSON.parse(searchResult.content)
+                        .map((e) => {
+                          return entries.find((ele) => ele._id == e);
+                        })
+                        .map((sample, index) => (
+                          <EntrySearchResult
+                            sample={sample}
+                            index={index}
+                            responseType={responseType}
+                            setSampleContent={setSampleContent}
+                            setSampleModal={setSampleModal}
+                          />
+                        ))}
                     {responseType === "Sample" &&
                       searchResult &&
                       JSON.parse(searchResult.content)

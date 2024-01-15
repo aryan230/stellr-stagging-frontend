@@ -159,6 +159,9 @@ body {
 .custom-react-quill-editor .quill .ql-formats {
   border: 0px !important;
 }
+.custom-react-quill-editor .quill .ql-container {
+  border: 1px solid black;
+}
 .custom-react-quill-editor .quill .ql-editor {
   min-height: 150px;
   max-height: -moz-fit-content;

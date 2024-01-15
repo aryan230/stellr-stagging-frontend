@@ -147,7 +147,9 @@ body {
     .ql-formats {
       border: 0px !important;
     }
-
+    .ql-container {
+      border: 1px solid black;
+    }
     .ql-editor {
       min-height: 150px;
       max-height: fit-content;

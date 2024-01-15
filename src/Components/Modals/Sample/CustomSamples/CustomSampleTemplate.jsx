@@ -184,61 +184,31 @@ function CustomSampleTemplate({ setCustomSample, setSampleModal }) {
                             >
                               <Menu.Items className="z-10 mx-3 origin-top-right absolute right-10 top-3 w-48 mt-1 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-200 focus:outline-none">
                                 <div className="py-1">
-                                  <Menu.Item>
-                                    {({ active }) => (
-                                      <a
-                                        href="#"
-                                        className={classNames(
-                                          active
-                                            ? "bg-gray-100 text-gray-900"
-                                            : "text-gray-700",
-                                          "block px-4 py-2 text-sm"
-                                        )}
-                                      >
-                                        View
-                                      </a>
-                                    )}
-                                  </Menu.Item>
-                                </div>
-                                <div className="py-1">
-                                  <Menu.Item>
-                                    {({ active }) => (
-                                      <a
-                                        href="#"
-                                        className={classNames(
-                                          active
-                                            ? "bg-gray-100 text-gray-900"
-                                            : "text-gray-700",
-                                          "block px-4 py-2 text-sm"
-                                        )}
-                                        onClick={(e) => {
-                                          e.preventDefault();
-                                          setCustomSampleData((current) =>
-                                            current.filter((f) => {
-                                              return f.id != d.id;
-                                            })
-                                          );
-                                        }}
-                                      >
-                                        Remove from Template
-                                      </a>
-                                    )}
-                                  </Menu.Item>
-                                  <Menu.Item>
-                                    {({ active }) => (
-                                      <a
-                                        href="#"
-                                        className={classNames(
-                                          active
-                                            ? "bg-gray-100 text-gray-900"
-                                            : "text-gray-700",
-                                          "block px-4 py-2 text-sm"
-                                        )}
-                                      >
-                                        Share
-                                      </a>
-                                    )}
-                                  </Menu.Item>
+                                  <div className="py-1">
+                                    <Menu.Item>
+                                      {({ active }) => (
+                                        <a
+                                          href="#"
+                                          className={classNames(
+                                            active
+                                              ? "bg-gray-100 text-gray-900"
+                                              : "text-gray-700",
+                                            "block px-4 py-2 text-sm"
+                                          )}
+                                          onClick={(e) => {
+                                            e.preventDefault();
+                                            setCustomSampleData((current) =>
+                                              current.filter((f) => {
+                                                return f.id != d.id;
+                                              })
+                                            );
+                                          }}
+                                        >
+                                          Remove from Template
+                                        </a>
+                                      )}
+                                    </Menu.Item>
+                                  </div>
                                 </div>
                               </Menu.Items>
                             </Transition>

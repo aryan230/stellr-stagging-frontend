@@ -110,6 +110,7 @@ import { addNotification } from "../Functions/addNotification";
 import CustomLogs from "../CustomLogs/CustomLogs";
 import InsertFileEditor from "./EditorSettings/InsertFileEditor";
 import FilePreview from "../Preview/FilePreview";
+import { removeFromCart } from "../../redux/actions/cartActions";
 
 const zip = new JSZip();
 
@@ -691,6 +692,9 @@ function TextEditorTwo({
 
   const [approval, setApproval] = useState(false);
   const [approvalDetails, setApprovalDetails] = useState(false);
+  const [submittedforApproval, setSubmittedForApproval] = useState(
+    tab.submittedForApproval
+  );
   return (
     <>
       {warningModal && (
@@ -1649,6 +1653,7 @@ function TextEditorTwo({
                           setEntryUpdate(true);
                           setWhichTabisActive("projectList");
                           setApproval(false);
+                          await dispatch(removeFromCart(tab._id));
                           toast.success("Updated");
                         })
                         .catch(function(error) {

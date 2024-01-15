@@ -4,6 +4,7 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useSelector } from "react-redux";
 import { storage } from "../../../firebase";
 import SecondLoaderWithText from "../../Loaders/SecondLoaderWithText";
+import { v4 as uuid } from "uuid";
 
 function InsertFileEditor({ open, setOpen, quill }) {
   const userLogin = useSelector((state) => state.userLogin);
@@ -14,7 +15,10 @@ function InsertFileEditor({ open, setOpen, quill }) {
   const btnClick = async () => {
     setLoader(true);
     const editor = quill.current.editor;
-    const imageRef = ref(storage, `files/${userInfo._id}/${file.name}`);
+    const imageRef = ref(
+      storage,
+      `files/${userInfo._id}/${file.name + uuid()}`
+    );
 
     uploadBytes(imageRef, file).then((snapshot) => {
       getDownloadURL(snapshot.ref).then((url) => {
