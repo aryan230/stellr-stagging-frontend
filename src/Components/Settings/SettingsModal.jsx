@@ -10,6 +10,8 @@ import BasicModalTailwind from "../../UI/MainModals/BasicModalTailwind";
 import MainModalEntity from "../../UI/MainModals/MainModalEntity";
 import DefaultButton from "../../UI/Button/DefaultButton";
 import MainModalTailwind from "../../UI/MainModals/MainModalTailwind";
+import SecondLoaderWithText from "../Loaders/SecondLoaderWithText";
+import { toast } from "sonner";
 
 function SettingsModal({
   settingsModal,
@@ -19,10 +21,11 @@ function SettingsModal({
   setUpdatedUserCollabRole,
   setProjectSettings,
   email,
+  setNewCollab,
 }) {
   const dispatch = useDispatch();
   const [selectedRole, setSelectedRole] = useState("");
-
+  const [loader, setLoader] = useState(false);
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
 
@@ -45,6 +48,7 @@ function SettingsModal({
   ];
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoader(true);
     const data = {
       projectId: project._id,
       role: selectedRole.label,
@@ -55,8 +59,9 @@ function SettingsModal({
       user: userInfo._id,
       userName: userInfo.name,
       userEmail: userInfo.email,
-      message: `Changed the role of the user With  ${email} to ${selectedRole.label}`,
+      message: `Changed the role of the user With  ${id} to ${selectedRole.label}`,
     };
+    await dispatch(updateCollabProject(data));
     await addNotification({
       id: id,
       type: "Not read",
@@ -73,22 +78,26 @@ function SettingsModal({
       token: userInfo.token,
     });
     await addProjectLogs(logObject);
-    await dispatch(updateCollabProject(data));
     await dispatch({ type: PROJECT_UPDATE_COLLAB_RESET });
+    setLoader(false);
   };
   useEffect(() => {
     if (sucess) {
-      setUpdatedUserCollabRole(true);
+      setNewCollab(true);
       setProjectSettings(false);
       setSettingsModal(false);
     }
-  }, [sucess]);
+    if (error) {
+      toast.error("There was an error. Please try again later.");
+    }
+  }, [sucess, error]);
   return (
     <MainModalTailwind
       modalName="Change Role"
       open={settingsModal}
       setCloseModal={setSettingsModal}
     >
+      {loader && <SecondLoaderWithText />}
       <div className="setting-main-div-modal">
         <div className="settings-main-div-modal-inside">
           <div className="s-m-d-i-right">

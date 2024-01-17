@@ -695,6 +695,47 @@ function TextEditorTwo({
   const [submittedforApproval, setSubmittedForApproval] = useState(
     tab.submittedForApproval
   );
+
+  const resubmitforApproval = async (id) => {
+    setApproval(true);
+    var data = JSON.stringify({
+      userName: userInfo.name,
+      statusMessage: "This entry has been resubmitted",
+      status: "Draft",
+    });
+
+    var config = {
+      method: "put",
+      url: `${URL[0]}api/entries/status/${tab._id}`,
+      headers: {
+        Authorization: `Bearer ${userInfo.token}`,
+        "Content-Type": "application/json",
+      },
+      data: data,
+    };
+
+    axios(config)
+      .then(async function(response) {
+        setLoader(false);
+        const logObject = {
+          entryId: tab._id,
+          user: userInfo._id,
+          userName: userInfo.name,
+          userEmail: userInfo.email,
+          message: `Submitted the entry for approval`,
+        };
+        await addEntryLogs(logObject);
+        setEntryUpdate(true);
+        setWhichTabisActive("projectList");
+        setApproval(false);
+        await dispatch(removeFromCart(tab._id));
+        toast.success("Updated");
+      })
+      .catch(function(error) {
+        setLoader(false);
+        console.log(error);
+      });
+  };
   return (
     <>
       {warningModal && (
@@ -760,8 +801,10 @@ function TextEditorTwo({
             status: tab.status,
             statusMessage: tab.statusMessage ? tab.statusMessage : "",
             statusBy: tab.statusBy ? tab.statusBy : "",
+            logs: tab.logs
           }}
           role={userType}
+          resubmitforApproval={resubmitforApproval}
         />
       }
       {/* <DrawerHistory

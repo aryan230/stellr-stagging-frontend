@@ -18,6 +18,7 @@ import { PlusSmIcon } from "@heroicons/react/solid";
 import { PenIcon, Settings } from "lucide-react";
 import ConformationModal from "../../UI/MainModals/ConformationModal";
 import axios from "axios";
+import moment from "moment";
 const tabs = [
   { name: "General", href: "#", current: true },
   { name: "Password", href: "#", current: false },
@@ -102,9 +103,9 @@ function ProjectSettingsNew({
       <div className="project-main">
         {/* Content area */}
         <div className="h-[100%]">
-          <div className="max-w-4xl mx-auto flex flex-col md:px-8 xl:px-0">
+          <div className="max-w-5xl mx-auto flex flex-col md:px-8 xl:px-0">
             <main className="flex-1">
-              <div className="relative max-w-4xl mx-auto md:px-8 xl:px-0">
+              <div className="relative max-w-5xl mx-auto md:px-8 xl:px-0">
                 <div className="pt-10 pb-16">
                   <div className="px-4 sm:px-6 md:px-0">
                     <h1 className="text-3xl font-extrabold text-gray-700 font-body flex items-center justify-left">
@@ -217,7 +218,13 @@ function ProjectSettingsNew({
                                                 {person.message}
                                               </td>
                                               <td className="px-6 py-4">
-                                                {person.date.toLocaleString()}
+                                                {moment(person.date).format(
+                                                  "DD/MM/YYYY"
+                                                ) +
+                                                  " " +
+                                                  moment(person.date).format(
+                                                    "LT"
+                                                  )}
                                               </td>
                                             </tr>
                                           ))}
