@@ -178,10 +178,59 @@ function CustomSampleRecord({
         )}
         {insdieFormData.map(
           (t) =>
+            t.type === "Time" && (
+              <div>
+                <label
+                  htmlFor="first_name"
+                  className="block mb-2 text-sm font-medium text-gray-900"
+                >
+                  {t.name}
+                </label>
+                <input
+                  type="time"
+                  id="first_name"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  placeholder={
+                    t.placeholder ? t.placeholder : `Field Placeholder`
+                  }
+                  required=""
+                  onChange={(e) => handleChange(t.name, e.target.value)}
+                />
+              </div>
+            )
+        )}
+        {insdieFormData.map(
+          (t) =>
             t.type === "Rich Text Editor" && (
               <div className="label-input">
                 {" "}
                 <DefaultRTE label={t.placeholder} />
+              </div>
+            )
+        )}
+        {insdieFormData.map(
+          (t) =>
+            t.type === "Picklist" && (
+              <div className="py-2">
+                <label
+                  htmlFor="location"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  {t.name}
+                </label>
+                <select
+                  id="location"
+                  name="location"
+                  className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                  defaultValue="Canada"
+                  onChange={(e) => {
+                    handleChange(t.name, e.target.value);
+                  }}
+                >
+                  {t.options.map((o) => (
+                    <option>{o.name}</option>
+                  ))}
+                </select>
               </div>
             )
         )}

@@ -396,7 +396,17 @@ function TextEditorTwo({
     if (socket == null || quill.current == null) return;
     const handler = (delta, oldDelta, source) => {
       if (source != "user") return;
-
+      let cursorData = quill.current.getBounds(
+        quill.current.getSelection().index
+      );
+      console.log(cursorData);
+      const newStyle = setCoordinates(
+        cursorData.left,
+        cursorData.bottom,
+        cursorData.top,
+        cursorData.right
+      );
+      setStyle(newStyle);
       socket.emit("send-changes", delta);
     };
     quill.current.on("text-change", handler);
@@ -736,6 +746,30 @@ function TextEditorTwo({
         console.log(error);
       });
   };
+
+  const [style, setStyle] = useState({
+    position: "absolute",
+    width: "3px",
+    height: "20px",
+    backgroundColor: "blue",
+    zIndex: 9999999,
+  });
+  const setCoordinates = (left, bottom, top, right) => {
+    // You don't need whitespace in here, I added it for readability
+    // I would recommend using something like EmotionJS for this
+    return {
+      position: "absolute",
+      width: "3px",
+      height: "20px",
+      backgroundColor: "blue",
+      left: left,
+      bottom: bottom,
+      top: top,
+      right: right,
+      zIndex: 9999999,
+    };
+  };
+
   return (
     <>
       {warningModal && (
@@ -801,7 +835,7 @@ function TextEditorTwo({
             status: tab.status,
             statusMessage: tab.statusMessage ? tab.statusMessage : "",
             statusBy: tab.statusBy ? tab.statusBy : "",
-            logs: tab.logs
+            logs: tab.logs,
           }}
           role={userType}
           resubmitforApproval={resubmitforApproval}
@@ -903,6 +937,7 @@ function TextEditorTwo({
         id={tab._id}
       >
         {mainLoader && <MainLoaderWithText text="Getting your entry ready" />}
+
         {tab && tab.submittedForApproval && tab.status === "Draft" && (
           <div className="absolute -translate-x-1/2 -translate-y-1/2 top-2/4 left-1/2 w-[100%] h-[100%] bg-white bg-opacity-95 flex items-center justify-center z-[999999]">
             <div className="main-loader-scss-inside">
@@ -1934,6 +1969,7 @@ function TextEditorTwo({
         </Disclosure> */}
 
         <RichTextEditor
+          className="relative"
           modules={{
             table: {},
             codeHighlight: true,
@@ -1999,7 +2035,14 @@ function TextEditorTwo({
           ref={quill}
           content={htmlData}
           placeholder=" "
-        />
+        ></RichTextEditor>
+        {/* <div
+          style={style}
+          onClick={(e) => {
+            const newStyle = setCoordinates(20, 20);
+            setStyle(newStyle);
+          }}
+        ></div> */}
       </div>
     </>
   );

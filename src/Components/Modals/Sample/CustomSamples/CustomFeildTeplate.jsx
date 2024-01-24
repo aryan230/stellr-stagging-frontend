@@ -7,6 +7,7 @@ import Select from "react-select";
 import MainLoaderWithText from "../../../Loaders/MainLoaderWithText";
 import HelperText from "../../../../UI/Input/HelperText";
 import _ from "lodash";
+import { PlusIcon } from "lucide-react";
 function CustomFeildTeplate({
   setCustomFeild,
   customSampleData,
@@ -25,6 +26,11 @@ function CustomFeildTeplate({
   const [placeholder, setPlaceholder] = useState();
   const [slug, setSlug] = useState();
   const [loaderText, setLoaderText] = useState("Loading");
+  const [picklist, setPicklist] = useState([
+    {
+      name: "",
+    },
+  ]);
   const fields = [
     {
       name: "Text",
@@ -44,6 +50,12 @@ function CustomFeildTeplate({
     {
       name: "Date",
     },
+    {
+      name: "Time",
+    },
+    {
+      name: "Picklist",
+    },
   ];
   const handleAddFeild = async () => {
     setLoaderText("Creating new field");
@@ -53,6 +65,7 @@ function CustomFeildTeplate({
       isRequired: false,
       slug,
       placeholder,
+      options: picklist,
     };
     var data = JSON.stringify({
       name,
@@ -83,6 +96,9 @@ function CustomFeildTeplate({
             description: description,
             placeholder: JSON.parse(response.data.data).placeholder,
             slug: JSON.parse(response.data.data).placeholder,
+            options: JSON.parse(response.data.data).options
+              ? JSON.parse(response.data.data).options
+              : [],
           },
         ]);
         setLoader(false);
@@ -107,6 +123,9 @@ function CustomFeildTeplate({
             description: description,
             placeholder: JSON.parse(selectedField.data).placeholder,
             slug: JSON.parse(selectedField.data).slug,
+            options: JSON.parse(selectedField.data).options
+              ? JSON.parse(selectedField.data).options
+              : [],
           },
         ]);
         setLoader(false);
@@ -161,7 +180,7 @@ function CustomFeildTeplate({
           {/* Modal header */}
           <div className="flex items-center justify-between p-5 py-8 border-b rounded-t sticky top-0 bg-white z-50">
             <h3 className="text-xl font-medium text-gray-900">
-              Add Custom Feild
+              Add Custom Field
             </h3>
 
             <button
@@ -226,7 +245,7 @@ function CustomFeildTeplate({
                     onClick={handleAddFieldInSample}
                     className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
                   >
-                    Add Feild
+                    Add Field
                   </button>
                 </div>
               )}
@@ -314,6 +333,43 @@ function CustomFeildTeplate({
                     ))}
                   </select>
                 </div>
+                {type === "Picklist" && (
+                  <div className="pb-3 font-body">
+                    <h3 className="pt-3">Enter Options ({picklist.length})</h3>
+                    {picklist.map((p, index) => (
+                      <div className="py-2">
+                        <label htmlFor="email" className="sr-only">
+                          Email
+                        </label>
+                        <input
+                          type="text"
+                          name="option"
+                          id="option"
+                          onChange={(e) => {
+                            picklist[index].name = e.target.value;
+                          }}
+                          className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                          placeholder="Enter option here"
+                        />
+                      </div>
+                    ))}
+
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        setPicklist((p) => [
+                          ...p,
+                          {
+                            name: "",
+                          },
+                        ]);
+                      }}
+                      className="my-2 inline-flex items-center p-1 border border-transparent rounded-full shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    >
+                      <PlusIcon className="h-5 w-5" aria-hidden="true" />
+                    </button>
+                  </div>
+                )}
                 <div className="my-4">
                   <label
                     htmlFor="first_name"
@@ -373,7 +429,7 @@ function CustomFeildTeplate({
                   onClick={handleAddFeild}
                   className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
                 >
-                  Add Feild
+                  Add Field
                 </button>
               </div>
             )}

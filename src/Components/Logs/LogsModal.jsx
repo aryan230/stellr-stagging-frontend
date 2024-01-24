@@ -1,16 +1,24 @@
 import React from "react";
-import { Fragment, useState } from "react";
+import { Fragment, useState, useRef } from "react";
 import { Dialog, Transition, Menu } from "@headlessui/react";
 import { XIcon } from "@heroicons/react/outline";
 import LogEntryMain from "./LogEntryMain";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { ChevronDownIcon } from "@heroicons/react/solid";
+import { CSVLink } from "react-csv";
+import moment from "moment";
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
 function LogsModal({ open, setOpen, logs, name }) {
+  const csvLink = useRef(); // setup the ref that we'll use for the hidden CsvLink click once we've updated the data
+
+  const exportCSV = async (e) => {
+    e.preventDefault();
+    csvLink.current.link.click();
+  };
   const exportAuditLog = async (e) => {
     e.preventDefault();
     const doc = new jsPDF();
@@ -40,7 +48,23 @@ function LogsModal({ open, setOpen, logs, name }) {
       >
         <div className="absolute inset-0 overflow-hidden">
           <Dialog.Overlay className="absolute inset-0" />
-
+          <CSVLink
+            data={logs
+              .sort(function(a, b) {
+                return new Date(b.date) - new Date(a.date);
+              })
+              .map((d) => ({
+                email: d.userEmail,
+                message: d.message,
+                timestamp:
+                  moment(d.date).format("DD/MM/YYYY") +
+                  " " +
+                  moment(d.date).format("LT"),
+              }))}
+            filename={"my-file.csv"}
+            target="_blank"
+            ref={csvLink}
+          ></CSVLink>
           <div className="fixed inset-y-0 right-0 pl-10 max-w-full flex font-sans">
             <Transition.Child
               as={Fragment}
@@ -111,6 +135,28 @@ function LogsModal({ open, setOpen, logs, name }) {
                                     )}
                                   >
                                     PDF
+                                  </a>
+                                )}
+                              </Menu.Item>
+                            </div>
+                            <div className="py-1">
+                              <Menu.Item>
+                                {({ active }) => (
+                                  <a
+                                    href="#"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      exportCSV(e);
+                                    }}
+                                    className={classNames(
+                                      active
+                                        ? "bg-gray-100 text-gray-900"
+                                        : "text-gray-700",
+                                      "block px-4 py-2 text-sm"
+                                    )}
+                                  >
+                                    {" "}
+                                    CSV
                                   </a>
                                 )}
                               </Menu.Item>
