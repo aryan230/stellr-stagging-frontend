@@ -17,6 +17,7 @@ import _ from "lodash";
 import DashHome from "./ReportsAndDashboard/DashHome";
 import CompleteLoader from "./Loaders/CompleteLoader";
 import { PlusCircle } from "lucide-react";
+import NewHomeDash from "./NewHomeDash";
 
 const localizer = momentLocalizer(moment);
 
@@ -151,7 +152,8 @@ function Home({
       ) : (
         <>
           <div className="calender-holder">
-            <Calendar
+            <NewHomeDash />
+            {/* <Calendar
               views={{ month: true, week: false, day: false, agenda: false }}
               localizer={localizer}
               defaultDate={new Date()}
@@ -179,7 +181,7 @@ function Home({
               eventPropGetter={getEventProp}
               style={{ height: "100%" }}
               onSelectEvent={handleSelected}
-            />
+            /> */}
           </div>
           <div className="calender-tasks">
             <div className="calender-task-top">

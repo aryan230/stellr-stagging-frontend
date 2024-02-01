@@ -17,6 +17,8 @@ import DetailSlideOver from "../../../UI/SlideOvers/DetailSlideOver";
 import LogsModal from "../../Logs/LogsModal";
 import ConformationModal from "../../../UI/MainModals/ConformationModal";
 import EmptySlideOvers from "../../../UI/SlideOvers/EmptySlideOvers";
+import { addToRC } from "../../../redux/actions/rcActions";
+import { useDispatch } from "react-redux";
 
 function TaskModal({
   setTaskModal,
@@ -25,6 +27,7 @@ function TaskModal({
   setTaskUpdate,
 }) {
   console.log(doc);
+  const dispatch = useDispatch();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isDrawerOpenLogs, setIsDrawerOpenLogs] = useState(false);
   const [viewLogs, setViewLogs] = useState(false);
@@ -60,6 +63,17 @@ function TaskModal({
         console.log(error);
       });
   };
+
+  useEffect(() => {
+    dispatch(
+      addToRC({
+        _id: doc._id,
+        type: "Task",
+        name: doc.subject,
+        time: Date.now(),
+      })
+    );
+  }, [dispatch]);
 
   useEffect(() => {
     if (!ownerUserData) {

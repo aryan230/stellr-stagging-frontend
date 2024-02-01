@@ -9,11 +9,14 @@ import {
   getSheetIndex,
 } from "@syncfusion/ej2-react-spreadsheet";
 import { registerLicense } from "@syncfusion/ej2-base";
+import { useDispatch } from "react-redux";
+import { addToRC } from "../../redux/actions/rcActions";
 
 function NewSpreadSheet({
   spreadsheetData: { name, id },
   setIsSpreadSheetOpen,
 }) {
+  const dispatch = useDispatch();
   const spreadsheetRef = useRef(null);
   const [data, setData] = useState();
   const [loader, setLoader] = useState(false);
@@ -99,6 +102,17 @@ function NewSpreadSheet({
       }
     }
   }, [document.querySelector(".e-toolbar-item"), spreadsheetRef]);
+
+  useEffect(() => {
+    dispatch(
+      addToRC({
+        _id: id,
+        type: "Lab Sheet",
+        name: name,
+        time: Date.now(),
+      })
+    );
+  }, [dispatch]);
 
   return (
     <div className="modal">

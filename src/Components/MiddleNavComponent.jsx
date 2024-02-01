@@ -16,6 +16,7 @@ import SmallEntries from "./Entries/SmallEntries";
 import SmallTasks from "./Entries/SmallTasks";
 import NewSpreadSheet from "./Modals/NewSpreadSheet";
 import CompleteLoader from "./Loaders/CompleteLoader";
+import { addToRC } from "../redux/actions/rcActions";
 
 function MiddleNavComponent({
   id,
@@ -95,6 +96,19 @@ function MiddleNavComponent({
 
   const find =
     project && project.collaborators.find((e) => e.user == userInfo._id);
+
+  useEffect(() => {
+    if (project) {
+      dispatch(
+        addToRC({
+          _id: project._id,
+          type: "Project",
+          name: project.name,
+          time: Date.now(),
+        })
+      );
+    }
+  }, [dispatch, project]);
 
   return (
     <div className="sl-inside">

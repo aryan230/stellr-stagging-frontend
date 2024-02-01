@@ -41,30 +41,32 @@ function ListProtocolsAll({
 
   useEffect(() => {
     setTableData(
-      protocols
-        .filter((p) => p.deleted === true)
-        .map(
-          ({
-            protocolId: id,
-            title: name,
-            createdAt: createdAt,
-            type: recordType,
-            updatedAt: updatedAt,
-          }) => ({
-            id: `PTCL-000${id}`,
-            name: name,
-            createdAt: new Date(createdAt)
-              .toLocaleString("en-GB")
-              .split(",")[0],
-            recordType,
-            updatedAt: new Date(updatedAt)
-              .toLocaleString("en-GB")
-              .split(",")[0],
-            createdDate: createdAt,
-            createdBy: userInfo.name,
-            view: "View",
-          })
-        )
+      protocols &&
+        protocols.length > 0 &&
+        protocols
+          .filter((p) => p.deleted === true)
+          .map(
+            ({
+              protocolId: id,
+              title: name,
+              createdAt: createdAt,
+              type: recordType,
+              updatedAt: updatedAt,
+            }) => ({
+              id: `PTCL-000${id}`,
+              name: name,
+              createdAt: new Date(createdAt)
+                .toLocaleString("en-GB")
+                .split(",")[0],
+              recordType,
+              updatedAt: new Date(updatedAt)
+                .toLocaleString("en-GB")
+                .split(",")[0],
+              createdDate: createdAt,
+              createdBy: userInfo.name,
+              view: "View",
+            })
+          )
     );
   }, []);
 

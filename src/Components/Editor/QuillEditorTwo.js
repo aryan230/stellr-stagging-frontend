@@ -111,6 +111,7 @@ import CustomLogs from "../CustomLogs/CustomLogs";
 import InsertFileEditor from "./EditorSettings/InsertFileEditor";
 import FilePreview from "../Preview/FilePreview";
 import { removeFromCart } from "../../redux/actions/cartActions";
+import { addToRC } from "../../redux/actions/rcActions";
 
 const zip = new JSZip();
 
@@ -769,6 +770,18 @@ function TextEditorTwo({
       zIndex: 9999999,
     };
   };
+
+
+  useEffect(() => {
+    dispatch(
+      addToRC({
+        _id: tab._id,
+        type: "Lab Entry",
+        name: tab.name,
+        time: Date.now(),
+      })
+    );
+  }, [dispatch]);
 
   return (
     <>

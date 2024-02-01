@@ -6,12 +6,15 @@ import { doc, onSnapshot, setDoc } from "firebase/firestore";
 import { SpreadsheetComponent } from "@syncfusion/ej2-react-spreadsheet";
 import { Button, Menu, MenuItem } from "@mui/material";
 import { saveAs } from "file-saver";
+import { useDispatch } from "react-redux";
+import { addToRC } from "../../redux/actions/rcActions";
 
 // import Luckysheet from "../SpreadSheetContainers/Luckysheet";
 // import luckysheet from "luckysheet";
 // import "luckysheet/dist/plugins/js/plugin.js";
 
 function SpreadSheet({ name, id, setIsSpreadSheetOpen }) {
+  const dispatch = useDispatch();
   const luckysheet = window.luckysheet;
   const [data, setData] = useState();
   const [changeData, setChangeData] = useState();
@@ -33,6 +36,17 @@ function SpreadSheet({ name, id, setIsSpreadSheetOpen }) {
   useEffect(() => {
     fetchFirestoreData();
   }, []);
+
+  useEffect(() => {
+    dispatch(
+      addToRC({
+        _id: id,
+        type: "Lab Sheet",
+        name: name,
+        time: Date.now(),
+      })
+    );
+  }, [dispatch]);
   const [read, setRead] = useState(false);
   useEffect(() => {
     if (container.current) {

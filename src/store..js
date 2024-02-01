@@ -55,9 +55,11 @@ import {
   sopListMyReducer,
 } from "./redux/reducers/sopReducers";
 import { stateReducer } from "./redux/reducers/stateReducers";
+import { rcReducer } from "./redux/reducers/rcReducers";
 
 const reducer = combineReducers({
   cart: cartReducer,
+  rc: rcReducer,
   state: stateReducer,
   userLogin: userLoginReducer,
   userUpdate: userUpdateReducer,
@@ -105,7 +107,12 @@ const cartInfoStorage = localStorage.getItem("tabDetails")
   ? JSON.parse(localStorage.getItem("tabDetails"))
   : [];
 
+const rcInfoFromStorage = localStorage.getItem("rcDetails")
+  ? JSON.parse(localStorage.getItem("rcDetails"))
+  : [];
+
 const initialState = {
+  rc: { rcDetails: rcInfoFromStorage },
   userLogin: { userInfo: userInfoFromStorage },
   cart: { tabDetails: cartInfoStorage },
   state: { stateDetails: stateInfoFromStorage },

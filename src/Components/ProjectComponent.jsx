@@ -16,6 +16,7 @@ import CompleteLoader from "./Loaders/CompleteLoader";
 import { Folders } from "lucide-react";
 import NewSpreadSheet from "./Modals/NewSpreadSheet";
 import NewProjectComponent from "./NewProjectComponent";
+import { addToRC } from "../redux/actions/rcActions";
 
 function ProjectComponent({
   id,
@@ -205,6 +206,19 @@ function ProjectComponent({
 
   const find =
     project && project.collaborators.find((e) => e.user == userInfo._id);
+
+  useEffect(() => {
+    if (project) {
+      dispatch(
+        addToRC({
+          _id: project._id,
+          type: "Project",
+          name: project.name,
+          time: Date.now(),
+        })
+      );
+    }
+  }, [dispatch, project]);
 
   return (
     <>
