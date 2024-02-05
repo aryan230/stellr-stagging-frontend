@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import MainModalEntity from "../UI/MainModals/MainModalEntity";
-import { Atom, Book, FileText, Tags } from "lucide-react";
+import { Atom, Book, FileLineChart, FileText, Tags } from "lucide-react";
 import { toast } from "sonner";
 
 function HomeSelectStats({ open, setOpen, submitHandlerProfile }) {
@@ -25,6 +25,11 @@ function HomeSelectStats({ open, setOpen, submitHandlerProfile }) {
       id: "SOPs",
       name: "SOPs",
       icon: <FileText className="mb-2 w-7 text-slate-500" />,
+    },
+    {
+      id: "Reports",
+      name: "Reports",
+      icon: <FileLineChart className="mb-2 w-7 text-slate-500" />,
     },
   ];
 

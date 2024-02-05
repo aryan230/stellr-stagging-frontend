@@ -1052,6 +1052,7 @@ function EditorComponent({ expire, setExpire }) {
               <div className="main-inside calendar-main-inside">
                 {" "}
                 <Home
+                  setWhichTabisActive={setWhichTabisActive}
                   setTaskModal={setTaskModal}
                   setTaskContent={setTaskContent}
                   setCreateNewTaskModal={setCreateNewTaskModal}

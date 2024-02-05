@@ -10,6 +10,8 @@ import {
   CircleDashed,
   Clock10,
   ExternalLink,
+  File,
+  FileLineChart,
   FileText,
   Folders,
   MoveUpRight,
@@ -119,10 +121,11 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-function NewHomeDash() {
+function NewHomeDash({ setWhichTabisActive }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [cd, setCD] = useState();
+  const [reports, setReports] = useState();
   const rc = useSelector((state) => state.rc);
   const { rcDetails } = rc;
   const taskListMyPersonal = useSelector((state) => state.taskListMyPersonal);
@@ -169,6 +172,26 @@ function NewHomeDash() {
 
   const userLogin = useSelector((state) => state.userLogin);
   let { loading, error, userInfo } = userLogin;
+
+  //Reports
+
+  useEffect(() => {
+    var config = {
+      method: "get",
+      url: `${URL}api/reports/myreports`,
+      headers: {
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+
+    axios(config)
+      .then(function(response) {
+        setReports(response.data);
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
+  }, []);
 
   // Entries
   const [projectStats, setProjectStats] = useState(false);
@@ -313,24 +336,45 @@ function NewHomeDash() {
       data: protocols && protocols.length,
       name: "Protocols",
       icon: <Book className="mb-2 w-7 h-7 text-slate-500" />,
+      onClick: () => {
+        setWhichTabisActive("listProtocols");
+      },
     },
     {
       id: "samples",
       name: "Samples",
       data: samples && samples.length,
       icon: <Tags className="mb-2 w-7 h-7 text-slate-500" />,
+      onClick: () => {
+        setWhichTabisActive("sampleList");
+      },
     },
     {
       id: "ChemicalDrawings",
       name: "Chemical Drawings",
       data: cd ? cd.length : 0,
       icon: <Atom className="mb-2 w-7 text-slate-500" />,
+      onClick: () => {
+        setWhichTabisActive("chemicalList");
+      },
     },
     {
       id: "SOPs",
       name: "SOPs",
       data: sops && sops.length,
       icon: <FileText className="mb-2 w-7 text-slate-500" />,
+      onClick: () => {
+        setWhichTabisActive("listSops");
+      },
+    },
+    {
+      id: "Reports",
+      name: "Reports",
+      data: reports && reports.length,
+      icon: <FileLineChart className="mb-2 w-7 text-slate-500" />,
+      onClick: () => {
+        setWhichTabisActive("reportsAndDashboard");
+      },
     },
   ];
 
@@ -384,14 +428,26 @@ function NewHomeDash() {
               </p>
             </div>
 
-            <div className="absolute flex items-center justify-center w-10 h-10 top-5 right-5 hover:cursor-pointer bg-white rounded-full">
+            <div
+              onClick={(e) => {
+                e.preventDefault();
+                setWhichTabisActive("projectList");
+              }}
+              className="absolute flex items-center justify-center w-10 h-10 top-5 right-5 hover:cursor-pointer bg-white rounded-full"
+            >
               <MoveUpRight className="w-4" />
             </div>
           </div>
         </div>
         <div className="max-[800px]:hidden w-[60%] h-[100%] p-5 flex-col items-center justify-between">
           <div className="w-[100%] h-[45%] flex">
-            <div className="w-[60%] h-[100%] bg-[#4b6cff] rounded-xl mr-5 relative">
+            <div
+              onClick={(e) => {
+                e.preventDefault();
+                setWhichTabisActive("projectList");
+              }}
+              className="w-[60%] h-[100%] bg-[#4b6cff] rounded-xl mr-5 relative"
+            >
               {" "}
               <div className="absolute flex items-center justify-center w-6 h-6 top-5 right-5 hover:cursor-pointer bg-white rounded-full">
                 <MoveUpRight className="w-3" />
@@ -469,7 +525,13 @@ function NewHomeDash() {
                   </div>
                 )}{" "}
               </h1>
-              <div className="absolute flex items-center justify-center w-6 h-6 top-5 right-5 hover:cursor-pointer bg-white rounded-full">
+              <div
+                onClick={(e) => {
+                  e.preventDefault();
+                  setWhichTabisActive("projectList");
+                }}
+                className="absolute flex items-center justify-center w-6 h-6 top-5 right-5 hover:cursor-pointer bg-white rounded-full"
+              >
                 <MoveUpRight className="w-3" />
               </div>
               <Table2
@@ -492,7 +554,13 @@ function NewHomeDash() {
                     <h1 className="absolute bottom-2 left-5 text-6xl font-body text-slate-700">
                       {s.data}
                     </h1>
-                    <div className="absolute flex items-center justify-center w-6 h-6 top-5 right-5 hover:cursor-pointer bg-white rounded-full">
+                    <div
+                      onClick={(e) => {
+                        e.preventDefault();
+                        s.onClick();
+                      }}
+                      className="absolute flex items-center justify-center w-6 h-6 top-5 right-5 hover:cursor-pointer bg-white rounded-full"
+                    >
                       <MoveUpRight className="w-3" />
                     </div>
                   </div>
@@ -605,7 +673,7 @@ function NewHomeDash() {
                   <div className="flex flex-col items-start mb-3 me-4 md:items-center md:flex-row md:mb-0">
                     <a
                       href="#"
-                      className="flex items-center mb-2 border-gray-200 md:pe-4 md:me-4 md:border-e md:mb-0 dark:border-gray-600"
+                      className="flex items-center mb-2 border-gray-200 md:pe-4 md:me-4 md:border-e md:mb-0"
                     >
                       <div className="w-8 h-8 rounded-full bg-indigo-500 me-3 flex items-center justify-center">
                         {" "}
@@ -621,13 +689,22 @@ function NewHomeDash() {
                         {r.type === "Task" && (
                           <CheckCircle className="h-4 text-white" />
                         )}
+                        {r.type === "Chemical Drawing" && (
+                          <Atom className="h-4 text-white" />
+                        )}
+                        {r.type === "SOP" && (
+                          <File className="h-4 text-white" />
+                        )}
+                        {r.type === "Protocol" && (
+                          <Book className="h-4 text-white" />
+                        )}
                       </div>
 
-                      <span className="self-center text-base font-semibold whitespace-nowrap dark:text-white">
+                      <span className="self-center text-base font-semibold whitespace-nowrap">
                         {r.name}{" "}
                       </span>
                     </a>
-                    <p className="flex items-center text-sm font-normal text-gray-500 dark:text-gray-400">
+                    <p className="flex items-center text-sm font-normal text-gray-500">
                       {r.type}
                     </p>
                   </div>

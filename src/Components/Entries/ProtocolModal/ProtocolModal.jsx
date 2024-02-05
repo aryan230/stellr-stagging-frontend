@@ -1,5 +1,5 @@
 import _ from "lodash";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import UpdateProtocolStepperOne from "./UpdateProtocol/UpdateProtocolStepperOne";
@@ -36,6 +36,8 @@ import URL from "./../../../Data/data.json";
 import axios from "axios";
 import { toast } from "sonner";
 import { useSelector } from "react-redux";
+import { addToRC } from "../../../redux/actions/rcActions";
+import { useDispatch } from "react-redux";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -47,6 +49,7 @@ function ProtocolModal({
   setWhichTabisActive,
   setNewProtocol,
 }) {
+  const dispatch = useDispatch();
   const [insideData, setInsideData] = useState(
     doc.data ? Object.entries(JSON.parse(doc.data)) : []
   );
@@ -103,6 +106,17 @@ function ProtocolModal({
         console.log(error);
       });
   };
+
+  useEffect(() => {
+    dispatch(
+      addToRC({
+        _id: doc._id,
+        type: "Protocol",
+        name: doc.title,
+        time: Date.now(),
+      })
+    );
+  }, [dispatch]);
 
   return (
     <div className="modal">

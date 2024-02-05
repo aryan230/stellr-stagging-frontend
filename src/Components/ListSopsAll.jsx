@@ -36,24 +36,30 @@ function ListSopsAll({
 
   useEffect(() => {
     setTableData(
-      sops.map(
-        ({
-          protocolId: id,
-          title: name,
-          createdAt: createdAt,
-          type: recordType,
-          updatedAt: updatedAt,
-        }) => ({
-          id: `PTCL-000${id}`,
-          name: name,
-          createdAt: new Date(createdAt).toLocaleString("en-GB").split(",")[0],
-          recordType,
-          updatedAt: new Date(updatedAt).toLocaleString("en-GB").split(",")[0],
-          createdDate: createdAt,
-          createdBy: userInfo.name,
-          view: "View",
-        })
-      )
+      sops &&
+        sops.length > 0 &&
+        sops.map(
+          ({
+            protocolId: id,
+            title: name,
+            createdAt: createdAt,
+            type: recordType,
+            updatedAt: updatedAt,
+          }) => ({
+            id: `PTCL-000${id}`,
+            name: name,
+            createdAt: new Date(createdAt)
+              .toLocaleString("en-GB")
+              .split(",")[0],
+            recordType,
+            updatedAt: new Date(updatedAt)
+              .toLocaleString("en-GB")
+              .split(",")[0],
+            createdDate: createdAt,
+            createdBy: userInfo.name,
+            view: "View",
+          })
+        )
     );
   }, []);
 

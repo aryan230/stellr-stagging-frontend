@@ -1,4 +1,4 @@
-import React, { Fragment, useRef, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import BasicModalTailwind from "../../UI/MainModals/BasicModalTailwind";
 import { Editor } from "ketcher-react";
 import { RemoteStructServiceProvider } from "ketcher-core";
@@ -12,8 +12,11 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
 import MainLoaderWithText from "../Loaders/MainLoaderWithText";
+import { addToRC } from "../../redux/actions/rcActions";
+import { useDispatch } from "react-redux";
 
 function CDEntries({ setOpen, open, doc, setCDUpdate }) {
+  const dispatch = useDispatch();
   function blobToBase64(blob) {
     return new Promise((resolve, _) => {
       const reader = new FileReader();
@@ -73,6 +76,17 @@ function CDEntries({ setOpen, open, doc, setCDUpdate }) {
         console.log(error);
       });
   };
+
+  useEffect(() => {
+    dispatch(
+      addToRC({
+        _id: doc._id,
+        type: "Chemical Drawing",
+        name: doc.name,
+        time: Date.now(),
+      })
+    );
+  }, [dispatch]);
 
   return (
     <div className="modal">

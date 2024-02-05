@@ -1,6 +1,6 @@
 import { Drawer } from "@mui/material";
 import _ from "lodash";
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import DrawerSopLogs from "./DrawerSopLogs";
@@ -14,12 +14,15 @@ import { Menu, Transition } from "@headlessui/react";
 import { Eye, MoreHorizontalIcon } from "lucide-react";
 import ShareSopModal from "./ShareSopModal";
 import LogsModal from "../../Logs/LogsModal";
+import { addToRC } from "../../../redux/actions/rcActions";
+import { useDispatch } from "react-redux";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
 function SopModal({ setSopModal, doc, setWhichTabisActive }) {
+  const dispatch = useDispatch();
   const [isDrawerOpenLogs, setIsDrawerOpenLogs] = useState(false);
 
   const [insideData, setInsideData] = useState(
@@ -45,6 +48,17 @@ function SopModal({ setSopModal, doc, setWhichTabisActive }) {
       //do something else
     }
   }
+
+  useEffect(() => {
+    dispatch(
+      addToRC({
+        _id: doc._id,
+        type: "SOP",
+        name: doc.title,
+        time: Date.now(),
+      })
+    );
+  }, [dispatch]);
 
   return (
     <div className="modal">

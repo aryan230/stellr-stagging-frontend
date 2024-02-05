@@ -27,6 +27,7 @@ function Home({
   setCreateNewTaskModal,
   setTaskUpdateController,
   taskUpdateController,
+  setWhichTabisActive,
 }) {
   const dispatch = useDispatch();
   const [events, setEvents] = useState();
@@ -152,7 +153,7 @@ function Home({
       ) : (
         <>
           <div className="calender-holder">
-            <NewHomeDash />
+            <NewHomeDash setWhichTabisActive={setWhichTabisActive} />
             {/* <Calendar
               views={{ month: true, week: false, day: false, agenda: false }}
               localizer={localizer}
