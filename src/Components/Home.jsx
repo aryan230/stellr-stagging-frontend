@@ -352,7 +352,7 @@ function Home({
                 <div className="calender-todays-task">
                   {newArr &&
                     newArr
-                      .filter((t) => t.deleted === false)
+                      .filter((t) => t.deleted === false && t.status === "Open")
                       .map(
                         (doc) =>
                           doc.due_date < todaysDate && (

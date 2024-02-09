@@ -184,7 +184,7 @@ function TaskModal({
       />
       <div className="border-t border-gray-200 pt-8 lg:flex lg:items-center lg:justify-between xl:mt-0">
         <div>
-          <h3 className="text-sm font-semibold text-gray-400 tracking-wider uppercase">
+          <h3 className="text-md font-semibold text-gray-400 tracking-wider uppercase">
             Priority
           </h3>
           <span
@@ -192,7 +192,7 @@ function TaskModal({
               doc.priority === "High"
                 ? "bg-emerald-100 text-emerald-700 border-emerald-500"
                 : "bg-gray-100 text-gray-800 border-gray-500"
-            } text-xs font-medium inline-flex items-center px-2.5 py-0.5 mt-2 rounded me-2 border`}
+            } text-sm font-medium inline-flex items-center px-2.5 py-0.5 mt-2 rounded me-2 border`}
           >
             <svg
               class="w-2.5 h-2.5 me-1.5"
@@ -208,7 +208,7 @@ function TaskModal({
         </div>
       </div>
       <div className="mt-10">
-        <h2 className="text-sm font-medium text-gray-900">Description</h2>
+        <h2 className="text-base font-medium text-gray-900">Description</h2>
 
         <div
           className="mt-2 prose prose-sm text-gray-500"
@@ -217,7 +217,7 @@ function TaskModal({
       </div>
 
       <div className="mt-8 border-t border-gray-200 pt-8">
-        <h2 className="text-sm font-medium text-gray-900">Due Date</h2>
+        <h2 className="text-base font-medium text-gray-900">Due Date</h2>
 
         <div className="mt-2 prose prose-sm text-gray-500">
           {moment(doc.due_date).fromNow()}{" "}

@@ -227,7 +227,7 @@ function CustomFeildTeplate({
                   htmlFor="bordered-radio-1"
                   className="w-full py-4 ml-2 text-sm font-medium text-gray-900"
                 >
-                  Use an existing Field
+                  Use an existing field
                 </label>
               </div>
               {newField && newField === "exist" && (
@@ -265,7 +265,7 @@ function CustomFeildTeplate({
                   htmlFor="bordered-radio-2"
                   className="w-full py-4 ml-2 text-sm font-medium text-gray-900"
                 >
-                  Created New Field
+                  Created new field
                 </label>
               </div>
             </>
@@ -277,7 +277,7 @@ function CustomFeildTeplate({
                     htmlFor="first_name"
                     className="block mb-2 text-sm font-medium text-gray-900"
                   >
-                    Enter Name for New Field
+                    Enter Name for field
                   </label>
                   <input
                     type="text"
@@ -316,7 +316,7 @@ function CustomFeildTeplate({
                     htmlFor="countries"
                     className="block mb-2 text-sm font-medium text-gray-900"
                   >
-                    Select a Field Type
+                    Select a field type
                   </label>
                   <select
                     id="countries"
@@ -375,7 +375,7 @@ function CustomFeildTeplate({
                     htmlFor="first_name"
                     className="block mb-2 text-sm font-medium text-gray-900"
                   >
-                    Enter Value for Placeholer
+                    Enter value for placeholder
                   </label>
                   <input
                     type="text"

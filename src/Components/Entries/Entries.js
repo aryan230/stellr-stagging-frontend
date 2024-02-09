@@ -6,6 +6,7 @@ import { addEntryLogs } from "../Functions/addEntryLogs";
 import { userRoleExtract } from "../Functions/userRoleFunction";
 import { addToState } from "../../redux/actions/stateActions";
 import { FileText, Table2 } from "lucide-react";
+import { addTime } from "../Functions/addTime";
 
 function Entries({
   doc,
@@ -120,20 +121,8 @@ function Entries({
           <p>{doc.name}</p>
         </div>
         <span>ENT-{String(index + 1).padStart(4, "0")}</span>
-        <span>
-          {new Date(doc.updatedAt).toLocaleString("en-GB").split(",")[0]},{" "}
-          {new Date(doc.updatedAt).toLocaleString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
-        </span>
-        <span>
-          {new Date(doc.createdAt).toLocaleString("en-GB").split(",")[0]},{" "}
-          {new Date(doc.updatedAt).toLocaleString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
-        </span>
+        <span>{addTime(doc.updatedAt)}</span>
+        <span>{addTime(doc.createdAt)}</span>
       </div>
     </button>
   );

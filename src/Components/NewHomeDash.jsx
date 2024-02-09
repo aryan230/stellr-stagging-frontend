@@ -441,15 +441,15 @@ function NewHomeDash({ setWhichTabisActive }) {
         </div>
         <div className="max-[800px]:hidden w-[60%] h-[100%] p-5 flex-col items-center justify-between">
           <div className="w-[100%] h-[45%] flex">
-            <div
-              onClick={(e) => {
-                e.preventDefault();
-                setWhichTabisActive("projectList");
-              }}
-              className="w-[60%] h-[100%] bg-[#4b6cff] rounded-xl mr-5 relative"
-            >
+            <div className="w-[60%] h-[100%] bg-[#4b6cff] rounded-xl mr-5 relative">
               {" "}
-              <div className="absolute flex items-center justify-center w-6 h-6 top-5 right-5 hover:cursor-pointer bg-white rounded-full">
+              <div
+                onClick={(e) => {
+                  e.preventDefault();
+                  setWhichTabisActive("listEntriesMainAll");
+                }}
+                className="absolute flex items-center justify-center w-6 h-6 top-5 right-5 hover:cursor-pointer bg-white rounded-full"
+              >
                 <MoveUpRight className="w-3" />
               </div>
               <h1 className="text-lg pl-5 pt-5 font-bold font-body text-white">
@@ -528,7 +528,7 @@ function NewHomeDash({ setWhichTabisActive }) {
               <div
                 onClick={(e) => {
                   e.preventDefault();
-                  setWhichTabisActive("projectList");
+                  setWhichTabisActive("listLabsheets");
                 }}
                 className="absolute flex items-center justify-center w-6 h-6 top-5 right-5 hover:cursor-pointer bg-white rounded-full"
               >

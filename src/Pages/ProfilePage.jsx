@@ -17,6 +17,8 @@ import NewProfilePage from "./NewProfile";
 import ChangePassword from "./Modals/ChangePassword";
 import toast, { Toaster } from "react-hot-toast";
 import ContactAdmin from "./Modals/ContactAdmin";
+import { TimezoneSelectMain, finalTime } from "./Modals/TimezoneSelect";
+import { addTime } from "../Components/Functions/addTime";
 
 function ProfilePage() {
   const navigate = useNavigate();
@@ -54,6 +56,10 @@ function ProfilePage() {
   const [loader, setLoader] = useState(false);
   const [changePasswordModal, setChangePasswordModal] = useState(false);
   const [contactAdmin, setContactAdmin] = useState(false);
+  const [timezone, setTimezone] = useState(false);
+  const [time, setTime] = useState();
+  const [changeTime, setChangeTime] = useState(false);
+
   useEffect(() => {
     if (!userInfo) {
       navigate(`/login`);
@@ -64,6 +70,31 @@ function ProfilePage() {
       dispatch(getUserDetails("profile"));
     }
   }, [userInfo, sucess]);
+
+  useEffect(() => {
+    const localTime = localStorage.getItem("stellrtimezone");
+    if (localTime) {
+      setTime(JSON.parse(localTime));
+    } else {
+      setTime({
+        value: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (changeTime) {
+      const localTime = localStorage.getItem("stellrtimezone");
+      if (localTime) {
+        setTime(JSON.parse(localTime));
+      } else {
+        setTime({
+          value: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        });
+      }
+      setChangeTime(false);
+    }
+  }, [changeTime]);
 
   const submitHandlerProfile = async (e) => {
     e.preventDefault();
@@ -130,6 +161,13 @@ function ProfilePage() {
               <ChangePassword setChangePasswordModal={setChangePasswordModal} />
             )}
             {contactAdmin && <ContactAdmin setContactAdmin={setContactAdmin} />}
+            {timezone && (
+              <TimezoneSelectMain
+                setTimezone={setTimezone}
+                time={time}
+                setChangeTime={setChangeTime}
+              />
+            )}
             <Toaster position="top-center" reverseOrder={true} />
             <div className="flex-1 xl:overflow-y-auto h-[100%] w-full">
               <div className="max-w-3xl mx-auto py-10 px-4 sm:px-6 lg:py-12 lg:px-8">
@@ -344,13 +382,35 @@ function ProfilePage() {
                         Set Recovery Email
                       </a>
                     </div>
+                  </div>
+                  <div className="pt-8 grid grid-cols-1 gap-y-6 sm:grid-cols-6 sm:gap-x-6">
+                    <div className="sm:col-span-6">
+                      <h2 className="text-xl font-medium text-blue-gray-900">
+                        Timezone Information
+                      </h2>
+                      <p className="mt-1 text-sm text-blue-gray-500">
+                        This information will be displayed publicly so be
+                        careful what you share.
+                      </p>
+                    </div>
+                    <h2>{time && time.value}</h2>
+                    <div className="sm:col-span-6">
+                      <a
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setTimezone(true);
+                        }}
+                        className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                      >
+                        Change Timezone
+                      </a>
+                    </div>
+
                     <p className="text-sm text-blue-gray-500 sm:col-span-6">
-                      This account was created on{" "}
-                      {new Date(user.createdAt).toDateString()} at{" "}
-                      {new Date(user.createdAt).toTimeString()}.
+                      This account was created on {addTime(user.createdAt)}
                     </p>
                   </div>
-
                   <div className="pt-8 flex justify-end">
                     <button
                       type="submit"

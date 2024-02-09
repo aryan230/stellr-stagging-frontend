@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import StatsAndGraphs from "./Modals/StatsAndGraphs";
 import { listMySamples } from "../redux/actions/sampleActions";
+import { addTime } from "./Functions/addTime";
 
 function ListSamplesAll({
   setSampleContent,
@@ -235,13 +236,9 @@ function ListSamplesAll({
                     _id,
                     id: `SAM-000${id}`,
                     name: JSON.parse(name).sampleName,
-                    createdAt: new Date(createdAt)
-                      .toLocaleString("en-GB")
-                      .split(",")[0],
+                    createdAt: addTime(createdAt),
                     recordType,
-                    updatedAt: new Date(updatedAt)
-                      .toLocaleString("en-GB")
-                      .split(",")[0],
+                    updatedAt: addTime(updatedAt),
                     createdDate: createdAt,
                     createdBy: user.name ? user.name : userInfo.name,
                     updatedBy: user.name ? user.name : userInfo.name,

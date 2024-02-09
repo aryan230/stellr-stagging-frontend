@@ -78,6 +78,8 @@ import { addEntryLogs } from "./Functions/addEntryLogs";
 import { addNotification } from "./Functions/addNotification";
 import URL from "./../Data/data.json";
 import { toast } from "sonner";
+import ListLabsheetsAll from "./ListLabsheetsAll";
+import ListEntriesMainAll from "./ListEntriesMainAll";
 
 function EditorComponent({ expire, setExpire }) {
   const mainDiv = useRef();
@@ -1187,6 +1189,10 @@ function EditorComponent({ expire, setExpire }) {
                 newSop={newSop}
                 setSopContent={setSopContent}
               />
+            )}
+            {whichTabisActive === "listLabsheets" && <ListLabsheetsAll />}
+            {whichTabisActive === "listEntriesMainAll" && (
+              <ListEntriesMainAll setWhichTabisActive={setWhichTabisActive} setTabId={setTabId}/>
             )}
             {/* {whichTabisActive === "tabs" && tabDetails.length === 0 && (
               <div className="main-inside">

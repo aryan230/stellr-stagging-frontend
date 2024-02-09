@@ -4,6 +4,7 @@ import URL from "./../Data/data.json";
 import axios from "axios";
 import { Box } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { addTime } from "./Functions/addTime";
 function ListChemicalDrawingAll({
   setCDModalContent,
   setCDModal,
@@ -222,12 +223,8 @@ function ListChemicalDrawingAll({
                     id: `${_id}`,
                     name: name,
                     recordType,
-                    updatedAt: new Date(updatedAt)
-                      .toLocaleString("en-GB")
-                      .split(",")[0],
-                    createdAt: new Date(updatedAt)
-                      .toLocaleString("en-GB")
-                      .split(",")[0],
+                    updatedAt: addTime(updatedAt),
+                    createdAt: addTime(createdAt),
                     createdBy: user.name ? user.name : userInfo.name,
                     updatedBy: user.name ? user.name : userInfo.name,
                     view: "View",

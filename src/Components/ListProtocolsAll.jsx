@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import StatsAndGraphs from "./Modals/StatsAndGraphs";
 import { listMyProtocols } from "../redux/actions/protocolActions";
 import { useNavigate } from "react-router-dom";
+import { addTime } from "./Functions/addTime";
 
 function ListProtocolsAll({
   setProtocolContent,
@@ -55,13 +56,9 @@ function ListProtocolsAll({
             }) => ({
               id: `PTCL-000${id}`,
               name: name,
-              createdAt: new Date(createdAt)
-                .toLocaleString("en-GB")
-                .split(",")[0],
+              createdAt: addTime(createdAt),
               recordType,
-              updatedAt: new Date(updatedAt)
-                .toLocaleString("en-GB")
-                .split(",")[0],
+              updatedAt: addTime(updatedAt),
               createdDate: createdAt,
               createdBy: userInfo.name,
               view: "View",

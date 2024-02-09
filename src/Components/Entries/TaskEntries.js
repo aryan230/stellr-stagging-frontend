@@ -4,6 +4,7 @@ import { addTasksLogs } from "../Functions/addTaskLogs";
 import { useSelector } from "react-redux";
 import { PaperClipIcon } from "@heroicons/react/solid";
 import { Check, CheckCheck, CheckCircle, Circle } from "lucide-react";
+import { addTime } from "../Functions/addTime";
 
 function TaskEntries({ doc, setTaskModal, setTaskContent, index, taskFrom }) {
   console.log(doc);
@@ -60,14 +61,8 @@ function TaskEntries({ doc, setTaskModal, setTaskContent, index, taskFrom }) {
           <p>{doc.subject}</p>
         </div>
         <span>TASK-{String(index + 1).padStart(4, "0")}</span>
-        <span>
-          {new Date(doc.createdAt).toLocaleString("en-GB").split(",")[0]},{" "}
-          {new Date(doc.updatedAt).toLocaleString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
-        </span>
-        <span> {doc.due_date}</span>
+        <span>{addTime(doc.createdAt)}</span>
+        <span>{addTime(doc.due_date)}</span>
       </div>
     </button>
   );

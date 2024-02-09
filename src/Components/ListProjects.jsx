@@ -18,6 +18,7 @@ import { addToState } from "../redux/actions/stateActions";
 import { tConvert } from "./Functions/timeConvert";
 import { Helmet } from "react-helmet";
 import { Folders } from "lucide-react";
+import { addTime } from "./Functions/addTime";
 
 const people = [
   {
@@ -267,30 +268,8 @@ function ListProjects({
                             <p>{project.name}</p>
                           </div>
                           <span>PROJ-{String(index + 1).padStart(4, "0")}</span>
-                          <span>
-                            {
-                              new Date(project.createdAt)
-                                .toLocaleString("en-GB")
-                                .split(",")[0]
-                            }
-                            ,{" "}
-                            {new Date(project.createdAt).toLocaleString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                          </span>
-                          <span>
-                            {
-                              new Date(project.updatedAt)
-                                .toLocaleString("en-GB")
-                                .split(",")[0]
-                            }
-                            ,{" "}
-                            {new Date(project.updatedAt).toLocaleString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                          </span>
+                          <span>{addTime(project.createdAt)}</span>
+                          <span>{addTime(project.updatedAt)}</span>
                         </div>
                       </button>
                     ))
