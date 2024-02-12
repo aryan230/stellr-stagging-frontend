@@ -19,6 +19,7 @@ import ConformationModal from "../../../UI/MainModals/ConformationModal";
 import EmptySlideOvers from "../../../UI/SlideOvers/EmptySlideOvers";
 import { addToRC } from "../../../redux/actions/rcActions";
 import { useDispatch } from "react-redux";
+import { addTime } from "../../Functions/addTime";
 
 function TaskModal({
   setTaskModal,
@@ -135,12 +136,8 @@ function TaskModal({
             moment(doc.createdAt).fromNow()} by ${ownerUserData &&
             ownerUserData.name}`,
           createdby: ownerUserData && ownerUserData.name,
-          created: moment(doc.createdAt)
-            .locale("en-in")
-            .format("ll"),
-          modified: moment(doc.updatedAt)
-            .locale("en-in")
-            .format("ll"),
+          created: doc.createdAt,
+          modified: doc.updatedAt,
           size: "2KB",
           shared: doc.assigned,
         }}
@@ -221,7 +218,7 @@ function TaskModal({
 
         <div className="mt-2 prose prose-sm text-gray-500">
           {moment(doc.due_date).fromNow()}{" "}
-          <span className="text-sm">({doc.due_date})</span>
+          <span className="text-sm">({addTime(doc.due_date)})</span>
         </div>
       </div>
     </MainModalEntity>

@@ -19,6 +19,8 @@ import { PenIcon, Settings } from "lucide-react";
 import ConformationModal from "../../UI/MainModals/ConformationModal";
 import axios from "axios";
 import moment from "moment";
+import { addTime } from "../Functions/addTime";
+
 const tabs = [
   { name: "General", href: "#", current: true },
   { name: "Password", href: "#", current: false },
@@ -218,13 +220,7 @@ function ProjectSettingsNew({
                                                 {person.message}
                                               </td>
                                               <td className="px-6 py-4">
-                                                {moment(person.date).format(
-                                                  "DD/MM/YYYY"
-                                                ) +
-                                                  " " +
-                                                  moment(person.date).format(
-                                                    "LT"
-                                                  )}
+                                                {addTime(person.date)}
                                               </td>
                                             </tr>
                                           ))}

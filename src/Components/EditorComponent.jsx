@@ -80,6 +80,7 @@ import URL from "./../Data/data.json";
 import { toast } from "sonner";
 import ListLabsheetsAll from "./ListLabsheetsAll";
 import ListEntriesMainAll from "./ListEntriesMainAll";
+import TemplateSettingsNew from "./TemplateSettingsNew";
 
 function EditorComponent({ expire, setExpire }) {
   const mainDiv = useRef();
@@ -1086,7 +1087,7 @@ function EditorComponent({ expire, setExpire }) {
                 setTaskContent={setTaskContent}
               />
             )}
-            {whichTabisActive === "templates" && <TemplateSettings />}
+            {whichTabisActive === "templates" && <TemplateSettingsNew />}
             {whichTabisActive === "profile" && (
               <div className="main-inside">
                 <ProfilePage />
@@ -1192,7 +1193,10 @@ function EditorComponent({ expire, setExpire }) {
             )}
             {whichTabisActive === "listLabsheets" && <ListLabsheetsAll />}
             {whichTabisActive === "listEntriesMainAll" && (
-              <ListEntriesMainAll setWhichTabisActive={setWhichTabisActive} setTabId={setTabId}/>
+              <ListEntriesMainAll
+                setWhichTabisActive={setWhichTabisActive}
+                setTabId={setTabId}
+              />
             )}
             {/* {whichTabisActive === "tabs" && tabDetails.length === 0 && (
               <div className="main-inside">

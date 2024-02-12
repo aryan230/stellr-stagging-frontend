@@ -33,6 +33,7 @@ import ProjectSettingsNew from "./ProjectSettingsNew";
 import MainModalEntity from "../../UI/MainModals/MainModalEntity";
 import SecondLoaderWithText from "../Loaders/SecondLoaderWithText";
 import moment from "moment";
+import { addTime } from "../Functions/addTime";
 
 function ProjectSettings({
   projectSettings,
@@ -345,18 +346,12 @@ function ProjectSettings({
                 {
                   type: "text",
                   key: "Created On",
-                  value:
-                    moment(project.createdAt).format("DD/MM/YYYY") +
-                    " " +
-                    moment(project.createdAt).format("LT"),
+                  value: addTime(project.createdAt),
                 },
                 {
                   type: "text",
                   key: "Last Updated On",
-                  value:
-                    moment(project.updatedAt).format("DD/MM/YYYY") +
-                    " " +
-                    moment(project.updatedAt).format("LT"),
+                  value: addTime(project.updatedAt),
                 },
               ],
             },

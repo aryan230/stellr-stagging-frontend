@@ -3,6 +3,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { HeartIcon, XIcon } from "@heroicons/react/outline";
 import { PencilIcon, PlusSmIcon } from "@heroicons/react/solid";
 import { CheckCheck, FileText, User } from "lucide-react";
+import { addTime } from "../../Components/Functions/addTime";
 
 function DetailSlideOver({ open, setOpen, data }) {
   return (
@@ -90,11 +91,16 @@ function DetailSlideOver({ open, setOpen, data }) {
                         </div>
                         <div className="py-3 flex justify-between text-sm font-medium">
                           <dt className="text-gray-500">Created</dt>
-                          <dd className="text-gray-900">{data.created}</dd>
+                          <dd className="text-gray-900">
+                            {" "}
+                            {addTime(data.created)}
+                          </dd>
                         </div>
                         <div className="py-3 flex justify-between text-sm font-medium">
                           <dt className="text-gray-500">Last modified</dt>
-                          <dd className="text-gray-900">{data.modified}</dd>
+                          <dd className="text-gray-900">
+                            {addTime(data.modified)}
+                          </dd>
                         </div>
                         <div className="py-3 flex justify-between text-sm font-medium">
                           <dt className="text-gray-500">Last modified by</dt>
@@ -121,7 +127,7 @@ function DetailSlideOver({ open, setOpen, data }) {
                         </button>
                       </div>
                     </div> */}
-                    <div>
+                    {/* <div>
                       <h3 className="font-medium text-gray-900">Shared with</h3>
                       <ul
                         role="list"
@@ -152,37 +158,18 @@ function DetailSlideOver({ open, setOpen, data }) {
                               </button>
                             </li>
                           ))}
-
-                        {/* <li className="py-2 flex justify-between items-center">
-                          <button
-                            type="button"
-                            className="group -ml-1 bg-white p-1 rounded-md flex items-center focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                          >
-                            <span className="w-8 h-8 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400">
-                              <PlusSmIcon
-                                className="h-5 w-5"
-                                aria-hidden="true"
-                              />
-                            </span>
-                            <span className="ml-4 text-sm font-medium text-indigo-600 group-hover:text-indigo-500">
-                              Share
-                            </span>
-                          </button>
-                        </li> */}
                       </ul>
-                    </div>
+                    </div> */}
                     <div className="flex">
                       <button
                         type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setOpen(false);
+                        }}
                         className="flex-1 bg-indigo-600 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                       >
-                        Download
-                      </button>
-                      <button
-                        type="button"
-                        className="flex-1 ml-3 bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                      >
-                        Delete
+                        Close
                       </button>
                     </div>
                   </div>

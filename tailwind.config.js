@@ -9,6 +9,7 @@ module.exports = {
     extend: {
       fontFamily: {
         sans: ["Inter var", ...defaultTheme.fontFamily.sans],
+        lato: "Lato",
         karla: "Karla",
         body: "Poppins",
         code: "Roboto Mono",

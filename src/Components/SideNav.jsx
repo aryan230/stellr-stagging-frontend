@@ -799,7 +799,7 @@ function SideNav({
                     </div>
                   </div>
                 </button>
-                <div className="mnc-element">
+                {/* <div className="mnc-element">
                   <div className="mnc-element-inside">
                     <div className="mnc-element-left">
                       <svg
@@ -817,7 +817,7 @@ function SideNav({
                       <p>Help</p>
                     </div>
                   </div>
-                </div>
+                </div> */}
                 {/* <div
                   onClick={() => {
                     setCreateOrg(true);

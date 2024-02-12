@@ -8,6 +8,8 @@ import autoTable from "jspdf-autotable";
 import { ChevronDownIcon } from "@heroicons/react/solid";
 import { CSVLink } from "react-csv";
 import moment from "moment";
+import { addTime } from "../Functions/addTime";
+
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
@@ -29,7 +31,7 @@ function LogsModal({ open, setOpen, logs, name }) {
       .map(({ userEmail, message, date }) => [
         userEmail,
         message,
-        new Date(date).toLocaleString(),
+        addTime(date),
       ]);
 
     autoTable(doc, { html: "#my-table" });
@@ -56,10 +58,7 @@ function LogsModal({ open, setOpen, logs, name }) {
               .map((d) => ({
                 email: d.userEmail,
                 message: d.message,
-                timestamp:
-                  moment(d.date).format("DD/MM/YYYY") +
-                  " " +
-                  moment(d.date).format("LT"),
+                timestamp: addTime(d.date),
               }))}
             filename={"my-file.csv"}
             target="_blank"
