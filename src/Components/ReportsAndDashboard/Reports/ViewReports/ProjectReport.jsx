@@ -12,6 +12,7 @@ import { saveAs } from "file-saver";
 import html2pdf from "html2pdf.js";
 import TopDataReport from "./TopDataReport";
 import generatePDF from "react-to-pdf";
+import { addTime } from "../../../Functions/addTime";
 
 function ProjectReport({ data }) {
   const pdfRef = useRef();
@@ -197,12 +198,8 @@ function ProjectReport({ data }) {
                       {p._id}
                     </th>
                     <td className="px-6 py-4">{p.name}</td>
-                    <td className="px-6 py-4">
-                      {new Date(p.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4">
-                      {new Date(p.updatedAt).toLocaleDateString()}
-                    </td>
+                    <td className="px-6 py-4">{addTime(p.createdAt)}</td>
+                    <td className="px-6 py-4">{addTime(p.updatedAt)}</td>
                   </tr>
                 ))}
             </tbody>

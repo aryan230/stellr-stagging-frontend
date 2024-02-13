@@ -8,6 +8,7 @@ import CustomFunnel from "../../../CustomCharts/CustomFunnel";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import TopDataReport from "./TopDataReport";
+import { addTime } from "../../../Functions/addTime";
 function TaskReport({ data }) {
   const pdfRef = useRef();
   const [chartsData, setChartsData] = useState(JSON.parse(data.dataSet).charts);
@@ -176,12 +177,8 @@ function TaskReport({ data }) {
                       {p._id}
                     </th>
                     <td className="px-6 py-4">{p.subject}</td>
-                    <td className="px-6 py-4">
-                      {new Date(p.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4">
-                      {new Date(p.updatedAt).toLocaleDateString()}
-                    </td>
+                    <td className="px-6 py-4">{addTime(p.createdAt)}</td>
+                    <td className="px-6 py-4">{addTime(p.updatedAt)}</td>
                   </tr>
                 ))}
             </tbody>

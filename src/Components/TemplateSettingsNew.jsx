@@ -14,7 +14,15 @@ import {
   SortAscendingIcon,
 } from "@heroicons/react/solid";
 import { MailIcon, PhoneIcon } from "@heroicons/react/solid";
-import { Eye, FileText, Tag, Trash } from "lucide-react";
+import {
+  Eye,
+  FileText,
+  FlaskConical,
+  Package,
+  PackageOpen,
+  Tag,
+  Trash,
+} from "lucide-react";
 import { addTime } from "./Functions/addTime";
 import SampleTemplateModal from "./TemplateSettings/SampleTemplateModal";
 
@@ -183,7 +191,7 @@ function TemplateSettingsNew() {
         />
       )}
       <div className="project-component-inside">
-        <div div className="xl:w-3/4 2xl:w-4/5 w-full mx-auto font-sans">
+        <div div className="xl:w-3/4 2xl:w-4/5 w-full mx-auto font-dmsans">
           <div className="px-4 md:px-10 py-4 md:py-7">
             <div className="sm:flex items-center justify-between">
               <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold leading-normal text-gray-800">
@@ -200,6 +208,69 @@ function TemplateSettingsNew() {
             <div className="overflow-x-auto">
               <table className="w-full whitespace-nowrap">
                 <tbody>
+                  {customSamples &&
+                    customSamples.length > 0 &&
+                    customSamples
+                      .filter(
+                        (entry) =>
+                          entry.name
+                            .toLowerCase()
+                            .includes(inputSearch.toLowerCase()) ||
+                          entry._id
+                            .toLowerCase()
+                            .includes(inputSearch.toLowerCase())
+                      )
+                      .map(
+                        (doc, index) =>
+                          !doc.deleted && (
+                            <tr className="text-sm leading-none text-gray-600 h-16">
+                              <td className="w-1/2">
+                                <div className="flex items-center">
+                                  <div className="h-8 w-8 mb-4 lg:mb-0 mr-4">
+                                    <Package className="h-full w-full" />
+                                  </div>
+                                  <div className="pl-2">
+                                    <p className="text-sm font-medium leading-none text-gray-800">
+                                      {doc.name}
+                                    </p>
+                                    <p className="text-xs leading-3 text-gray-600 mt-2">
+                                      Created on {addTime(doc.createdAt)}
+                                    </p>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="pl-16">
+                                <p>sample</p>
+                              </td>
+                              <td>
+                                <p className="pl-16">
+                                  Last updated at {addTime(doc.updatedAt)}
+                                </p>
+                              </td>
+                              <td>
+                                <button
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    setSampleData(doc);
+                                    setSampleTemplateModal(true);
+                                  }}
+                                  className="inline-flex sm:ml-3 items-start justify-start px-6 py-3 bg-indigo-700 hover:bg-indigo-600 focus:outline-none rounded"
+                                >
+                                  <p className="text-sm font-medium leading-none text-white">
+                                    View
+                                  </p>
+                                </button>
+                              </td>
+                              {/* <td>
+                                <button className="inline-flex sm:ml-3 items-start justify-start px-6 py-3 bg-indigo-700 hover:bg-indigo-600 focus:outline-none rounded">
+                                  <p className="text-sm font-medium leading-none text-white">
+                                    Archive
+                                  </p>
+                                </button>
+                              </td> */}
+                            </tr>
+                          )
+                      )}
                   {templates &&
                     templates.length > 0 &&
                     templates
@@ -245,75 +316,6 @@ function TemplateSettingsNew() {
                                     e.preventDefault();
                                     setTemplateContent(doc);
                                     setTemplateModal(true);
-                                  }}
-                                  className="inline-flex sm:ml-3 items-start justify-start px-6 py-3 bg-indigo-700 hover:bg-indigo-600 focus:outline-none rounded"
-                                >
-                                  <p className="text-sm font-medium leading-none text-white">
-                                    View
-                                  </p>
-                                </button>
-                              </td>
-                              {/* <td>
-                                <button className="inline-flex sm:ml-3 items-start justify-start px-6 py-3 bg-indigo-700 hover:bg-indigo-600 focus:outline-none rounded">
-                                  <p className="text-sm font-medium leading-none text-white">
-                                    Archive
-                                  </p>
-                                </button>
-                              </td> */}
-                            </tr>
-                          )
-                      )}
-                  {customSamples &&
-                    customSamples.length > 0 &&
-                    customSamples
-                      .filter(
-                        (entry) =>
-                          entry.name
-                            .toLowerCase()
-                            .includes(inputSearch.toLowerCase()) ||
-                          entry._id
-                            .toLowerCase()
-                            .includes(inputSearch.toLowerCase())
-                      )
-                      .map(
-                        (doc, index) =>
-                          !doc.deleted && (
-                            <tr className="text-sm leading-none text-gray-600 h-16">
-                              <td className="w-1/2">
-                                <div className="flex items-center">
-                                  <div className="h-8 w-8 mb-4 lg:mb-0 mr-4">
-                                    <svg xmlns="http://www.w3.org/2000/svg">
-                                      <path
-                                        className="h-full w-full"
-                                        d="M14.473 7.52666L11.1397 4.19333C11.0774 4.13154 11.0035 4.08266 10.9223 4.04948C10.8411 4.01631 10.7541 3.99949 10.6663 4H3.33301C2.80257 4 2.29387 4.21071 1.91879 4.58578C1.54372 4.96086 1.33301 5.46956 1.33301 6V10C1.33301 10.5304 1.54372 11.0391 1.91879 11.4142C2.29387 11.7893 2.80257 12 3.33301 12H10.6663C10.7541 12.0005 10.8411 11.9837 10.9223 11.9505C11.0035 11.9173 11.0774 11.8684 11.1397 11.8067L14.473 8.47333C14.5355 8.41135 14.5851 8.33762 14.6189 8.25638C14.6528 8.17514 14.6702 8.088 14.6702 8C14.6702 7.91199 14.6528 7.82485 14.6189 7.74361C14.5851 7.66237 14.5355 7.58864 14.473 7.52666ZM10.393 10.6667H3.33301C3.1562 10.6667 2.98663 10.5964 2.8616 10.4714C2.73658 10.3464 2.66634 10.1768 2.66634 10V6C2.66634 5.82318 2.73658 5.65362 2.8616 5.52859C2.98663 5.40357 3.1562 5.33333 3.33301 5.33333H10.393L13.0597 8L10.393 10.6667Z"
-                                        fill="black"
-                                      />
-                                    </svg>
-                                  </div>
-                                  <div className="pl-2">
-                                    <p className="text-sm font-medium leading-none text-gray-800">
-                                      {doc.name}
-                                    </p>
-                                    <p className="text-xs leading-3 text-gray-600 mt-2">
-                                      Created on {addTime(doc.createdAt)}
-                                    </p>
-                                  </div>
-                                </div>
-                              </td>
-                              <td className="pl-16">
-                                <p>sample</p>
-                              </td>
-                              <td>
-                                <p className="pl-16">
-                                  Last updated at {addTime(doc.updatedAt)}
-                                </p>
-                              </td>
-                              <td>
-                                <button
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    setSampleData(doc);
-                                    setSampleTemplateModal(true);
                                   }}
                                   className="inline-flex sm:ml-3 items-start justify-start px-6 py-3 bg-indigo-700 hover:bg-indigo-600 focus:outline-none rounded"
                                 >

@@ -6,6 +6,7 @@ import CustomAreaChart from "../../../CustomCharts/CustomAreaChart";
 import CustomColumnChartDist from "../../../CustomCharts/CustomColumnChartDist";
 import CustomFunnel from "../../../CustomCharts/CustomFunnel";
 import TopDataReport from "./TopDataReport";
+import { addTime } from "../../../Functions/addTime";
 function SampleReport({ data }) {
   const pdfRef = useRef();
   const userLogin = useSelector((state) => state.userLogin);
@@ -202,12 +203,8 @@ function SampleReport({ data }) {
                     <td className="px-6 py-4">
                       {JSON.parse(p.data).sampleName}
                     </td>
-                    <td className="px-6 py-4">
-                      {new Date(p.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4">
-                      {new Date(p.updatedAt).toLocaleDateString()}
-                    </td>
+                    <td className="px-6 py-4">{addTime(p.createdAt)}</td>
+                    <td className="px-6 py-4">{addTime(p.updatedAt)}</td>
                   </tr>
                 ))}
             </tbody>

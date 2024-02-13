@@ -289,13 +289,9 @@ function ListProtocolsAll({
                     }) => ({
                       id: `PTCL-000${id}`,
                       name: name,
-                      createdAt: new Date(createdAt)
-                        .toLocaleString("en-GB")
-                        .split(",")[0],
+                      createdAt: addTime(createdAt),
                       recordType,
-                      updatedAt: new Date(updatedAt)
-                        .toLocaleString("en-GB")
-                        .split(",")[0],
+                      updatedAt: addTime(updatedAt),
                       createdDate: createdAt,
                       createdBy: user.name ? user.name : userInfo.name,
                       updatedBy: user.name ? user.name : userInfo.name,

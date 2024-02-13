@@ -15,8 +15,9 @@ import ProtocolReport from "./Reports/ViewReports/ProtocolReport";
 import EntryReport from "./Reports/ViewReports/EntryReport";
 import TaskReport from "./Reports/ViewReports/TaskReport";
 import SOPReport from "./Reports/ViewReports/SOPReport";
+import MainModalEntity from "../../UI/MainModals/MainModalEntity";
 
-function ViewReport({ viewReportContent, setViewReport }) {
+function ViewReport({ viewReportContent, setViewReport, viewReport }) {
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
 
@@ -102,93 +103,6 @@ function ViewReport({ viewReportContent, setViewReport }) {
         {mainData && mainData.type === "Protocols" && (
           <ProtocolReport data={mainData} />
         )}
-        {/* <div className="view-report-charts">
-          {chartsData.map(
-            (e) =>
-              e === "area" && (
-                <div className="py-10">
-                  <BasicArea newSamples={insideDataIn ? insideDataIn : null} />
-                </div>
-              )
-          )}
-          {chartsData.map(
-            (e) =>
-              e === "pie" && (
-                <div className="py-10">
-                  <Pie
-                    newSamples={
-                      JSON.parse(
-                        JSON.parse(viewReportContent.dataSet).insideData
-                      )
-                        ? JSON.parse(
-                            JSON.parse(viewReportContent.dataSet).insideData
-                          )
-                        : []
-                    }
-                  />
-                </div>
-              )
-          )}
-        </div> */}
-        {/* <div className="view-report-data-grid">
-          <TableContainer sx={{ maxHeight: 300 }}>
-            <Table
-              stickyHeader
-              aria-label="sticky table"
-              className="custom-font-mui"
-            >
-              <TableHead>
-                <TableRow>
-                  {columns.map((column) => (
-                    <TableCell
-                      key={column.id}
-                      align={column.align}
-                      style={{ minWidth: column.minWidth }}
-                    >
-                      {column.label}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {insideDataIn &&
-                  insideDataIn.length > 0 &&
-                  insideDataIn
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row) => {
-                      return (
-                        <TableRow
-                          hover
-                          role="checkbox"
-                          tabIndex={-1}
-                          key={row.code}
-                        >
-                          {columns.map((column) => {
-                            const value = row[column.id];
-                            return (
-                              <TableCell key={column.id} align={column.align}>
-                                {column.format && typeof value === "number"
-                                  ? column.format(value)
-                                  : value}
-                              </TableCell>
-                            );
-                          })}
-                        </TableRow>
-                      );
-                    })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <TablePagination
-            rowsPerPageOptions={[4, 25, 100]}
-            component="div"
-            count={insideDataIn && insideDataIn.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </div> */}
       </div>
     </div>
   );

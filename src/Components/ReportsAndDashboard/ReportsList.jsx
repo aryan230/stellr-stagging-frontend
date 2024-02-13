@@ -13,6 +13,7 @@ import ViewReport from "./ViewReport";
 import URL from "./../../Data/data.json";
 import Reports from "./Reports/Reports";
 import DownloadReportsModal from "./Reports/DownloadReportsModal";
+import { addTime } from "../Functions/addTime";
 
 function ReportsList({ newReport, setNewReport, setActiveReport }) {
   const [data, setData] = useState([]);
@@ -106,6 +107,7 @@ function ReportsList({ newReport, setNewReport, setActiveReport }) {
         <ViewReport
           viewReportContent={viewReportContent}
           setViewReport={setViewReport}
+          viewReport={viewReport}
         />
       )}
       {downloadReport && (
@@ -219,7 +221,7 @@ function ReportsList({ newReport, setNewReport, setActiveReport }) {
                       _id,
                       name,
                       description,
-                      createdAt: new Date(createdAt).toLocaleString(),
+                      createdAt: addTime(createdAt),
                     })
                   )
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)

@@ -5,6 +5,7 @@ import StatsAndGraphs from "./Modals/StatsAndGraphs";
 import { listMySops } from "../redux/actions/sopActions";
 import { Box } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { addTime } from "./Functions/addTime";
 
 function ListSopsAll({
   setSopContent,
@@ -262,13 +263,9 @@ function ListSopsAll({
                     }) => ({
                       id: `SOP-000${id}`,
                       name: name,
-                      createdAt: new Date(createdAt)
-                        .toLocaleString("en-GB")
-                        .split(",")[0],
+                      createdAt: addTime(createdAt),
                       recordType,
-                      updatedAt: new Date(updatedAt)
-                        .toLocaleString("en-GB")
-                        .split(",")[0],
+                      updatedAt: addTime(updatedAt),
                       createdDate: createdAt,
                       createdBy: user.name ? user.name : userInfo.name,
                       updatedBy: user.name ? user.name : userInfo.name,

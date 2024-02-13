@@ -6,6 +6,7 @@ import CustomAreaChart from "../../../CustomCharts/CustomAreaChart";
 import CustomColumnChartDist from "../../../CustomCharts/CustomColumnChartDist";
 import CustomFunnel from "../../../CustomCharts/CustomFunnel";
 import TopDataReport from "./TopDataReport";
+import { addTime } from "../../../Functions/addTime";
 function SOPReport({ data }) {
   const pdfRef = useRef();
 
@@ -166,12 +167,8 @@ function SOPReport({ data }) {
                       {p._id}
                     </th>
                     <td className="px-6 py-4">{p.title}</td>
-                    <td className="px-6 py-4">
-                      {new Date(p.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4">
-                      {new Date(p.updatedAt).toLocaleDateString()}
-                    </td>
+                    <td className="px-6 py-4">{addTime(p.createdAt)}</td>
+                    <td className="px-6 py-4">{addTime(p.updatedAt)}</td>
                   </tr>
                 ))}
             </tbody>

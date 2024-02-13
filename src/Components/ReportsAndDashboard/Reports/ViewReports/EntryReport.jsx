@@ -8,6 +8,7 @@ import CustomFunnel from "../../../CustomCharts/CustomFunnel";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import TopDataReport from "./TopDataReport";
+import { addTime } from "../../../Functions/addTime";
 function EntryReport({ data }) {
   const pdfRef = useRef();
 
@@ -177,12 +178,8 @@ function EntryReport({ data }) {
                       {p._id}
                     </th>
                     <td className="px-6 py-4">{p.name}</td>
-                    <td className="px-6 py-4">
-                      {new Date(p.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4">
-                      {new Date(p.updatedAt).toLocaleDateString()}
-                    </td>
+                    <td className="px-6 py-4">{addTime(p.createdAt)}</td>
+                    <td className="px-6 py-4">{addTime(p.updatedAt)}</td>
                   </tr>
                 ))}
             </tbody>
