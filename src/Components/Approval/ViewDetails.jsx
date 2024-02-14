@@ -4,6 +4,7 @@ import MainModalEntity from "../../UI/MainModals/MainModalEntity";
 import { BadgeCheck, FileText } from "lucide-react";
 import SpinnerLoader from "../Loaders/SpinnerLoader";
 import UpdateStatus from "./UpdateStatus";
+import { addTime } from "../Functions/addTime";
 
 function ViewDetails({ open, setOpen, data, role, resubmitforApproval }) {
   const [loader, setLoader] = useState(true);
@@ -137,11 +138,11 @@ function ViewDetails({ open, setOpen, data, role, resubmitforApproval }) {
                         {data.logs.filter((l) =>
                           l.message.includes("The status")
                         ) &&
-                          new Date(
+                          addTime(
                             data.logs.filter((l) =>
                               l.message.includes("The status")
                             )[0].date
-                          ).toDateString()}
+                          )}
                       </dd>
                     </div>
                   </>

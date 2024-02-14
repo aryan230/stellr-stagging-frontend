@@ -9,6 +9,7 @@ import CustomLogsInside from "./CustomLogsInside";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { ChevronDownIcon } from "@heroicons/react/solid";
+import { addTime } from "../Functions/addTime";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -39,7 +40,7 @@ function CustomLogs({ open, setOpen, logs, name, project, tab }) {
       .map(({ userEmail, message, date }) => [
         userEmail,
         message,
-        new Date(date).toLocaleString(),
+        addTime(date),
       ]);
 
     autoTable(doc, { html: "#my-table" });

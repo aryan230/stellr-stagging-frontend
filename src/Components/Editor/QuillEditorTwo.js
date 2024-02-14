@@ -112,6 +112,7 @@ import InsertFileEditor from "./EditorSettings/InsertFileEditor";
 import FilePreview from "../Preview/FilePreview";
 import { removeFromCart } from "../../redux/actions/cartActions";
 import { addToRC } from "../../redux/actions/rcActions";
+import { addTime } from "../Functions/addTime";
 
 const zip = new JSZip();
 
@@ -771,7 +772,6 @@ function TextEditorTwo({
     };
   };
 
-
   useEffect(() => {
     dispatch(
       addToRC({
@@ -804,12 +804,8 @@ function TextEditorTwo({
             description: `This entry was created ${tab.createdAt &&
               moment(tab.createdAt).fromNow()}`,
             createdby: userInfo.name,
-            created: moment(tab.createdAt)
-              .locale("en-in")
-              .format("ll"),
-            modified: moment(tab.updatedAt)
-              .locale("en-in")
-              .format("ll"),
+            created: addTime(tab.createdAt),
+            modified: addTime(tab.updatedAt),
             size: "5KB",
             shared: [],
           }}
