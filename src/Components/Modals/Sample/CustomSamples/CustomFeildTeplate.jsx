@@ -243,9 +243,9 @@ function CustomFeildTeplate({
                   <button
                     type="submit"
                     onClick={handleAddFieldInSample}
-                    className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+                    className="mx-2 my-2 bg-white transition duration-150 ease-in-out hover:border-indigo-600 rounded hover:bg-indigo-600 hover:text-white border border-indigo-700 text-indigo-700 px-6 py-2 text-base"
                   >
-                    Add field
+                    Add Field
                   </button>
                 </div>
               )}
