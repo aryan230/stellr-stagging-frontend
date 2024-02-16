@@ -543,7 +543,7 @@ function NewHomeDash({ setWhichTabisActive }) {
             </div>
           </div>
           <div className="w-[100%] h-[45%] flex items-center justify-between mt-5">
-            {user.home ? (
+            {user && user.home ? (
               finalData
                 .filter((s) => JSON.parse(user.home).some((b) => s.id == b))
                 .map((s) => (

@@ -171,7 +171,7 @@ function CustomFeildTeplate({
 
   return (
     <div className="modal">
-      <div className="relative w-full max-w-xl max-h-full">
+      <div className="relative w-full max-w-xl max-h-full font-sans">
         {loader && <MainLoaderWithText text={loaderText} />}
 
         {/* Modal content */}
@@ -180,7 +180,7 @@ function CustomFeildTeplate({
           {/* Modal header */}
           <div className="flex items-center justify-between p-5 py-8 border-b rounded-t sticky top-0 bg-white z-50">
             <h3 className="text-xl font-medium text-gray-900">
-              Add Custom Field
+              Add custom field
             </h3>
 
             <button
@@ -245,7 +245,7 @@ function CustomFeildTeplate({
                     onClick={handleAddFieldInSample}
                     className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
                   >
-                    Add Field
+                    Add field
                   </button>
                 </div>
               )}
@@ -265,7 +265,7 @@ function CustomFeildTeplate({
                   htmlFor="bordered-radio-2"
                   className="w-full py-4 ml-2 text-sm font-medium text-gray-900"
                 >
-                  Created new field
+                  Create new field
                 </label>
               </div>
             </>
@@ -277,7 +277,7 @@ function CustomFeildTeplate({
                     htmlFor="first_name"
                     className="block mb-2 text-sm font-medium text-gray-900"
                   >
-                    Enter Name for field
+                    Enter name for field
                   </label>
                   <input
                     type="text"
@@ -381,7 +381,7 @@ function CustomFeildTeplate({
                     type="text"
                     id="first_name"
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                    placeholder="Placeholer"
+                    placeholder="Placehodler"
                     required=""
                     onChange={(e) => {
                       setPlaceholder(e.target.value);
@@ -407,7 +407,7 @@ function CustomFeildTeplate({
                     }}
                   />
                 </div>
-                <HelperText text="This field is used to hold your filed with a custom variable" />
+                <HelperText text="This field is used to hold your field with a custom variable" />
                 <div className="margin-maker"></div>
                 {/* <div className="flex items-center my-4">
                   <input
@@ -423,11 +423,10 @@ function CustomFeildTeplate({
                     Is Required
                   </label>
                 </div> */}
-
                 <button
                   type="submit"
                   onClick={handleAddFeild}
-                  className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+                  className="mx-2 my-2 bg-white transition duration-150 ease-in-out hover:border-indigo-600 rounded hover:bg-indigo-600 hover:text-white border border-indigo-700 text-indigo-700 px-6 py-2 text-base"
                 >
                   Add Field
                 </button>
