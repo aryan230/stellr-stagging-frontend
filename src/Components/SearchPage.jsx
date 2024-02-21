@@ -19,6 +19,7 @@ import { listMySops } from "../redux/actions/sopActions";
 import { Helmet } from "react-helmet";
 import URL from "./../Data/data.json";
 import axios from "axios";
+import { quillGetHTML } from "./Functions/quillGetHTML";
 
 function SearchPage({
   setSampleContent,
@@ -173,7 +174,7 @@ function SearchPage({
         console.log(response.data);
         let entriesArray = [];
         response.data.stats.map((e) => {
-          e.entries.map((p) => {
+          e.entries.map(async (p) => {
             entriesArray.push(p);
           });
         });

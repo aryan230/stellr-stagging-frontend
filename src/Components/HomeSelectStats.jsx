@@ -40,7 +40,7 @@ function HomeSelectStats({ open, setOpen, submitHandlerProfile }) {
           Choose stats:
         </h3>
         <div
-          className="flex items-center p-4 mb-4 text-sm text-yellow-800 border border-yellow-300 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300 dark:border-yellow-800"
+          className="flex items-center p-4 mb-4 text-sm text-yellow-800 border border-yellow-300 rounded-lg bg-yellow-50"
           role="alert"
         >
           <svg
@@ -83,7 +83,7 @@ function HomeSelectStats({ open, setOpen, submitHandlerProfile }) {
               />
               <label
                 htmlFor={s.id}
-                className="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border-2 border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 peer-checked:border-blue-600 hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600 hover:bg-gray-50"
+                className="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border-2 border-gray-200 rounded-lg cursor-pointer peer-checked:border-blue-600 hover:text-gray-600 peer-checked:text-gray-600 hover:bg-gray-50"
               >
                 <div className="block">
                   {s.icon}

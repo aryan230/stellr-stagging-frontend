@@ -13,6 +13,8 @@ import SOPSearchResult from "./SearchResults/SOPSearchResutl";
 import { toast } from "sonner";
 import DrawingSearchResult from "./SearchResults/DrawingSearchResult";
 import EntrySearchResult from "./SearchResults/EntrySearchResult";
+import { quillGetHTML } from "../Functions/quillGetHTML";
+import { Bot, BrainCircuit } from "lucide-react";
 function AdvancedSearch({
   setAdvancedSearch,
   samples,
@@ -74,6 +76,8 @@ function AdvancedSearch({
       getApiKey();
     }
   }, [apikey]);
+
+  const [entryResult, setEntryResult] = useState();
 
   const openai = new OpenAIApi(configuration);
 
@@ -160,41 +164,81 @@ function AdvancedSearch({
       console.log("data is ", data);
       console.log(data.choices[0].message);
     } else if (message.includes("entries") || message.includes("entry")) {
-      setLoading(true);
+      // setLoading(true);
       const response = await openai.createChatCompletion({
         model: "gpt-3.5-turbo-16k",
         messages: [
           {
             role: "user",
-            content: newPromptforEntriesOne,
+            content: `${message}. Check if this prompt is searching for keyword or not and do not include any explanations, only return output as ids in RFC8259 compliant JSON response without deviation and without missing brackets using following format.
+  
+            The JSON response: 
+            ["yes or no", "if yes then the keyword"]`,
           },
         ],
       });
       const searchResult = response.data.choices[0].message;
-      const filteredEntries = JSON.parse(searchResult.content)
-        .map((e) => {
-          return entries.find((ele) => ele._id == e);
-        })
-        .map((entry) => ({
-          _id: entry._id,
-          data: entry.data[0].block,
-        }));
-      console.log(filteredEntries);
-      setResponseTwo(filteredEntries);
-      const finalResponse = await openai.createChatCompletion({
-        model: "gpt-3.5-turbo-16k",
-        messages: [
-          {
-            role: "user",
-            content: newPromptforEntriesTwo,
-          },
-        ],
-      });
-      const { data } = finalResponse;
-      console.log(data.choices[0].message);
-      setResponseType("Entry");
-      setSearchResult(data.choices[0].message);
-      setLoading(false);
+      console.log(searchResult.content);
+      const data = JSON.parse(searchResult.content);
+      const result = [];
+
+      if (data[0] === "yes") {
+        const keyword = data[1];
+        entries.forEach(async (p) => {
+          const html = await quillGetHTML(p.data[0].block.ops);
+          const reg = new RegExp(keyword, "g");
+          if (html.match(reg)) {
+            result.push(p._id);
+          }
+        });
+        console.log(result);
+        setResponseType("Entry");
+        setSearchResult([1, 2]);
+        setEntryResult(result);
+      } else {
+        const response = await openai.createChatCompletion({
+          model: "gpt-3.5-turbo-16k",
+          messages: [
+            {
+              role: "user",
+              content: newPromptforEntriesOne,
+            },
+          ],
+        });
+        const searchResult = response.data.choices[0].message;
+        const { data } = response;
+        setResponseType("Entry");
+        setSearchResult(data.choices[0].message);
+        setEntryResult(JSON.parse(data.choices[0].message.content));
+        setLoading(false);
+        console.log("data is ", data);
+        console.log(data.choices[0].message);
+      }
+
+      // const filteredEntries = JSON.parse(searchResult.content)
+      //   .map((e) => {
+      //     return entries.find((ele) => ele._id == e);
+      //   })
+      //   .map((entry) => ({
+      //     _id: entry._id,
+      //     data: entry.data[0].block,
+      //   }));
+      // console.log(filteredEntries);
+      // setResponseTwo(filteredEntries);
+      // const finalResponse = await openai.createChatCompletion({
+      //   model: "gpt-3.5-turbo-16k",
+      //   messages: [
+      //     {
+      //       role: "user",
+      //       content: newPromptforEntriesTwo,
+      //     },
+      //   ],
+      // });
+      // const { data } = finalResponse;
+      // console.log(data.choices[0].message);
+      // setResponseType("Entry");
+      // setSearchResult(data.choices[0].message);
+      // setLoading(false);
     } else if (message.includes("protocols") || message.includes("protocol")) {
       console.log("Protocol");
       setLoading(true);
@@ -304,18 +348,18 @@ function AdvancedSearch({
     }
   };
 
-  const data =
-    searchResult &&
-    JSON.parse(
-      searchResult.content.substring(
-        searchResult.content.indexOf("["),
-        searchResult.content.lastIndexOf("]") + 1
-      )
-    ).map((e) => {
-      return projects.find((ele) => ele._id == e);
-    });
+  // const data =
+  //   searchResult &&
+  //   JSON.parse(
+  //     searchResult.content.substring(
+  //       searchResult.content.indexOf("["),
+  //       searchResult.content.lastIndexOf("]") + 1
+  //     )
+  //   ).map((e) => {
+  //     return projects.find((ele) => ele._id == e);
+  //   });
 
-  console.log(data);
+  // console.log(data);
 
   return (
     <div className="search-modal">
@@ -404,9 +448,8 @@ function AdvancedSearch({
                   </thead>
                   <tbody>
                     {responseType === "Entry" &&
-                      searchResult &&
-                      searchResult.content &&
-                      JSON.parse(searchResult.content)
+                      entryResult &&
+                      entryResult
                         .map((e) => {
                           return entries.find((ele) => ele._id == e);
                         })
