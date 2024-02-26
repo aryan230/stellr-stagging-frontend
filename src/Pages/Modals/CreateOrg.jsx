@@ -69,6 +69,7 @@ function CreateOrg({ setCreateOrg }) {
               onChange={(e) => setName(e.target.value)}
               required
             />
+
             <textarea
               type="text"
               placeholder="Enter a description for your organization"
