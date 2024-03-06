@@ -74,7 +74,7 @@ function ViewReportMain({ viewReportContent, open, setOpen, openR, setOpenR }) {
                     </div>
                     <div className="mt-1">
                       <p className="text-sm text-indigo-300">
-                        Report ID: {mainData._id}
+                        Report ID: {mainData && mainData._id && mainData._id}
                       </p>
                     </div>
                   </div>
