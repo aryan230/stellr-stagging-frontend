@@ -11,6 +11,7 @@ import SOPReport from "./Reports/ViewReports/SOPReport";
 import { useSelector } from "react-redux";
 import MainModalEntity from "../../UI/MainModals/MainModalEntity";
 import CompleteLoader from "../Loaders/CompleteLoader";
+
 function ViewReportMain({ viewReportContent, open, setOpen, openR, setOpenR }) {
   console.log(viewReportContent);
   const userLogin = useSelector((state) => state.userLogin);

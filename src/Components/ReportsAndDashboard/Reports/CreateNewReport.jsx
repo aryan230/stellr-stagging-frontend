@@ -28,7 +28,11 @@ function CreateNewReport({
   const [name, setName] = useState();
   const [description, setDescription] = useState();
   const [type, setType] = useState(typeFrom && typeFrom);
-  const [filter, setFilter] = useState({});
+  const [filter, setFilter] = useState({
+    value: "",
+    condition: "contains",
+    field: "_id",
+  });
   const [charts, setCharts] = useState([]);
   const [fields, setFields] = useState([
     {
@@ -51,6 +55,7 @@ function CreateNewReport({
         charts: charts,
         insideData,
         fields: fields,
+        filter: filter,
         typeOfReport: "new",
       }),
     });
@@ -242,7 +247,17 @@ function CreateNewReport({
       ],
     },
   ];
+  console.log(filter);
 
+  const filterFunction = (d) => {
+    if (filter.condition == "equals") {
+      return d[filter.field].toLowerCase() == filter.value.toLowerCase();
+    } else if (filter.condition == "contains") {
+      return d[filter.field].toLowerCase().includes(filter.value.toLowerCase());
+    } else {
+      return d;
+    }
+  };
   return (
     <MainModalEntity open={reportTab} setOpen={setReportTab} width="80vw">
       <div className="bg-gray-50 relative">
@@ -357,7 +372,7 @@ function CreateNewReport({
                   </div>
                 </div>
               </div>
-              {/* <div className="mt-10 border-t border-gray-200 pt-10">
+              <div className="mt-10 border-t border-gray-200 pt-10">
                 <h2 className="text-lg font-medium text-gray-900">
                   Filter By Properties
                 </h2>
@@ -373,11 +388,12 @@ function CreateNewReport({
                     <select
                       id="countries_disabled"
                       value={filter.field}
-                      onChange={(e) =>
-                        setFilter({
+                      onChange={(e) => {
+                        setFilter((f) => ({
+                          ...f,
                           field: e.target.value,
-                        })
-                      }
+                        }));
+                      }}
                       name="location"
                       className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                     >
@@ -395,12 +411,20 @@ function CreateNewReport({
                     </label>
                     <select
                       id="countries_disabled"
-                      value={type}
-                      onChange={(e) => setType(e.target.value)}
+                      value={filter.condition}
+                      onChange={(e) => {
+                        setFilter((f) => ({
+                          ...f,
+                          condition: e.target.value,
+                        }));
+                      }}
                       name="location"
                       className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                     >
-                      <option value="">is equal to</option>
+                      <option value="contains">contains</option>
+                      <option value="equals">equals</option>
+                      <option value="starts with">starts with</option>
+                      <option value="ends with">ends with</option>
                     </select>
                   </div>
                   <div className="">
@@ -415,14 +439,19 @@ function CreateNewReport({
                         type="text"
                         id="email-address"
                         name="email-address"
-                        onChange={(e) => setName(e.target.value)}
+                        onChange={(e) => {
+                          setFilter((f) => ({
+                            ...f,
+                            value: e.target.value,
+                          }));
+                        }}
                         autoComplete="email"
                         className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       />
                     </div>
                   </div>
                 </div>
-              </div> */}
+              </div>
 
               {/* Payment */}
               <div className="mt-10 border-t border-gray-200 pt-10">
@@ -510,47 +539,55 @@ function CreateNewReport({
                             type === "Protocols" ||
                             type === "Samples"
                               ? dataValue &&
-                                dataValue.map((person) => (
-                                  <tr>
-                                    {fields.map((f) => (
-                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">
-                                        {person[f.label].toString()}
-                                      </td>
-                                    ))}
-                                  </tr>
-                                ))
+                                dataValue
+                                  .filter(filterFunction)
+                                  .map((person) => (
+                                    <tr>
+                                      {fields.map((f) => (
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">
+                                          {person[f.label].toString()}
+                                        </td>
+                                      ))}
+                                    </tr>
+                                  ))
                               : type === "Projects"
                               ? dataValue &&
-                                dataValue.projects.map((person) => (
-                                  <tr>
-                                    {fields.map((f) => (
-                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">
-                                        {person[f.label].toString()}
-                                      </td>
-                                    ))}
-                                  </tr>
-                                ))
+                                dataValue.projects
+                                  .filter(filterFunction)
+                                  .map((person) => (
+                                    <tr>
+                                      {fields.map((f) => (
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">
+                                          {person[f.label].toString()}
+                                        </td>
+                                      ))}
+                                    </tr>
+                                  ))
                               : type === "Entries"
                               ? dataValue &&
-                                dataValue.entries.map((person) => (
-                                  <tr>
-                                    {fields.map((f) => (
-                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">
-                                        {person[f.label].toString()}
-                                      </td>
-                                    ))}
-                                  </tr>
-                                ))
+                                dataValue.entries
+                                  .filter(filterFunction)
+                                  .map((person) => (
+                                    <tr>
+                                      {fields.map((f) => (
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">
+                                          {person[f.label].toString()}
+                                        </td>
+                                      ))}
+                                    </tr>
+                                  ))
                               : dataValue &&
-                                dataValue.tasks.map((person) => (
-                                  <tr>
-                                    {fields.map((f) => (
-                                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">
-                                        {person[f.label].toString()}
-                                      </td>
-                                    ))}
-                                  </tr>
-                                ))}
+                                dataValue.tasks
+                                  .filter(filterFunction)
+                                  .map((person) => (
+                                    <tr>
+                                      {fields.map((f) => (
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">
+                                          {person[f.label].toString()}
+                                        </td>
+                                      ))}
+                                    </tr>
+                                  ))}
                           </tbody>
                         </table>
                       </div>

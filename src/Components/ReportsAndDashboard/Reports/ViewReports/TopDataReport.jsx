@@ -4,6 +4,9 @@ import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/solid";
 import { addTime } from "../../../Functions/addTime";
+import { PaperClipIcon } from "@heroicons/react/solid";
+import CompleteLoader from "../../../Loaders/CompleteLoader";
+import SecondLoaderWithText from "../../../Loaders/SecondLoaderWithText";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -13,11 +16,106 @@ function TopDataReport({ data, pdfRef }) {
   return (
     <>
       <div className="view-report-details-tp">
-        <p className="font-karla pb-2">
-          This report was created on {addTime(data.createdAt)} and last updated
-          on {addTime(data.updatedAt)} having version __v:{data.__v}
-        </p>
-        <Menu
+        <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+          <div className="border-t border-gray-200 px-4 py-5 sm:p-0">
+            <dl className="sm:divide-y sm:divide-gray-200">
+              <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt className="text-sm font-medium text-gray-500">
+                  Report name
+                </dt>
+                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  {data.name}
+                </dd>
+              </div>
+              <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt className="text-sm font-medium text-gray-500">
+                  Report Description
+                </dt>
+                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  {data.description}
+                </dd>
+              </div>
+              <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt className="text-sm font-medium text-gray-500">
+                  Created on
+                </dt>
+                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  {addTime(data.createdAt)}
+                </dd>
+              </div>
+              <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt className="text-sm font-medium text-gray-500">
+                  Last Updated on
+                </dt>
+                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  {addTime(data.updatedAt)}
+                </dd>
+              </div>
+
+              <div
+                className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6"
+                id="download-btn-report-1"
+              >
+                <dt className="text-sm font-medium text-gray-500">
+                  Download Report
+                </dt>
+                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  <ul
+                    role="list"
+                    className="border border-gray-200 rounded-md divide-y divide-gray-200"
+                  >
+                    <li className="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
+                      <div className="w-0 flex-1 flex items-center">
+                        <PaperClipIcon
+                          className="flex-shrink-0 h-5 w-5 text-gray-400"
+                          aria-hidden="true"
+                        />
+                        <span className="ml-2 flex-1 w-0 truncate">pdf</span>
+                      </div>
+                      <div className="ml-4 flex-shrink-0">
+                        <a
+                          href="#"
+                          onClick={async (e) => {
+                            e.preventDefault();
+                            document.getElementById(
+                              "download-btn-report-1"
+                            ).style.display = "none";
+                            await generatePDF(pdfRef, { filename: data.name });
+                            document.getElementById(
+                              "download-btn-report-1"
+                            ).style.display = "grid";
+                          }}
+                          className="font-medium text-indigo-600 hover:text-indigo-500"
+                        >
+                          Download
+                        </a>
+                      </div>
+                    </li>
+                    <li className="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
+                      <div className="w-0 flex-1 flex items-center">
+                        <PaperClipIcon
+                          className="flex-shrink-0 h-5 w-5 text-gray-400"
+                          aria-hidden="true"
+                        />
+                        <span className="ml-2 flex-1 w-0 truncate">csv</span>
+                      </div>
+                      <div className="ml-4 flex-shrink-0">
+                        <a
+                          href="#"
+                          className="font-medium text-indigo-600 hover:text-indigo-500"
+                        >
+                          Download
+                        </a>
+                      </div>
+                    </li>
+                  </ul>
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+
+        {/* <Menu
           as="div"
           className="relative inline-block text-left z-[99999]"
           id="download-btn-report"
@@ -69,7 +167,7 @@ function TopDataReport({ data, pdfRef }) {
               </div>
             </Menu.Items>
           </Transition>
-        </Menu>
+        </Menu> */}
         {/* <button onClick={() => generatePDF(pdfRef, { filename: "page.pdf" })}>
         download
       </button> */}

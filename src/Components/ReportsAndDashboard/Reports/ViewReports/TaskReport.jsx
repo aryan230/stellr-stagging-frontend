@@ -74,6 +74,26 @@ function TaskReport({ data }) {
 
   const labels = ["My Projects", "Collaborated Projects"];
 
+  const [filter, setFilter] = useState(
+    JSON.parse(data.dataSet).filter && JSON.parse(data.dataSet).filter
+  );
+
+  const filterFunction = (d) => {
+    if (filter) {
+      if (filter.condition == "equals") {
+        return d[filter.field].toLowerCase() == filter.value.toLowerCase();
+      } else if (filter.condition == "contains") {
+        return d[filter.field]
+          .toLowerCase()
+          .includes(filter.value.toLowerCase());
+      } else {
+        return d;
+      }
+    } else {
+      return d;
+    }
+  };
+
   return (
     <div ref={pdfRef}>
       <TopDataReport data={data} pdfRef={pdfRef} />
@@ -186,7 +206,7 @@ function TaskReport({ data }) {
             <tbody>
               {entries &&
                 entries.length > 0 &&
-                entries.map((p) =>
+                entries.filter(filterFunction).map((p) =>
                   typeOfreport ? (
                     <tr className="bg-white border-b">
                       {fields.map((f) => (

@@ -76,6 +76,27 @@ function SOPReport({ data }) {
       newSamples.filter((e) => e.createdAt.split("-")[1] == "12").length,
     ],
   };
+
+  const [filter, setFilter] = useState(
+    JSON.parse(data.dataSet).filter && JSON.parse(data.dataSet).filter
+  );
+
+  const filterFunction = (d) => {
+    if (filter) {
+      if (filter.condition == "equals") {
+        return d[filter.field].toLowerCase() == filter.value.toLowerCase();
+      } else if (filter.condition == "contains") {
+        return d[filter.field]
+          .toLowerCase()
+          .includes(filter.value.toLowerCase());
+      } else {
+        return d;
+      }
+    } else {
+      return d;
+    }
+  };
+
   return (
     <div ref={pdfRef}>
       <TopDataReport data={data} pdfRef={pdfRef} />
@@ -177,7 +198,7 @@ function SOPReport({ data }) {
             <tbody>
               {newArr &&
                 newArr.length > 0 &&
-                newArr.map((p) =>
+                newArr.filter(filterFunction).map((p) =>
                   typeOfreport ? (
                     <tr className="bg-white border-b">
                       {fields.map((f) => (
