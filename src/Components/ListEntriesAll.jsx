@@ -21,6 +21,7 @@ import axios from "axios";
 import CustomPieChart from "./CustomCharts/CustomPieChart";
 import CustomAreaChart from "./CustomCharts/CustomAreaChart";
 import URL from "./../Data/data.json";
+import CreateNewReport from "./ReportsAndDashboard/Reports/CreateNewReport";
 function ListEntriesAll({
   setWhichTabisActive,
   setReportTab,
@@ -139,7 +140,8 @@ function ListEntriesAll({
         />
       </Helmet>
       {newArr && entries && selectedProject && reportTab && (
-        <Reports
+        <CreateNewReport
+          reportTab={reportTab}
           setReportTab={setReportTab}
           dataValue={{
             selectedProject: selectedProject,

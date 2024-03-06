@@ -22,6 +22,7 @@ import CustomPieChart from "./CustomCharts/CustomPieChart";
 import { listMyTasks } from "../redux/actions/taskActions";
 import CustomAreaChart from "./CustomCharts/CustomAreaChart";
 import URL from "./../Data/data.json";
+import CreateNewReport from "./ReportsAndDashboard/Reports/CreateNewReport";
 function ListTasksAll({
   setWhichTabisActive,
   setReportTab,
@@ -133,7 +134,8 @@ function ListTasksAll({
         />
       </Helmet>
       {newArr && tasks && selectedProject && reportTab && (
-        <Reports
+        <CreateNewReport
+          reportTab={reportTab}
           setReportTab={setReportTab}
           dataValue={{
             selectedProject: selectedProject,

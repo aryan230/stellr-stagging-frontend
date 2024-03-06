@@ -14,6 +14,7 @@ import URL from "./../../Data/data.json";
 import Reports from "./Reports/Reports";
 import DownloadReportsModal from "./Reports/DownloadReportsModal";
 import { addTime } from "../Functions/addTime";
+import ViewReportMain from "./ViewReportMain";
 
 function ReportsList({ newReport, setNewReport, setActiveReport }) {
   const [data, setData] = useState([]);
@@ -110,6 +111,7 @@ function ReportsList({ newReport, setNewReport, setActiveReport }) {
           viewReport={viewReport}
         />
       )}
+
       {downloadReport && (
         <DownloadReportsModal
           setDownloadReport={setDownloadReport}

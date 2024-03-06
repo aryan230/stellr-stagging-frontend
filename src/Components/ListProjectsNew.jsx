@@ -24,6 +24,7 @@ import axios from "axios";
 import CustomColumnChartDist from "./CustomCharts/CustomColumnChartDist";
 import CustomScatterChart from "./CustomCharts/CustomScatterChart";
 import URL from "./../Data/data.json";
+import CreateNewReport from "./ReportsAndDashboard/Reports/CreateNewReport";
 function ListProjectsNew({
   setWhichTabisActive,
   setReportTab,
@@ -144,7 +145,8 @@ function ListProjectsNew({
         />
       </Helmet>
       {projectStats && reportTab && (
-        <Reports
+        <CreateNewReport
+          reportTab={reportTab}
           setReportTab={setReportTab}
           dataValue={
             newArr &&

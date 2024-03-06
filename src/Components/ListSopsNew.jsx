@@ -12,6 +12,7 @@ import CustomAreaChart from "./CustomCharts/CustomAreaChart";
 import CustomLine from "./CustomCharts/CustomLine";
 import Reports from "./ReportsAndDashboard/Reports/Reports";
 import { listMySops } from "../redux/actions/sopActions";
+import CreateNewReport from "./ReportsAndDashboard/Reports/CreateNewReport";
 
 function ListSopsNew({
   setWhichTabisActive,
@@ -150,7 +151,8 @@ function ListSopsNew({
         />
       </Helmet>
       {reportTab && (
-        <Reports
+        <CreateNewReport
+          reportTab={reportTab}
           setReportTab={setReportTab}
           dataValue={sops && sops}
           newReport={newReport}

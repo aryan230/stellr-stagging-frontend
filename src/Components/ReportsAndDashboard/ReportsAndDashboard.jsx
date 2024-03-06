@@ -33,7 +33,7 @@ function ReportsAndDashboard({ setWhichTabisActive }) {
         className="fixed top-0 left-[6vw] z-40 w-[15vw] h-screen transition-transform -translate-x-full sm:translate-x-0 max-md:invisible"
         aria-label="Sidebar"
       >
-        <div className="h-full px-3 py-4 overflow-y-auto bg-gray-50">
+        <div className="h-full px-3 py-4 overflow-y-auto bg-gray-50 font-dmsans">
           <ul className="space-y-2 font-medium">
             <li>
               <a
@@ -63,31 +63,6 @@ function ReportsAndDashboard({ setWhichTabisActive }) {
                 href="#"
                 onClick={(e) => {
                   e.preventDefault();
-                  setActiveReport("projects");
-                }}
-                className={`flex items-center p-2 text-gray-900 rounded-lg  hover:bg-gray-100 group ${activeReport ===
-                  "projects" && `bg-gray-200`}`}
-              >
-                <svg
-                  className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75  group-hover:text-gray-900"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="18"
-                  height="18"
-                  viewBox="0 0 18 18"
-                >
-                  <path d="M15.99 3.78751L11.49 2.28751H11.4375C11.4026 2.284 11.3674 2.284 11.3325 2.28751H11.16H11.0625H11.01L6.75 3.75001L2.49 2.28751C2.37721 2.25032 2.25721 2.24044 2.13985 2.2587C2.0225 2.27695 1.91116 2.32282 1.815 2.39251C1.71807 2.46152 1.63895 2.55261 1.58418 2.65824C1.52941 2.76387 1.50055 2.88102 1.5 3.00001V13.5C1.4996 13.6572 1.54862 13.8106 1.64013 13.9385C1.73165 14.0663 1.86104 14.1622 2.01 14.2125L6.51 15.7125C6.66109 15.7618 6.82392 15.7618 6.975 15.7125V15.7125L11.25 14.2875L15.51 15.75C15.5896 15.7608 15.6704 15.7608 15.75 15.75C15.9068 15.7522 16.0599 15.7021 16.185 15.6075C16.2819 15.5385 16.3611 15.4474 16.4158 15.3418C16.4706 15.2361 16.4995 15.119 16.5 15V4.50001C16.5004 4.34278 16.4514 4.18939 16.3599 4.06154C16.2684 3.93368 16.139 3.83782 15.99 3.78751V3.78751ZM6 13.9575L3 12.96V4.04251L6 5.04001V13.9575ZM10.5 12.96L7.5 13.9575V5.04001L10.5 4.04251V12.96ZM15 13.9575L12 12.96V4.04251L15 5.04001V13.9575Z" />
-                </svg>
-                <span className="flex-1 ml-3 whitespace-nowrap">Projects</span>
-                {/* <span className="inline-flex items-center justify-center px-2 ml-3 text-sm font-medium text-gray-800 bg-gray-100 rounded-full">
-                  0
-                </span> */}
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
                   setActiveReport("reports");
                 }}
                 className={`flex items-center p-2 text-gray-900 rounded-lg  hover:bg-gray-100 group ${activeReport ===
@@ -108,6 +83,32 @@ function ReportsAndDashboard({ setWhichTabisActive }) {
                 </span> */}
               </a>
             </li>
+            <li>
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActiveReport("projects");
+                }}
+                className={`flex items-center p-2 text-gray-900 rounded-lg  hover:bg-gray-100 group ${activeReport ===
+                  "projects" && `bg-gray-200`}`}
+              >
+                <svg
+                  className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75  group-hover:text-gray-900"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 18 18"
+                >
+                  <path d="M15.99 3.78751L11.49 2.28751H11.4375C11.4026 2.284 11.3674 2.284 11.3325 2.28751H11.16H11.0625H11.01L6.75 3.75001L2.49 2.28751C2.37721 2.25032 2.25721 2.24044 2.13985 2.2587C2.0225 2.27695 1.91116 2.32282 1.815 2.39251C1.71807 2.46152 1.63895 2.55261 1.58418 2.65824C1.52941 2.76387 1.50055 2.88102 1.5 3.00001V13.5C1.4996 13.6572 1.54862 13.8106 1.64013 13.9385C1.73165 14.0663 1.86104 14.1622 2.01 14.2125L6.51 15.7125C6.66109 15.7618 6.82392 15.7618 6.975 15.7125V15.7125L11.25 14.2875L15.51 15.75C15.5896 15.7608 15.6704 15.7608 15.75 15.75C15.9068 15.7522 16.0599 15.7021 16.185 15.6075C16.2819 15.5385 16.3611 15.4474 16.4158 15.3418C16.4706 15.2361 16.4995 15.119 16.5 15V4.50001C16.5004 4.34278 16.4514 4.18939 16.3599 4.06154C16.2684 3.93368 16.139 3.83782 15.99 3.78751V3.78751ZM6 13.9575L3 12.96V4.04251L6 5.04001V13.9575ZM10.5 12.96L7.5 13.9575V5.04001L10.5 4.04251V12.96ZM15 13.9575L12 12.96V4.04251L15 5.04001V13.9575Z" />
+                </svg>
+                <span className="flex-1 ml-3 whitespace-nowrap">Projects</span>
+                {/* <span className="inline-flex items-center justify-center px-2 ml-3 text-sm font-medium text-gray-800 bg-gray-100 rounded-full">
+                  0
+                </span> */}
+              </a>
+            </li>
+
             <li>
               <a
                 href="#"

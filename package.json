@@ -95,6 +95,7 @@
     "react-dom": "^18.2.0",
     "react-editor-js": "^2.1.0",
     "react-file-icon": "^1.4.0",
+    "react-filter-box": "^3.4.3",
     "react-helmet": "^6.1.0",
     "react-hot-toast": "^2.4.1",
     "react-loader-spinner": "^5.3.4",

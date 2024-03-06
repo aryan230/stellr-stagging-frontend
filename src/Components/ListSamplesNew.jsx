@@ -27,6 +27,7 @@ import CustomColumnChart from "./Charts/CustomColumnChart";
 import CustomPieChart from "./CustomCharts/CustomPieChart";
 import CustomLine from "./CustomCharts/CustomLine";
 import CustomAreaChart from "./CustomCharts/CustomAreaChart";
+import CreateNewReport from "./ReportsAndDashboard/Reports/CreateNewReport";
 
 function ListSamplesNew({
   setSampleContent,
@@ -228,7 +229,8 @@ function ListSamplesNew({
         />
       </Helmet>
       {reportTab && (
-        <Reports
+        <CreateNewReport
+          reportTab={reportTab}
           setReportTab={setReportTab}
           dataValue={samples && samples}
           newReport={newReport}

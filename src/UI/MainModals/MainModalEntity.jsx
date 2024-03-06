@@ -3,7 +3,7 @@ import React from "react";
 import { Fragment, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { ExclamationIcon } from "@heroicons/react/outline";
-function MainModalEntity({ children, open, setOpen }) {
+function MainModalEntity({ children, open, setOpen, width }) {
   const cancelButtonRef = useRef(null);
 
   return (
@@ -43,7 +43,11 @@ function MainModalEntity({ children, open, setOpen }) {
             leaveFrom="opacity-100 translate-y-0 sm:scale-100"
             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
           >
-            <div className="font-body inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full sm:p-6">
+            <div
+              className={`font-body inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl w-[80vw] transform transition-all sm:my-8 sm:align-middle ${
+                width ? width : "sm:max-w-4xl sm:w-full"
+              }  sm:p-6`}
+            >
               {" "}
               {children}
             </div>

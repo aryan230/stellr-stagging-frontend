@@ -174,7 +174,7 @@ function ShowChartProjects({ c }) {
                   }
                 : []
             }
-            dataLabel={projectStats.stats.map((e) => e.name)}
+            dataLabel={projectStats && projectStats.stats.map((e) => e.name)}
           />
         </div>
       )}

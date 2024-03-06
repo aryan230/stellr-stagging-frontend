@@ -11,6 +11,7 @@ import CustomPieChart from "./CustomCharts/CustomPieChart";
 import CustomAreaChart from "./CustomCharts/CustomAreaChart";
 import CustomLine from "./CustomCharts/CustomLine";
 import Reports from "./ReportsAndDashboard/Reports/Reports";
+import CreateNewReport from "./ReportsAndDashboard/Reports/CreateNewReport";
 
 function ListProtocolsNew({
   setProtocolContent,
@@ -178,7 +179,8 @@ function ListProtocolsNew({
         />
       </Helmet>
       {reportTab && (
-        <Reports
+        <CreateNewReport
+          reportTab={reportTab}
           setReportTab={setReportTab}
           dataValue={protocols && protocols}
           newReport={newReport}

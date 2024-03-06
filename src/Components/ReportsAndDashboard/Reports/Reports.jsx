@@ -1,7 +1,11 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import URL from "./../../../Data/data.json";
 import { useSelector } from "react-redux";
+import Select from "react-select";
+import ReactFilterBox, { SimpleResultProcessing } from "react-filter-box";
+import "react-filter-box/lib/react-filter-box.css";
+
 function Reports({
   setReportTab,
   dataValue,
@@ -13,10 +17,13 @@ function Reports({
   const [name, setName] = useState();
   const [description, setDescription] = useState();
   const [type, setType] = useState(typeFrom && typeFrom);
+  const [filter, setFilter] = useState([]);
   const [charts, setCharts] = useState([]);
-
+  const [fields, setFields] = useState([]);
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
+
+  console.log(dataValue);
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -28,6 +35,8 @@ function Reports({
       dataSet: JSON.stringify({
         charts: charts,
         insideData,
+        fields: fields,
+        typeOfReport: "new",
       }),
     });
     var config = {
@@ -210,6 +219,42 @@ function Reports({
       ],
     },
   ];
+
+  useEffect(() => {
+    document.querySelector("body").addEventListener("click", (e) => {
+      // e.stopPropagation();
+      console.log("body");
+      if (
+        document
+          .getElementById("drop-down-div_from_layout_wizard8")
+          .classList.contains("active")
+      ) {
+        document
+          .getElementById("drop-down-div_from_layout_wizard8")
+          .classList.add("hidden");
+        document
+          .getElementById("drop-down-div_from_layout_wizard8")
+          .classList.remove("active");
+      }
+    });
+  });
+  function showDropDownMenu_from_layout_wizard8(el) {
+    document.querySelectorAll(".hideme").forEach((el) => {
+      el.classList.remove("active");
+    });
+    el.parentElement.children[1].classList.add("active");
+    el.parentElement.children[1].classList.remove("hidden");
+  }
+  function text(el) {
+    const targetText = el.innerText;
+    document.getElementById(
+      "drop-down-content-setter_from_layout_wizard8"
+    ).innerText = targetText;
+    document
+      .getElementById("drop-down-div_from_layout_wizard8")
+      .classList.toggle("hidden");
+  }
+
   return (
     <div className="modal">
       <div className="report-modal-container">
@@ -289,7 +334,122 @@ function Reports({
                 <option value="SOPS">SOPS</option>
               </select>
             </div>
+            <div className="flex flex-col mb-6">
+              <div className="py-5">
+                <Select
+                  value={filter}
+                  options={
+                    type === "SOPs" ||
+                    type === "Protocols" ||
+                    type === "Samples"
+                      ? dataValue.length > 0 &&
+                        Object.keys(dataValue[0]).map((e) => ({
+                          label: e,
+                          value: e,
+                        }))
+                      : type === "Projects"
+                      ? dataValue.projects.length > 0 &&
+                        Object.keys(dataValue.projects[0]).map((e) => ({
+                          label: e,
+                          value: e,
+                        }))
+                      : type === "Entries"
+                      ? dataValue.entries.length > 0 &&
+                        Object.keys(dataValue.entries[0]).map((e) => ({
+                          label: e,
+                          value: e,
+                        }))
+                      : dataValue.tasks.length > 0 &&
+                        Object.keys(dataValue.tasks[0]).map((e) => ({
+                          label: e,
+                          value: e,
+                        }))
+                  }
+                  onChange={(e) => setFilter(e)}
+                  // isOptionDisabled={() => filter.length >= 5}
+                />
+                {typeof dataValue.projects[0][filter.label]}
+              </div>
+              <div className="py-5">
+                <Select
+                  isMulti
+                  value={fields}
+                  options={
+                    type === "SOPs" ||
+                    type === "Protocols" ||
+                    type === "Samples"
+                      ? dataValue.length > 0 &&
+                        Object.keys(dataValue[0]).map((e) => ({
+                          label: e,
+                          value: e,
+                        }))
+                      : type === "Projects"
+                      ? dataValue.projects.length > 0 &&
+                        Object.keys(dataValue.projects[0]).map((e) => ({
+                          label: e,
+                          value: e,
+                        }))
+                      : type === "Entries"
+                      ? dataValue.entries.length > 0 &&
+                        Object.keys(dataValue.entries[0]).map((e) => ({
+                          label: e,
+                          value: e,
+                        }))
+                      : dataValue.tasks.length > 0 &&
+                        Object.keys(dataValue.tasks[0]).map((e) => ({
+                          label: e,
+                          value: e,
+                        }))
+                  }
+                  onChange={(e) => setFields(e)}
+                  isOptionDisabled={() => fields.length >= 5}
+                />
+              </div>
 
+              <div className="">
+                <div className="py-2 align-middle inline-block min-w-full">
+                  <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          {fields.map((f) => (
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            >
+                              {f.label}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {type === "SOPs" ||
+                        type === "Protocols" ||
+                        type === "Samples"
+                          ? dataValue.map((person) => (
+                              <tr key={person._id}>
+                                {fields.map((f) => (
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    {person[f.label].toString()}
+                                  </td>
+                                ))}
+                              </tr>
+                            ))
+                          : dataValue.projects.map((person) => (
+                              <tr key={person._id}>
+                                {fields.map((f) => (
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    {person[f.label].toString()}
+                                  </td>
+                                ))}
+                              </tr>
+                            ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
             <div className="report-main-container-chart">
               <h3 className="mb-5 text-lg font-medium text-gray-900">
                 Choose Charts:
@@ -334,28 +494,8 @@ function Reports({
                     ))}
               </ul>
             </div>
-            {/* <>
-              {data &&
-                Object.keys(data[0]).map((e) => (
-                  <div className="flex items-center pl-4 border border-gray-200 rounded">
-                    <input
-                      id={e}
-                      type="checkbox"
-                      defaultValue=""
-                      name="bordered-checkbox"
-                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                    />
-                    <label
-                      htmlFor={e}
-                      className="w-full py-4 ml-2 text-sm font-medium text-gray-900"
-                    >
-                      {e}
-                    </label>
-                  </div>
-                ))}
-            </> */}
+
             <div className="py-10">
-              {" "}
               <button
                 type="button"
                 onClick={submitHandler}
