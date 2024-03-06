@@ -25,6 +25,7 @@ function ReportsList({ newReport, setNewReport, setActiveReport }) {
   const [downloadReport, setDownloadReport] = useState(false);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [openR, setOpenR] = React.useState(false);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -104,13 +105,21 @@ function ReportsList({ newReport, setNewReport, setActiveReport }) {
   }, [newReport]);
   return (
     <div className="project-component-inside-samples">
-      {viewReport && (
+      {/* {viewReport && (
         <ViewReport
           viewReportContent={viewReportContent}
           setViewReport={setViewReport}
           viewReport={viewReport}
         />
-      )}
+      )} */}
+
+      <ViewReportMain
+        viewReportContent={viewReportContent}
+        setOpen={setViewReport}
+        open={viewReport}
+        openR={openR}
+        setOpenR={setOpenR}
+      />
 
       {downloadReport && (
         <DownloadReportsModal
@@ -262,6 +271,7 @@ function ReportsList({ newReport, setNewReport, setActiveReport }) {
                                       (e) => e._id === row._id
                                     );
                                     setViewReportContent(content);
+                                    setOpenR(true);
                                     setViewReport(true);
                                   }}
                                 >

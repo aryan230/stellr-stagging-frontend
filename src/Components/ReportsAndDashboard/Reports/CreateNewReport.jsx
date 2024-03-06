@@ -74,6 +74,7 @@ function CreateNewReport({
   const dataSets = [
     {
       name: "Entries",
+      fields: ["_id", "name", "updatedAt", "createdAt"],
       charts: [
         {
           id: "area",
@@ -93,6 +94,7 @@ function CreateNewReport({
     },
     {
       name: "Tasks",
+      fields: ["_id", "subject", "updatedAt", "createdAt"],
       charts: [
         {
           id: "area",
@@ -112,6 +114,7 @@ function CreateNewReport({
     },
     {
       name: "Protocols",
+      fields: ["_id", "title", "updatedAt", "createdAt"],
       charts: [
         {
           id: "area",
@@ -138,6 +141,7 @@ function CreateNewReport({
     },
     {
       name: "SOPS",
+      fields: ["_id", "title", "updatedAt", "createdAt"],
       charts: [
         {
           id: "area",
@@ -164,6 +168,7 @@ function CreateNewReport({
     },
     {
       name: "Samples",
+      fields: ["_id", "type ", "updatedAt", "createdAt", "sampleId", "__v"],
       charts: [
         {
           id: "area",
@@ -190,6 +195,7 @@ function CreateNewReport({
     },
     {
       name: "Projects",
+      fields: ["_id", "name", "updatedAt", "createdAt"],
       charts: [
         {
           id: "line",
@@ -328,35 +334,42 @@ function CreateNewReport({
                       isMulti
                       value={fields}
                       options={
-                        type === "SOPs" ||
-                        type === "Protocols" ||
-                        type === "Samples"
-                          ? dataValue &&
-                            dataValue.length > 0 &&
-                            Object.keys(dataValue[0]).map((e) => ({
-                              label: e,
-                              value: e,
-                            }))
-                          : type === "Projects"
-                          ? dataValue &&
-                            dataValue.projects.length > 0 &&
-                            Object.keys(dataValue.projects[0]).map((e) => ({
-                              label: e,
-                              value: e,
-                            }))
-                          : type === "Entries"
-                          ? dataValue &&
-                            dataValue.entries.length > 0 &&
-                            Object.keys(dataValue.entries[0]).map((e) => ({
-                              label: e,
-                              value: e,
-                            }))
-                          : dataValue &&
-                            dataValue.tasks.length > 0 &&
-                            Object.keys(dataValue.tasks[0]).map((e) => ({
-                              label: e,
-                              value: e,
-                            }))
+                        type &&
+                        dataSets
+                          .find((e) => e.name === type)
+                          .fields.map((f) => ({
+                            label: f,
+                            value: f,
+                          }))
+                        // type === "SOPS" ||
+                        // type === "Protocols" ||
+                        // type === "Samples"
+                        //   ? dataValue &&
+                        //     dataValue.length > 0 &&
+                        //     Object.keys(dataValue[0]).map((e) => ({
+                        //       label: e,
+                        //       value: e,
+                        //     }))
+                        //   : type === "Projects"
+                        //   ? dataValue &&
+                        //     dataValue.projects.length > 0 &&
+                        //     Object.keys(dataValue.projects[0]).map((e) => ({
+                        //       label: e,
+                        //       value: e,
+                        //     }))
+                        //   : type === "Entries"
+                        //   ? dataValue &&
+                        //     dataValue.entries.length > 0 &&
+                        //     Object.keys(dataValue.entries[0]).map((e) => ({
+                        //       label: e,
+                        //       value: e,
+                        //     }))
+                        //   : dataValue &&
+                        //     dataValue.tasks.length > 0 &&
+                        //     Object.keys(dataValue.tasks[0]).map((e) => ({
+                        //       label: e,
+                        //       value: e,
+                        //     }))
                       }
                       onChange={(e) => setFields(e)}
                       isOptionDisabled={() => fields.length >= 5}
@@ -447,7 +460,7 @@ function CreateNewReport({
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                            {type === "SOPs" ||
+                            {type === "SOPS" ||
                             type === "Protocols" ||
                             type === "Samples"
                               ? dataValue &&
