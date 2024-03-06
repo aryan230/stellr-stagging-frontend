@@ -7,6 +7,9 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import URL from "./../../../Data/data.json";
 import { X } from "lucide-react";
+import MainLoader from "../../Loaders/MainLoader";
+import CompleteLoader from "../../Loaders/CompleteLoader";
+import SecondLoaderWithText from "../../Loaders/SecondLoaderWithText";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -21,10 +24,11 @@ function CreateNewReport({
   setNewReport,
   setActiveReport,
 }) {
+  const [loader, setLoader] = useState(false);
   const [name, setName] = useState();
   const [description, setDescription] = useState();
   const [type, setType] = useState(typeFrom && typeFrom);
-  const [filter, setFilter] = useState([]);
+  const [filter, setFilter] = useState({});
   const [charts, setCharts] = useState([]);
   const [fields, setFields] = useState([
     {
@@ -37,6 +41,7 @@ function CreateNewReport({
 
   const submitHandler = async (e) => {
     e.preventDefault();
+    setLoader(true);
     let insideData = await JSON.stringify(dataValue);
     var data = await JSON.stringify({
       name,
@@ -64,9 +69,11 @@ function CreateNewReport({
         setNewReport(true);
         setActiveReport("reports");
         setReportTab(false);
+        setLoader(false);
       })
       .catch(function(error) {
         console.log(error);
+        setLoader(false);
       });
     console.log(data);
   };
@@ -168,7 +175,7 @@ function CreateNewReport({
     },
     {
       name: "Samples",
-      fields: ["_id", "type ", "updatedAt", "createdAt", "sampleId", "__v"],
+      fields: ["_id", "type", "updatedAt", "createdAt", "sampleId", "__v"],
       charts: [
         {
           id: "area",
@@ -239,6 +246,8 @@ function CreateNewReport({
   return (
     <MainModalEntity open={reportTab} setOpen={setReportTab} width="80vw">
       <div className="bg-gray-50 relative">
+        {loader && <SecondLoaderWithText text="Generating your report" />}
+
         <div
           className="absolute top-5 right-5"
           onClick={(e) => {
@@ -341,35 +350,6 @@ function CreateNewReport({
                             label: f,
                             value: f,
                           }))
-                        // type === "SOPS" ||
-                        // type === "Protocols" ||
-                        // type === "Samples"
-                        //   ? dataValue &&
-                        //     dataValue.length > 0 &&
-                        //     Object.keys(dataValue[0]).map((e) => ({
-                        //       label: e,
-                        //       value: e,
-                        //     }))
-                        //   : type === "Projects"
-                        //   ? dataValue &&
-                        //     dataValue.projects.length > 0 &&
-                        //     Object.keys(dataValue.projects[0]).map((e) => ({
-                        //       label: e,
-                        //       value: e,
-                        //     }))
-                        //   : type === "Entries"
-                        //   ? dataValue &&
-                        //     dataValue.entries.length > 0 &&
-                        //     Object.keys(dataValue.entries[0]).map((e) => ({
-                        //       label: e,
-                        //       value: e,
-                        //     }))
-                        //   : dataValue &&
-                        //     dataValue.tasks.length > 0 &&
-                        //     Object.keys(dataValue.tasks[0]).map((e) => ({
-                        //       label: e,
-                        //       value: e,
-                        //     }))
                       }
                       onChange={(e) => setFields(e)}
                       isOptionDisabled={() => fields.length >= 5}
@@ -377,6 +357,72 @@ function CreateNewReport({
                   </div>
                 </div>
               </div>
+              {/* <div className="mt-10 border-t border-gray-200 pt-10">
+                <h2 className="text-lg font-medium text-gray-900">
+                  Filter By Properties
+                </h2>
+
+                <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-4">
+                  <div className="">
+                    <label
+                      htmlFor="location"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Select Field
+                    </label>
+                    <select
+                      id="countries_disabled"
+                      value={filter.field}
+                      onChange={(e) =>
+                        setFilter({
+                          field: e.target.value,
+                        })
+                      }
+                      name="location"
+                      className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                    >
+                      {fields.map((f) => (
+                        <option value={f.label}>{f.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="">
+                    <label
+                      htmlFor="location"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Condition
+                    </label>
+                    <select
+                      id="countries_disabled"
+                      value={type}
+                      onChange={(e) => setType(e.target.value)}
+                      name="location"
+                      className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                    >
+                      <option value="">is equal to</option>
+                    </select>
+                  </div>
+                  <div className="">
+                    <label
+                      htmlFor="email-address"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Enter value
+                    </label>
+                    <div className="mt-1">
+                      <input
+                        type="text"
+                        id="email-address"
+                        name="email-address"
+                        onChange={(e) => setName(e.target.value)}
+                        autoComplete="email"
+                        className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div> */}
 
               {/* Payment */}
               <div className="mt-10 border-t border-gray-200 pt-10">

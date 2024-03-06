@@ -17,6 +17,15 @@ function SOPReport({ data }) {
   const [newArr, setNewArr] = useState(
     JSON.parse(JSON.parse(data.dataSet).insideData)
   );
+
+  const [fields, setFields] = useState(
+    JSON.parse(data.dataSet).typeOfReport && JSON.parse(data.dataSet).fields
+  );
+
+  const [typeOfreport, setTypeofreport] = useState(
+    JSON.parse(data.dataSet).typeOfReport ? true : false
+  );
+
   const [newSamples, setNewSamples] = useState(newArr && newArr);
 
   let detailed =
@@ -140,37 +149,55 @@ function SOPReport({ data }) {
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
           <table className="w-full text-sm text-left text-gray-500">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50">
-              <tr>
-                <th scope="col" className="px-6 py-3">
-                  SOP ID
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  SOP Name
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Created At
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Last Updated At
-                </th>
-              </tr>
+              {typeOfreport ? (
+                <tr>
+                  {fields.map((f) => (
+                    <th scope="col" className="px-6 py-3">
+                      {f.label}
+                    </th>
+                  ))}
+                </tr>
+              ) : (
+                <tr>
+                  <th scope="col" className="px-6 py-3">
+                    SOP ID
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    SOP Name
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Created At
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Last Updated At
+                  </th>
+                </tr>
+              )}
             </thead>
             <tbody>
               {newArr &&
                 newArr.length > 0 &&
-                newArr.map((p) => (
-                  <tr className="bg-white border-b">
-                    <th
-                      scope="row"
-                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
-                    >
-                      {p._id}
-                    </th>
-                    <td className="px-6 py-4">{p.title}</td>
-                    <td className="px-6 py-4">{addTime(p.createdAt)}</td>
-                    <td className="px-6 py-4">{addTime(p.updatedAt)}</td>
-                  </tr>
-                ))}
+                newArr.map((p) =>
+                  typeOfreport ? (
+                    <tr className="bg-white border-b">
+                      {fields.map((f) => (
+                        <td className="px-6 py-4">{p[f.label].toString()}</td>
+                      ))}
+                    </tr>
+                  ) : (
+                    <tr className="bg-white border-b">
+                      <th
+                        scope="row"
+                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                      >
+                        {p._id}
+                      </th>
+                      <td className="px-6 py-4">{p.title}</td>
+                      <td className="px-6 py-4">{addTime(p.createdAt)}</td>
+                      <td className="px-6 py-4">{addTime(p.updatedAt)}</td>
+                    </tr>
+                  )
+                )}
             </tbody>
           </table>
         </div>

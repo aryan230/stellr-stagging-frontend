@@ -185,16 +185,6 @@ function ProjectReport({ data }) {
                       {f.label}
                     </th>
                   ))}
-
-                  {/* <th scope="col" className="px-6 py-3">
-                  Project Name
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Created At
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Last Updated At
-                </th> */}
                 </tr>
               ) : (
                 <tr>
