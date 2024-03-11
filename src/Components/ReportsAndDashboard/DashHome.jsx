@@ -6,6 +6,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import ShowCharts from "./Dashboards/ShowCharts";
 import { getUserMetrics } from "../../redux/actions/userActions";
+import CreateDashboard from "./Dashboards/CreateDashboard";
 function DashHome() {
   const dispatch = useDispatch();
   const [data, setData] = useState();
@@ -74,13 +75,19 @@ function DashHome() {
   console.log(activeDash);
   return (
     <div className="dash-home">
-      {createNewDash && (
+      {/* {createNewDash && (
         <CreateNewDashboards
           setCreateNewDash={setCreateNewDash}
           newDash={newDash}
           setNewDash={setNewDash}
         />
-      )}
+      )} */}
+      <CreateDashboard
+        createNewDash={createNewDash}
+        setCreateNewDash={setCreateNewDash}
+        newDash={newDash}
+        setNewDash={setNewDash}
+      />
       {viewAllDash && (
         <ViewAllDashboards
           setViewAllDash={setViewAllDash}
@@ -148,11 +155,16 @@ function DashHome() {
           </div>
           <div className="dash-home-main-content">
             <div className="dash-home-main-content-inside">
-              <ShowCharts
-                insideData={JSON.parse(
-                  JSON.parse(activeDash.dataSet).insideData
-                )}
-              />
+              {JSON.parse(activeDash.dataSet).typeofDash ? (
+                <ShowCharts
+                  insideData={JSON.parse(
+                    JSON.parse(activeDash.dataSet).insideData
+                  )}
+                />
+              ) : (
+                <>OLd</>
+              )}
+              {/* */}
             </div>
           </div>
         </>
