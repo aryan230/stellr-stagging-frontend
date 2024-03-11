@@ -231,7 +231,7 @@ function ProjectReport({ data }) {
                   typeOfreport ? (
                     <tr className="bg-white border-b">
                       {fields.map((f) => (
-                        <td className="px-6 py-4">{p[f.label].toString()}</td>
+                        <td className="px-6 py-4">{p[f.value].toString()}</td>
                       ))}
                     </tr>
                   ) : (

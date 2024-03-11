@@ -10,6 +10,7 @@ import { X } from "lucide-react";
 import MainLoader from "../../Loaders/MainLoader";
 import CompleteLoader from "../../Loaders/CompleteLoader";
 import SecondLoaderWithText from "../../Loaders/SecondLoaderWithText";
+import _ from "lodash";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -36,7 +37,7 @@ function CreateNewReport({
   const [charts, setCharts] = useState([]);
   const [fields, setFields] = useState([
     {
-      label: "_id",
+      label: "Id",
       value: "_id",
     },
   ]);
@@ -362,7 +363,7 @@ function CreateNewReport({
                         dataSets
                           .find((e) => e.name === type)
                           .fields.map((f) => ({
-                            label: f,
+                            label: _.startCase(f),
                             value: f,
                           }))
                       }
@@ -398,7 +399,7 @@ function CreateNewReport({
                       className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                     >
                       {fields.map((f) => (
-                        <option value={f.label}>{f.label}</option>
+                        <option value={f.value}>{f.label}</option>
                       ))}
                     </select>
                   </div>
@@ -545,7 +546,7 @@ function CreateNewReport({
                                     <tr>
                                       {fields.map((f) => (
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">
-                                          {person[f.label].toString()}
+                                          {person[f.value].toString()}
                                         </td>
                                       ))}
                                     </tr>
@@ -558,7 +559,7 @@ function CreateNewReport({
                                     <tr>
                                       {fields.map((f) => (
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">
-                                          {person[f.label].toString()}
+                                          {person[f.value].toString()}
                                         </td>
                                       ))}
                                     </tr>
@@ -571,7 +572,7 @@ function CreateNewReport({
                                     <tr>
                                       {fields.map((f) => (
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">
-                                          {person[f.label].toString()}
+                                          {person[f.value].toString()}
                                         </td>
                                       ))}
                                     </tr>
@@ -583,7 +584,7 @@ function CreateNewReport({
                                     <tr>
                                       {fields.map((f) => (
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">
-                                          {person[f.label].toString()}
+                                          {person[f.value].toString()}
                                         </td>
                                       ))}
                                     </tr>
