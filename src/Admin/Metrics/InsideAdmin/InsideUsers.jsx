@@ -41,6 +41,7 @@ function InsideUsers({ e, data }) {
         {org && org.name} {orgData && orgData.name}{" "}
         {!org && !orgData && "Not Created/Joined an Organization."}
       </td>
+      <td className="px-6 py-4">{e.deactivated ? "Deactivated" : "Active"}</td>
       <td className="px-6 py-4">
         <a
           href="#"

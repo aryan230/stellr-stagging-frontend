@@ -28,8 +28,14 @@ function LoginComponent() {
     : " ";
   useEffect(() => {
     if (userInfo) {
-      navigate(`/${redirect}`);
-      console.log(redirect);
+      if (userInfo.deactivated) {
+        localStorage.removeItem("userStellr");
+        localStorage.setItem("userStellrRecover", JSON.stringify(userInfo));
+        navigate(`/recovery`);
+      } else {
+        navigate(`/${redirect}`);
+        console.log(redirect);
+      }
     }
     if (error) {
       dispatch({ type: USER_LOGOUT });

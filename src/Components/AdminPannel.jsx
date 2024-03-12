@@ -23,6 +23,7 @@ function AdminPannel() {
         <AdminUsers
           data={metrics ? metrics : []}
           setAdminUsers={setAdminUsers}
+          adminUsers={adminUsers}
           adminType={adminType}
         />
       )}

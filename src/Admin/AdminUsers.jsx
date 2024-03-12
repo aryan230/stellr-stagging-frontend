@@ -6,12 +6,13 @@ import AOrganization from "./Metrics/AOrganization";
 import AEntries from "./Metrics/AEntries";
 import AProtocols from "./Metrics/AProtocols";
 import ATasks from "./Metrics/ATasks";
+import MainModalEntity from "../UI/MainModals/MainModalEntity";
 
 function AdminUsers({ setAdminUsers, data, adminType }) {
   console.log(adminType);
   return (
     <div className="modal">
-      <div className="admin-modal">
+      <div className="admin-modal rounded-3xl">
         <div className="top-modal">
           <button
             onClick={() => {

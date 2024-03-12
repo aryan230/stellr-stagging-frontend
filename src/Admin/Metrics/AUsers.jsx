@@ -3,8 +3,9 @@ import React from "react";
 import InsideUsers from "./InsideAdmin/InsideUsers";
 
 function AUsers({ data }) {
+  console.log(data);
   return (
-    <div className="relative overflow-x-auto px-10 h-[80%]">
+    <div className="relative overflow-x-auto px-10 h-[80%] font-dmsans">
       <table className="w-full text-sm text-left text-gray-500 h-[100%]">
         <thead className="text-xs text-gray-700 uppercase bg-gray-50 sticky top-0">
           <tr>
@@ -23,7 +24,9 @@ function AUsers({ data }) {
             <th scope="col" className="px-6 py-3">
               Organization
             </th>
-
+            <th scope="col" className="px-6 py-3">
+              Deactivated
+            </th>
             <th scope="col" className="px-6 py-3">
               Last Online
             </th>

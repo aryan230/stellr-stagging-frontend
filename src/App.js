@@ -21,6 +21,7 @@ import { useDispatch } from "react-redux";
 import { logout } from "./redux/actions/userActions";
 import ENV from "./Data/data.json";
 import MainRed from "./Redirections/MainRed";
+import Recovery from "./Pages/Recovery";
 function App() {
   const dispatch = useDispatch();
 
@@ -52,6 +53,7 @@ function App() {
           <Route path="/projects" element={<Register />} />
           <Route path="/project/:id" element={<Project />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/recovery" element={<Recovery />} />
         </Routes>
       </Router>
     </div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Fragment } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {
@@ -25,48 +25,27 @@ import { addSOPLogs } from "./Functions/addSOPLogs";
 import { addNotification } from "./Functions/addNotification";
 import { PaperClipIcon, PlusIcon } from "@heroicons/react/solid";
 
-import { Disclosure, Menu, RadioGroup, Transition } from "@headlessui/react";
+import { Disclosure, Menu, Switch, Transition } from "@headlessui/react";
+
 import toast from "react-hot-toast";
-import { Crown } from "lucide-react";
-import { find } from "lodash";
+import { SearchIcon } from "@heroicons/react/solid";
+import {
+  BellIcon,
+  CogIcon,
+  CreditCardIcon,
+  KeyIcon,
+  MenuIcon,
+  UserCircleIcon,
+  ViewGridAddIcon,
+  XIcon,
+} from "@heroicons/react/outline";
+import { Building, LogOut, UserPlus, Users } from "lucide-react";
+import LeaveOrganization from "./OrganizationSettings/LeaveOrganization";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
-const settings = [
-  {
-    name: "Public access",
-    description: "This project would be available to anyone who has the link",
-  },
-  {
-    name: "Private to Project Members",
-    description: "Only members of this project would be able to access",
-  },
-  {
-    name: "Private to you",
-    description: "You are the only one able to access this project",
-  },
-];
-const team = [
-  {
-    name: "Calvin Hawkins",
-    email: "calvin.hawkins@example.com",
-    imageUrl:
-      "https://images.unsplash.com/photo-1513910367299-bce8d8a0ebf6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-  },
-  {
-    name: "Bessie Richards",
-    email: "bessie.richards@example.com",
-    imageUrl:
-      "https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-  },
-  {
-    name: "Floyd Black",
-    email: "floyd.black@example.com",
-    imageUrl:
-      "https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-  },
-];
+
 function ListOrganizations({
   newOrg,
   setUpdatedUserCollabRoleOrg,
@@ -95,6 +74,28 @@ function ListOrganizations({
   const [selected, setSelected] = useState();
   const [rowsPerPage, setRowsPerPage] = React.useState(4);
   const [ownerUserData, setOwnerUserData] = useState();
+  const [leaveOrg, setLeaveOrg] = useState(false);
+  const [email, setEmail] = useState();
+  const [activeSub, setActiveSub] = useState(1);
+
+  const subNavigation = [
+    { id: 1, name: "Organization", href: "#", icon: Building, current: true },
+    {
+      id: 2,
+      name: "Add new members",
+      href: "#",
+      icon: UserPlus,
+      current: false,
+    },
+    { id: 3, name: "Members", href: "#", icon: Users, current: false },
+    {
+      id: 4,
+      name: "Leave Organization",
+      href: "#",
+      icon: LogOut,
+      current: false,
+    },
+  ];
 
   const {
     loading: loadingUserDetails,
@@ -109,37 +110,32 @@ function ListOrganizations({
   const orgListMyCollab = useSelector((state) => state.orgListMyCollab);
   const { sucess: sucessCollab, orgs: orgsCollab } = orgListMyCollab;
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
-
-  const columns = [
-    { id: "name", label: "Entity Name", minWidth: 100 },
-    { id: "type", label: "Entity Type", minWidth: 100 },
-    { id: "status", label: "Entity Status", minWidth: 100 },
-    { id: "statusBy", label: "Approved/Declined by", minWidth: 170 },
+  const people = [
     {
-      id: "view",
-      label: "View",
-      minWidth: 100,
+      name: "Leonard Krasner",
+      handle: "leonardkrasner",
+      imageUrl:
+        "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
     },
     {
-      id: "edit",
-      label: "Edit",
-      minWidth: 100,
+      name: "Floyd Miles",
+      handle: "floydmiles",
+      imageUrl:
+        "https://images.unsplash.com/photo-1463453091185-61582044d556?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
     },
-    // {
-    //   id: "download",
-    //   label: "Download",
-    //   minWidth: 100,
-    // },
+    {
+      name: "Emily Selman",
+      handle: "emilyselman",
+      imageUrl:
+        "https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+    },
+    {
+      name: "Kristin Watson",
+      handle: "kristinwatson",
+      imageUrl:
+        "https://images.unsplash.com/photo-1500917293891-ef795e70e1f6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+    },
   ];
-
   useEffect(() => {
     dispatch(listMyOrgs());
   }, [dispatch]);
@@ -343,6 +339,65 @@ function ListOrganizations({
     }
   }, [ownerUserData, findOrg]);
 
+  const addCollaborator = async () => {
+    console.log(email);
+    var data = JSON.stringify({
+      email: `${email}`,
+    });
+
+    var config = {
+      method: "post",
+      url: `${URL}api/users/email`,
+      headers: {
+        Authorization: `Bearer ${userInfo.token}`,
+        "Content-Type": "application/json",
+      },
+      data: data,
+    };
+
+    axios(config)
+      .then(async function(response) {
+        if (response.data.length > 0) {
+          console.log(response.data);
+
+          const data = {
+            orgId: findOrg._id,
+            collabDetails: {
+              user: response.data[0]._id,
+              userName: response.data[0].name ? response.data[0].name : "",
+              userEmail: response.data[0].email ? response.data[0].email : "",
+              userStatus: "Invited",
+            },
+          };
+          var config = {
+            method: "post",
+            url: `${URL}api/organs/collab`,
+            headers: {
+              Authorization: `Bearer ${userInfo.token}`,
+              "Content-Type": "application/json",
+            },
+            data: data,
+          };
+
+          axios(config)
+            .then(function(responseData) {
+              setNewCollab(true);
+              setOrgSettings(false);
+              console.log(JSON.stringify(responseData.data));
+            })
+            .catch(function(error) {
+              console.log(error);
+              toast.error("There was an error adding member.");
+            });
+        } else {
+          toast.error("No user found for that email.");
+        }
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
+  };
+
   return (
     <div className="project-component">
       <Helmet>
@@ -372,1249 +427,826 @@ function ListOrganizations({
           />
         )}
         {orgs && (
-          <div className="project-component-inside overflow-y-auto">
-            <div className="w-[80%] mx-auto pt-10 font-sans">
-              <main className="max-w-lg mx-auto pt-10 pb-12 px-4 lg:pb-16">
-                <form>
-                  <div className="space-y-6">
-                    <div>
-                      <h1 className="text-lg leading-6 font-medium text-gray-900">
-                        Organization Settings
-                      </h1>
-                      {/* <p className="mt-1 text-sm text-gray-500">
-                        Let’s get started by filling in the information below to
-                        create your new project.
-                      </p> */}
-                    </div>
-                    <hr />
-                    <div>
-                      <label
-                        htmlFor="project-name"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Project Name
-                      </label>
-                      <div className="mt-1">
-                        <input
-                          type="text"
-                          name="project-name"
-                          id="project-name"
-                          className="block w-full shadow-sm focus:ring-sky-500 focus:border-sky-500 sm:text-sm border-gray-300 rounded-md"
-                          defaultValue={findOrg && findOrg.name}
-                          disabled
+          <>
+            <div className="w-full mx-auto h-full overflow-y-auto font-dmsans">
+              <Disclosure
+                as="div"
+                className="relative bg-indigo-700 pb-32 overflow-hidden"
+              >
+                {({ open }) => (
+                  <>
+                    <nav
+                      className={classNames(
+                        open ? "bg-indigo-900" : "bg-transparent",
+                        "relative z-10 border-b border-teal-500 border-opacity-25 lg:bg-transparent lg:border-none"
+                      )}
+                    ></nav>
+                    <div
+                      aria-hidden="true"
+                      className={classNames(
+                        open ? "bottom-0" : "inset-y-0",
+                        "absolute inset-x-0 left-1/2 transform -translate-x-1/2 w-full overflow-hidden lg:inset-y-0"
+                      )}
+                    >
+                      <div className="absolute inset-0 flex">
+                        <div
+                          className="h-full w-1/2"
+                          style={{ backgroundColor: "#4f46e5" }}
+                        />
+                        <div
+                          className="h-full w-1/2"
+                          style={{ backgroundColor: "#4f46e5" }}
                         />
                       </div>
+                      <div className="relative flex justify-center">
+                        <svg
+                          className="flex-shrink-0"
+                          width={1750}
+                          height={308}
+                          viewBox="0 0 1750 308"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M284.161 308H1465.84L875.001 182.413 284.161 308z"
+                            fill="#5d00d2"
+                          />
+                          <path
+                            d="M1465.84 308L16.816 0H1750v308h-284.16z"
+                            fill="#5d00d2"
+                          />
+                          <path
+                            d="M1733.19 0L284.161 308H0V0h1733.19z"
+                            fill="#5d00d2"
+                          />
+                          <path
+                            d="M875.001 182.413L1733.19 0H16.816l858.185 182.413z"
+                            fill="#5d00d2"
+                          />
+                        </svg>
+                      </div>
                     </div>
-                    {findOrg && (
-                      <div className="space-y-2">
-                        <div className="space-y-1">
+                    <header className="relative py-10">
+                      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <h1 className="text-3xl font-bold text-white">
+                          Organizational Settings
+                        </h1>
+                      </div>
+                    </header>
+                  </>
+                )}
+              </Disclosure>
+              {findOrg ? (
+                <main className="relative -mt-32">
+                  <LeaveOrganization
+                    open={leaveOrg}
+                    setOpen={setLeaveOrg}
+                    findOrg={findOrg && findOrg}
+                  />
+                  <div className="max-w-screen-xl mx-auto pb-6 px-4 sm:px-6 lg:pb-16 lg:px-8">
+                    <div className="bg-white rounded-lg shadow overflow-hidden max-w-5xl mx-auto">
+                      <div className="divide-y divide-gray-200 lg:grid lg:grid-cols-12 lg:divide-y-0 lg:divide-x">
+                        <aside className="py-6 lg:col-span-3">
+                          <nav className="space-y-1">
+                            {subNavigation.map((item) => (
+                              <a
+                                key={item.name}
+                                href={item.href}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  setActiveSub(item.id);
+                                }}
+                                className={classNames(
+                                  item.id == activeSub
+                                    ? "bg-indigo-50 border-indigo-500 text-indigo-700 hover:bg-indigo-50 hover:text-indigo-700"
+                                    : "border-transparent text-gray-900 hover:bg-gray-50 hover:text-gray-900",
+                                  "group border-l-4 px-3 py-2 flex items-center text-sm font-medium"
+                                )}
+                              >
+                                <item.icon
+                                  className={classNames(
+                                    item.id == activeSub
+                                      ? "text-indigo-500 group-hover:text-indigo-500"
+                                      : "text-gray-400 group-hover:text-gray-500",
+                                    "flex-shrink-0 -ml-1 mr-3 h-6 w-6"
+                                  )}
+                                  aria-hidden="true"
+                                />
+                                <span className="truncate">{item.name}</span>
+                              </a>
+                            ))}
+                          </nav>
+                        </aside>
+                        {activeSub == 1 && (
+                          <form className="divide-y divide-gray-200 lg:col-span-9">
+                            <div className="py-6 px-4 sm:p-6 lg:pb-8">
+                              <div>
+                                <h2 className="text-lg leading-6 font-medium text-gray-900">
+                                  Profile
+                                </h2>
+                                <p className="mt-1 text-sm text-gray-500">
+                                  This information will be displayed publicly so
+                                  be careful what you share.
+                                </p>
+                              </div>
+
+                              <div className="mt-6 flex flex-col lg:flex-row">
+                                <div className="flex-grow space-y-6">
+                                  <div>
+                                    <label
+                                      htmlFor="username"
+                                      className="block text-sm font-medium text-gray-700"
+                                    >
+                                      Organization ID
+                                    </label>
+                                    <div className="mt-1 rounded-md shadow-sm flex">
+                                      <span className="bg-gray-50 border border-r-0 border-gray-300 rounded-l-md px-3 inline-flex items-center text-gray-500 sm:text-sm">
+                                        ORG-
+                                      </span>
+                                      <input
+                                        type="text"
+                                        name="username"
+                                        id="username"
+                                        autoComplete="username"
+                                        className="focus:ring-indigo-500 focus:border-indigo-500 flex-grow block w-full min-w-0 rounded-none rounded-r-md sm:text-sm border-gray-300"
+                                        value={findOrg && findOrg._id}
+                                        disabled
+                                      />
+                                    </div>
+                                  </div>
+                                  <div className="col-span-12 sm:col-span-6">
+                                    <label
+                                      htmlFor="first-name"
+                                      className="block text-sm font-medium text-gray-700"
+                                    >
+                                      Name
+                                    </label>
+                                    <input
+                                      value={findOrg && findOrg.name}
+                                      type="text"
+                                      name="first-name"
+                                      id="first-name"
+                                      disabled
+                                      autoComplete="given-name"
+                                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label
+                                      htmlFor="about"
+                                      className="block text-sm font-medium text-gray-700"
+                                    >
+                                      About
+                                    </label>
+                                    <div className="mt-1">
+                                      <textarea
+                                        id="about"
+                                        name="about"
+                                        rows={3}
+                                        className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border border-gray-300 rounded-md"
+                                        defaultValue={""}
+                                      />
+                                    </div>
+                                    <p className="mt-2 text-sm text-gray-500">
+                                      Brief description about the organization.
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="mt-6 grid grid-cols-12 gap-6">
+                                {/* <div className="col-span-12">
+                              <label
+                                htmlFor="url"
+                                className="block text-sm font-medium text-gray-700"
+                              >
+                                URL
+                              </label>
+                              <input
+                                type="text"
+                                name="url"
+                                id="url"
+                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                              />
+                            </div>
+
+                            <div className="col-span-12 sm:col-span-6">
+                              <label
+                                htmlFor="company"
+                                className="block text-sm font-medium text-gray-700"
+                              >
+                                Company
+                              </label>
+                              <input
+                                type="text"
+                                name="company"
+                                id="company"
+                                autoComplete="organization"
+                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                              />
+                            </div> */}
+                              </div>
+                            </div>
+
+                            <div className="pt-6 divide-y divide-gray-200">
+                              <div className="mt-4 py-4 px-4 flex justify-end sm:px-6">
+                                <button
+                                  type="button"
+                                  className="bg-white border border-gray-300 rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                >
+                                  Cancel
+                                </button>
+                                <button
+                                  type="submit"
+                                  className="ml-5 bg-indigo-700 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                >
+                                  Save
+                                </button>
+                              </div>
+                            </div>
+                          </form>
+                        )}
+                        {activeSub == 2 && (
+                          <form className="divide-y divide-gray-200 lg:col-span-9">
+                            <div className="py-6 px-4 sm:p-6 lg:pb-8">
+                              <div>
+                                <h2 className="text-lg leading-6 font-medium text-gray-900">
+                                  Add new members
+                                </h2>
+                                <p className="mt-1 text-sm text-gray-500">
+                                  This information will be displayed publicly so
+                                  be careful what you share.
+                                </p>
+                              </div>
+                              <div className="space-y-1 max-w-md mt-6">
+                                <label
+                                  htmlFor="add-team-members"
+                                  className="block text-sm font-medium text-gray-700"
+                                >
+                                  Add Team Members
+                                </label>
+                                <p
+                                  id="add-team-members-helper"
+                                  className="sr-only"
+                                >
+                                  Search by email address
+                                </p>
+                                <div className="flex">
+                                  <div className="flex-grow">
+                                    <input
+                                      type="text"
+                                      name="add-team-members"
+                                      id="add-team-members"
+                                      className="block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded-md"
+                                      placeholder="Email address"
+                                      onChange={(e) => setEmail(e.target.value)}
+                                      aria-describedby="add-team-members-helper"
+                                    />
+                                  </div>
+                                  <span className="ml-3">
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        addCollaborator();
+                                      }}
+                                      className="bg-white inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
+                                    >
+                                      <PlusIcon
+                                        className="-ml-2 mr-1 h-5 w-5 text-gray-400"
+                                        aria-hidden="true"
+                                      />
+                                      <span>Add</span>
+                                    </button>
+                                  </span>
+                                </div>
+                              </div>
+                              {/* <div className="mt-10 max-w-md">
+                                <div className="flow-root mt-6">
+                                  <ul
+                                    role="list"
+                                    className="-my-5 divide-y divide-gray-200"
+                                  >
+                                    {findOrg &&
+                                    findOrg.collaborators &&
+                                    findOrg.collaborators.length > 0 ? (
+                                      findOrg.collaborators
+                                        .filter((f) => f.userStatus != "Joined")
+                                        .map((person) => (
+                                          <li
+                                            key={person.user}
+                                            className="py-4"
+                                          >
+                                            <div className="flex items-center space-x-4">
+                                              <div className="flex-shrink-0">
+                                                <img
+                                                  className="h-8 w-8 rounded-full"
+                                                  src={`https://api.dicebear.com/7.x/thumbs/svg?seed=${person.userName}`}
+                                                  alt=""
+                                                />
+                                              </div>
+                                              <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-medium text-gray-900 truncate">
+                                                  {person.userName}
+                                                </p>
+                                                <p className="text-sm text-gray-500 truncate">
+                                                  {person.userEmail}
+                                                </p>
+                                              </div>
+                                              <div>
+                                                <a
+                                                  href="#"
+                                                  className="inline-flex items-center shadow-sm px-2.5 py-0.5 border border-gray-300 text-sm leading-5 font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50"
+                                                >
+                                                  Invited
+                                                </a>
+                                              </div>
+                                            </div>
+                                          </li>
+                                        ))
+                                    ) : (
+                                      <>0 members</>
+                                    )}
+                                  </ul>
+                                </div>
+                              </div> */}
+                            </div>
+
+                            <div className="pt-6 divide-y divide-gray-200">
+                              <div className="mt-4 py-4 px-4 flex justify-end sm:px-6">
+                                <button
+                                  type="button"
+                                  className="bg-white border border-gray-300 rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                >
+                                  Cancel
+                                </button>
+                                <button
+                                  type="submit"
+                                  className="ml-5 bg-indigo-700 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                >
+                                  Save
+                                </button>
+                              </div>
+                            </div>
+                          </form>
+                        )}
+
+                        {activeSub == 3 && (
+                          <form className="divide-y divide-gray-200 lg:col-span-9">
+                            <div className="py-6 px-4 sm:p-6 lg:pb-8">
+                              <div>
+                                <h2 className="text-lg leading-6 font-medium text-gray-900">
+                                  Members
+                                </h2>
+                                <p className="mt-1 text-sm text-gray-500">
+                                  This information will be displayed publicly so
+                                  be careful what you share.
+                                </p>
+                              </div>
+
+                              <div className="mt-10 max-w-md">
+                                <div className="flow-root mt-6">
+                                  <ul
+                                    role="list"
+                                    className="-my-5 divide-y divide-gray-200"
+                                  >
+                                    {ownerUserData && (
+                                      <li
+                                        key={ownerUserData._id}
+                                        className="py-4"
+                                      >
+                                        <div className="flex items-center space-x-4">
+                                          <div className="flex-shrink-0">
+                                            <img
+                                              className="h-8 w-8 rounded-full"
+                                              src={`https://api.dicebear.com/7.x/thumbs/svg?seed=${ownerUserData.name}`}
+                                              alt=""
+                                            />
+                                          </div>
+                                          <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-medium text-gray-900 truncate">
+                                              {ownerUserData.name}{" "}
+                                              {ownerUserData._id ===
+                                                userInfo._id && "(You)"}
+                                            </p>
+                                            <p className="text-sm text-gray-500 truncate">
+                                              {ownerUserData.email}
+                                            </p>
+                                          </div>
+                                          <div>
+                                            <a
+                                              href="#"
+                                              className="inline-flex items-center shadow-sm px-2.5 py-0.5 border border-gray-300 text-sm leading-5 font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50"
+                                            >
+                                              Owner
+                                            </a>
+                                          </div>
+                                        </div>
+                                      </li>
+                                    )}
+                                    {findOrg &&
+                                    findOrg.collaborators &&
+                                    findOrg.collaborators.length > 0 ? (
+                                      findOrg.collaborators.map((person) => (
+                                        <li key={person.user} className="py-4">
+                                          <div className="flex items-center space-x-4">
+                                            <div className="flex-shrink-0">
+                                              <img
+                                                className="h-8 w-8 rounded-full"
+                                                src={`https://api.dicebear.com/7.x/thumbs/svg?seed=${person.userName}`}
+                                                alt=""
+                                              />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                              <p className="text-sm font-medium text-gray-900 truncate">
+                                                {person.userName}
+                                              </p>
+                                              <p className="text-sm text-gray-500 truncate">
+                                                {person.userEmail}
+                                              </p>
+                                            </div>
+                                            <div>
+                                              <a
+                                                href="#"
+                                                className="inline-flex items-center shadow-sm px-2.5 py-0.5 border border-gray-300 text-sm leading-5 font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50"
+                                              >
+                                                {person.userType}
+                                              </a>
+                                            </div>
+                                          </div>
+                                        </li>
+                                      ))
+                                    ) : (
+                                      <>0 members</>
+                                    )}
+                                  </ul>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="pt-6 divide-y divide-gray-200">
+                              <div className="mt-4 py-4 px-4 flex justify-end sm:px-6">
+                                <button
+                                  type="button"
+                                  className="bg-white border border-gray-300 rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                >
+                                  Cancel
+                                </button>
+                                <button
+                                  type="submit"
+                                  className="ml-5 bg-indigo-700 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                >
+                                  Save
+                                </button>
+                              </div>
+                            </div>
+                          </form>
+                        )}
+                        {activeSub == 4 && (
+                          <form className="divide-y divide-gray-200 lg:col-span-9">
+                            <div className="py-6 px-4 sm:p-6 lg:pb-8">
+                              <div>
+                                <h2 className="text-lg leading-6 font-medium text-gray-900">
+                                  Leave Organization
+                                </h2>
+                                <p className="mt-1 text-sm text-gray-500">
+                                  This information will be displayed publicly so
+                                  be careful what you share.
+                                </p>
+                              </div>
+                              <div className="mt-6">
+                                {findOrgRole && findOrgRole === "Owner" ? (
+                                  <div className="py-5">
+                                    <div className="relative focus-within:ring-2 focus-within:ring-indigo-500">
+                                      <h3 className="text-sm font-semibold text-gray-800">
+                                        <a
+                                          href="#"
+                                          className="hover:underline focus:outline-none"
+                                        >
+                                          {/* Extend touch target to entire panel */}
+                                          <span
+                                            className="absolute inset-0"
+                                            aria-hidden="true"
+                                          />
+                                          {userInfo.name &&
+                                            findOrgRole &&
+                                            `${ownerUserData.name} (Owner)`}
+                                        </a>
+                                      </h3>
+                                      <p className="mt-1 text-sm text-gray-600 line-clamp-2">
+                                        {" "}
+                                        As a owner you cannot leave the
+                                        organization.
+                                      </p>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="py-5">
+                                    <div className="relative">
+                                      <h3 className="text-sm font-semibold text-gray-800">
+                                        <a
+                                          href="#"
+                                          className="hover:underline focus:outline-none"
+                                        >
+                                          {/* Extend touch target to entire panel */}
+
+                                          {userInfo &&
+                                            findOrgRole &&
+                                            `${userInfo.name} (${findOrgRole})`}
+                                        </a>
+                                      </h3>
+                                      <p className="mt-1 text-sm text-gray-600 line-clamp-2">
+                                        {" "}
+                                        Leaving the organization will make you
+                                        lose all the perks and establishments
+                                        from the organization.
+                                      </p>
+                                      <button
+                                        type="submit"
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          setLeaveOrg(true);
+                                        }}
+                                        className="mt-4 bg-pink-700 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-pink-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+                                      >
+                                        Leave the organization
+                                      </button>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+
+                            <div className="pt-6 divide-y divide-gray-200">
+                              <div className="mt-4 py-4 px-4 flex justify-end sm:px-6">
+                                <button
+                                  type="button"
+                                  className="bg-white border border-gray-300 rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                >
+                                  Cancel
+                                </button>
+                                <button
+                                  type="submit"
+                                  className="ml-5 bg-indigo-700 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                >
+                                  Save
+                                </button>
+                              </div>
+                            </div>
+                          </form>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </main>
+              ) : (
+                <main className="relative -mt-32">
+                  <div className="max-w-screen-xl mx-auto pb-6 px-4 sm:px-6 lg:pb-16 lg:px-8">
+                    <div className="bg-white rounded-lg shadow overflow-hidden max-w-5xl mx-auto">
+                      <div className="min-h-[50vh] flex items-center justify-center w-full">
+                        <div className="space-y-1 w-[60%] mt-6">
                           <label
                             htmlFor="add-team-members"
                             className="block text-sm font-medium text-gray-700"
                           >
-                            Copy Invite Code
+                            Join an organization
                           </label>
-                          {/* <p id="add-team-members-helper" className="sr-only">
-                          Search by email address
-                        </p> */}
+                          <p id="add-team-members-helper" className="sr-only">
+                            Search by email address
+                          </p>
                           <div className="flex">
                             <div className="flex-grow">
                               <input
                                 type="text"
                                 name="add-team-members"
                                 id="add-team-members"
-                                className="block w-full shadow-sm focus:ring-sky-500 focus:border-sky-500 sm:text-sm border-gray-300 rounded-md"
-                                placeholder="Email address"
+                                className="block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded-md"
+                                placeholder="Paste the invite link"
                                 aria-describedby="add-team-members-helper"
-                                defaultValue={`ORG-${findOrg._id}`}
-                                disabled
                               />
                             </div>
                             <span className="ml-3">
                               <button
                                 type="button"
-                                onClick={() => {
-                                  navigator.clipboard.writeText(
-                                    `ORG-${findOrg._id}`
-                                  );
-                                  toast.success("Code Copied to clipboard");
-                                }}
                                 className="bg-white inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
                               >
                                 <PlusIcon
                                   className="-ml-2 mr-1 h-5 w-5 text-gray-400"
                                   aria-hidden="true"
                                 />
-                                <span>Copy</span>
+                                <span>Join</span>
                               </button>
                             </span>
                           </div>
                         </div>
                       </div>
-                    )}
-
-                    <div className="space-y-2">
-                      <div className="space-y-1">
-                        <label
-                          htmlFor="add-team-members"
-                          className="block text-sm font-medium text-gray-700"
-                        >
-                          Team Members
-                        </label>
-                        <p id="add-team-members-helper" className="sr-only">
-                          Search by email address
-                        </p>
-                        {/* <div className="flex">
-                          <div className="flex-grow">
-                            <input
-                              type="text"
-                              name="add-team-members"
-                              id="add-team-members"
-                              className="block w-full shadow-sm focus:ring-sky-500 focus:border-sky-500 sm:text-sm border-gray-300 rounded-md"
-                              placeholder="Email address"
-                              aria-describedby="add-team-members-helper"
-                            />
-                          </div>
-                          <span className="ml-3">
-                            <button
-                              type="button"
-                              className="bg-white inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
-                            >
-                              <PlusIcon
-                                className="-ml-2 mr-1 h-5 w-5 text-gray-400"
-                                aria-hidden="true"
-                              />
-                              <span>Add</span>
-                            </button>
-                          </span>
-                        </div> */}
-                      </div>
-
-                      <div className="border-b border-gray-200">
-                        <ul role="list" className="divide-y divide-gray-200">
-                          {ownerUserData && (
-                            <li key={ownerUserData.name} className="py-4 flex">
-                              <img
-                                className="h-10 w-10 rounded-full"
-                                src={`https://api.dicebear.com/7.x/thumbs/svg?seed=${ownerUserData.name}`}
-                                alt=""
-                              />
-                              <div className="ml-3 flex flex-col">
-                                <span className="text-sm font-medium text-gray-900 flex">
-                                  {ownerUserData.name
-                                    ? ownerUserData.name
-                                    : ownerUserData._id}
-                                  <Crown
-                                    size={12}
-                                    className="text-indigo-600 ml-2"
-                                  />
-                                </span>
-                                <span className="text-sm text-gray-500">
-                                  {ownerUserData.email}
-                                </span>
-                              </div>
-                            </li>
-                          )}
-                          {findOrg &&
-                            findOrg.collaborators &&
-                            findOrg.collaborators.length > 0 &&
-                            findOrg.collaborators.map((person) => (
-                              <li key={person.userEmail} className="py-4 flex">
-                                <img
-                                  className="h-10 w-10 rounded-full"
-                                  src={`https://api.dicebear.com/7.x/thumbs/svg?seed=${person.userName}`}
-                                  alt=""
-                                />
-                                <div className="ml-3 flex flex-col">
-                                  <span className="text-sm font-medium text-gray-900">
-                                    {person.userName
-                                      ? person.userName
-                                      : person.user}
-                                  </span>
-                                  <span className="text-sm text-gray-500">
-                                    {person.userEmail}
-                                  </span>
-                                </div>
-                              </li>
-                            ))}
-                        </ul>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label
-                        htmlFor="tags"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Tags
-                      </label>
-                      <input
-                        type="text"
-                        name="tags"
-                        id="tags"
-                        className="mt-1 block w-full shadow-sm focus:ring-sky-500 focus:border-sky-500 sm:text-sm border-gray-300 rounded-md"
-                      />
-                    </div>
-
-                    <div className="flex justify-end">
-                      <button
-                        type="submit"
-                        onClick={(e) => {
-                          if (findOrg) {
-                            e.preventDefault();
-                            setOrgContentSettings(findOrg);
-                            setOrgSettings(true);
-                          }
-                        }}
-                        className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-sky-500 hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
-                      >
-                        View Settings
-                      </button>
                     </div>
                   </div>
-                </form>
-              </main>
+                </main>
+              )}
             </div>
-          </div>
-          // <div className="project-component-inside">
-          //   <div className="md:flex md:items-center md:justify-between md:space-x-5 py-10 mx-auto w-[80%] font-inter">
-          //     <div className="flex items-start space-x-5">
-          //       <div className="flex-shrink-0">
-          //         <div className="relative">
-          //           <img
-          //             className="h-16 w-16 rounded-full"
-          //             src={`https://ui-avatars.com/api/?background=random&name=${findOrg &&
-          //               findOrg.name}`}
-          //             alt=""
-          //           />
-          //           <span
-          //             className="absolute inset-0 shadow-inner rounded-full"
-          //             aria-hidden="true"
-          //           />
-          //         </div>
-          //       </div>
+          </>
+          // <div className="project-component-inside overflow-y-auto">
+          //   <div className="w-[80%] mx-auto pt-10 font-sans">
+          //     <main className="max-w-lg mx-auto pt-10 pb-12 px-4 lg:pb-16">
+          //       <form>
+          //         <div className="space-y-6">
+          //           <div>
+          //             <h1 className="text-lg leading-6 font-medium text-gray-900">
+          //               Organization Settings
+          //             </h1>
+          //             {/* <p className="mt-1 text-sm text-gray-500">
+          //               Let’s get started by filling in the information below to
+          //               create your new project.
+          //             </p> */}
+          //           </div>
+          //           <hr />
+          //           <div>
+          //             <label
+          //               htmlFor="project-name"
+          //               className="block text-sm font-medium text-gray-700"
+          //             >
+          //               Project Name
+          //             </label>
+          //             <div className="mt-1">
+          //               <input
+          //                 type="text"
+          //                 name="project-name"
+          //                 id="project-name"
+          //                 className="block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded-md"
+          //                 defaultValue={findOrg && findOrg.name}
+          //                 disabled
+          //               />
+          //             </div>
+          //           </div>
+          //           {findOrg && (
+          //             <div className="space-y-2">
+          //               <div className="space-y-1">
+          //                 <label
+          //                   htmlFor="add-team-members"
+          //                   className="block text-sm font-medium text-gray-700"
+          //                 >
+          //                   Copy Invite Code
+          //                 </label>
+          //                 {/* <p id="add-team-members-helper" className="sr-only">
+          //                 Search by email address
+          //               </p> */}
+          //                 <div className="flex">
+          //                   <div className="flex-grow">
+          //                     <input
+          //                       type="text"
+          //                       name="add-team-members"
+          //                       id="add-team-members"
+          //                       className="block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded-md"
+          //                       placeholder="Email address"
+          //                       aria-describedby="add-team-members-helper"
+          //                       defaultValue={`ORG-${findOrg._id}`}
+          //                       disabled
+          //                     />
+          //                   </div>
+          //                   <span className="ml-3">
+          //                     <button
+          //                       type="button"
+          //                       onClick={() => {
+          //                         navigator.clipboard.writeText(
+          //                           `ORG-${findOrg._id}`
+          //                         );
+          //                         toast.success("Code Copied to clipboard");
+          //                       }}
+          //                       className="bg-white inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          //                     >
+          //                       <PlusIcon
+          //                         className="-ml-2 mr-1 h-5 w-5 text-gray-400"
+          //                         aria-hidden="true"
+          //                       />
+          //                       <span>Copy</span>
+          //                     </button>
+          //                   </span>
+          //                 </div>
+          //               </div>
+          //             </div>
+          //           )}
 
-          //       <div className="pt-1.5">
-          //         <h1 className="text-2xl font-bold text-gray-900">
-          //           {findOrg && findOrg.name}
-          //         </h1>
-          //         <p className="text-sm font-medium text-gray-500">
-          //           This organization was created on{" "}
-          //           <time dateTime="2020-08-25">
-          //             {findOrg && new Date(findOrg.createdAt).toUTCString()}
-          //           </time>
-          //         </p>
-          //       </div>
-          //     </div>
-          //     <div className="mt-6 flex flex-col-reverse justify-stretch space-y-4 space-y-reverse sm:flex-row-reverse sm:justify-end sm:space-x-reverse sm:space-y-0 sm:space-x-3 md:mt-0 md:flex-row md:space-x-3">
-          //       <button
-          //         type="button"
-          //         onClick={(e) => {
-          //           if (findOrg) {
-          //             e.preventDefault();
-          //             setOrgContentSettings(findOrg);
-          //             setOrgSettings(true);
-          //           }
-          //         }}
-          //         className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
-          //       >
-          //         Settings
-          //       </button>
-          //     </div>
-          //   </div>
-          //   <div className="w-[80%] font-sans mx-auto border-t border-gray-200 bg-gray-50 grid grid-cols-1 divide-y divide-gray-200 sm:grid-cols-3 sm:divide-y-0 sm:divide-x">
-          //     <div className="px-6 py-5 text-sm font-medium text-center">
-          //       <span className="text-gray-900">
-          //         {findOrg && findOrg.collaborators.length}
-          //       </span>{" "}
-          //       <span className="text-gray-600">Members</span>
-          //     </div>
-          //     <div className="px-6 py-5 text-sm font-medium text-center">
-          //       <span className="text-gray-900">
-          //         {finalCount && finalCount}
-          //       </span>{" "}
-          //       <span className="text-gray-600">Protocols</span>
-          //     </div>
-          //     <div className="px-6 py-5 text-sm font-medium text-center">
-          //       <span className="text-gray-900">
-          //         {finalCountSOP && finalCountSOP}
-          //       </span>{" "}
-          //       <span className="text-gray-600">SOPs</span>
-          //     </div>
-          //   </div>
-          //   <div className="project-c-bottom">
-          //     {findOrgRole === "Admin" ? (
-          //       <div className="relative overflow-x-auto">
-          //         <TableContainer sx={{ maxHeight: "100%" }}>
-          //           <Table
-          //             stickyHeader
-          //             aria-label="sticky table"
-          //             className="custom-font-mui"
-          //           >
-          //             <TableHead>
-          //               <TableRow>
-          //                 {columns.map((column) => (
-          //                   <TableCell
-          //                     key={column.id}
-          //                     align={column.align}
-          //                     style={{ minWidth: column.minWidth }}
+          //           <div className="space-y-2">
+          //             <div className="space-y-1">
+          //               <label
+          //                 htmlFor="add-team-members"
+          //                 className="block text-sm font-medium text-gray-700"
+          //               >
+          //                 Team Members
+          //               </label>
+          //               <p id="add-team-members-helper" className="sr-only">
+          //                 Search by email address
+          //               </p>
+          //               {/* <div className="flex">
+          //                 <div className="flex-grow">
+          //                   <input
+          //                     type="text"
+          //                     name="add-team-members"
+          //                     id="add-team-members"
+          //                     className="block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded-md"
+          //                     placeholder="Email address"
+          //                     aria-describedby="add-team-members-helper"
+          //                   />
+          //                 </div>
+          //                 <span className="ml-3">
+          //                   <button
+          //                     type="button"
+          //                     className="bg-white inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           //                   >
-          //                     {column.label}
-          //                   </TableCell>
-          //                 ))}
-          //               </TableRow>
-          //             </TableHead>
-          //             <TableBody>
-          //               {orgContent &&
-          //                 orgContent.orgData.map((u) =>
-          //                   u.protocols
-          //                     .map(
-          //                       ({
-          //                         title: name,
-          //                         createdAt: createdAt,
-          //                         _id,
-          //                         status,
-          //                         statusBy,
-          //                       }) => ({
-          //                         _id,
-          //                         name,
-          //                         type: "Protocol",
-          //                         status,
-          //                         statusBy: statusBy ? statusBy : "-",
-          //                         createdBy: u.name,
-          //                         createdAt: new Date(
-          //                           createdAt
-          //                         ).toLocaleString(),
-          //                       })
-          //                     )
-          //                     .slice(
-          //                       page * rowsPerPage,
-          //                       page * rowsPerPage + rowsPerPage
-          //                     )
-          //                     .map((row) => {
-          //                       return (
-          //                         <TableRow
-          //                           hover
-          //                           role="checkbox"
-          //                           tabIndex={-1}
-          //                           key={row.code}
-          //                         >
-          //                           {columns.map((column) => {
-          //                             if (column.id === "edit") {
-          //                               if (findOrgRole) {
-          //                                 if (findOrgRole === "Owner") {
-          //                                   return (
-          //                                     <TableCell
-          //                                       key={column.id}
-          //                                       align={column.align}
-          //                                     >
-          //                                       <button
-          //                                         type="button"
-          //                                         onClick={() => {
-          //                                           let content = u.protocols.find(
-          //                                             (e) => e._id === row._id
-          //                                           );
-          //                                           setEType("Protocol");
-          //                                           setOrgStatusContent(
-          //                                             content
-          //                                           );
-          //                                           setOrgStatus(true);
-          //                                         }}
-          //                                         className="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2"
-          //                                       >
-          //                                         Edit Status
-          //                                       </button>
-          //                                     </TableCell>
-          //                                   );
-          //                                 } else {
-          //                                   return (
-          //                                     <TableCell
-          //                                       key={column.id}
-          //                                       align={column.align}
-          //                                     ></TableCell>
-          //                                   );
-          //                                 }
-          //                               }
-          //                             } else if (column.id === "status") {
-          //                               return (
-          //                                 <TableCell
-          //                                   key={column.id}
-          //                                   align={column.align}
-          //                                 >
-          //                                   {row.status === "Draft" && (
-          //                                     <span className="bg-gray-500 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
-          //                                       Draft
-          //                                     </span>
-          //                                   )}
-          //                                   {row.status === "In Progress" && (
-          //                                     <span className="bg-indigo-600 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
-          //                                       In Progress
-          //                                     </span>
-          //                                   )}
-          //                                   {row.status === "Approved" && (
-          //                                     <span className="bg-emerald-500 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
-          //                                       Approved
-          //                                     </span>
-          //                                   )}
-          //                                   {row.status === "Rejected" && (
-          //                                     <span className="bg-red-500 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
-          //                                       Rejected
-          //                                     </span>
-          //                                   )}
-          //                                 </TableCell>
-          //                               );
-          //                             } else if (column.id === "view") {
-          //                               const value = row[column.id];
-          //                               return (
-          //                                 <TableCell
-          //                                   key={column.id}
-          //                                   align={column.align}
-          //                                 >
-          //                                   <a
-          //                                     href="#"
-          //                                     className="font-medium text-blue-600 hover:underline"
-          //                                     onClick={(e) => {
-          //                                       e.preventDefault();
-          //                                       let content = u.protocols.find(
-          //                                         (e) => e._id === row._id
-          //                                       );
-          //                                       setProtocolContent(content);
-          //                                       setProtocolModal(true);
-          //                                     }}
-          //                                   >
-          //                                     View
-          //                                   </a>
-          //                                 </TableCell>
-          //                               );
-          //                             } else {
-          //                               const value = row[column.id];
-          //                               return (
-          //                                 <TableCell
-          //                                   key={column.id}
-          //                                   align={column.align}
-          //                                 >
-          //                                   {column.format &&
-          //                                   typeof value === "number"
-          //                                     ? column.format(value)
-          //                                     : value}
-          //                                 </TableCell>
-          //                               );
-          //                             }
-          //                           })}
-          //                         </TableRow>
-          //                       );
-          //                     })
+          //                     <PlusIcon
+          //                       className="-ml-2 mr-1 h-5 w-5 text-gray-400"
+          //                       aria-hidden="true"
+          //                     />
+          //                     <span>Add</span>
+          //                   </button>
+          //                 </span>
+          //               </div> */}
+          //             </div>
+
+          //             <div className="border-b border-gray-200">
+          //               <ul role="list" className="divide-y divide-gray-200">
+          //                 {ownerUserData && (
+          //                   <li key={ownerUserData.name} className="py-4 flex">
+          //                     <img
+          //                       className="h-10 w-10 rounded-full"
+          //                       src={`https://api.dicebear.com/7.x/thumbs/svg?seed=${ownerUserData.name}`}
+          //                       alt=""
+          //                     />
+          //                     <div className="ml-3 flex flex-col">
+          //                       <span className="text-sm font-medium text-gray-900 flex">
+          //                         {ownerUserData.name
+          //                           ? ownerUserData.name
+          //                           : ownerUserData._id}
+          //                         <Crown
+          //                           size={12}
+          //                           className="text-indigo-600 ml-2"
+          //                         />
+          //                       </span>
+          //                       <span className="text-sm text-gray-500">
+          //                         {ownerUserData.email}
+          //                       </span>
+          //                     </div>
+          //                   </li>
           //                 )}
-          //               {orgContent &&
-          //                 orgContent.orgData.map((u) =>
-          //                   u.sops
-          //                     .map(
-          //                       ({
-          //                         title: name,
-          //                         createdAt: createdAt,
-          //                         _id,
-          //                         status,
-          //                         statusBy,
-          //                       }) => ({
-          //                         _id,
-          //                         name,
-          //                         type: "SOP",
-          //                         status,
-          //                         statusBy: statusBy ? statusBy : "-",
-          //                         createdBy: u.name,
-          //                         createdAt: new Date(
-          //                           createdAt
-          //                         ).toLocaleString(),
-          //                       })
-          //                     )
-          //                     .slice(
-          //                       page * rowsPerPage,
-          //                       page * rowsPerPage + rowsPerPage
-          //                     )
-          //                     .map((row) => {
-          //                       return (
-          //                         <TableRow
-          //                           hover
-          //                           role="checkbox"
-          //                           tabIndex={-1}
-          //                           key={row.code}
-          //                         >
-          //                           {columns.map((column) => {
-          //                             if (column.id === "edit") {
-          //                               if (findOrgRole) {
-          //                                 if (findOrgRole === "Owner") {
-          //                                   return (
-          //                                     <TableCell
-          //                                       key={column.id}
-          //                                       align={column.align}
-          //                                     >
-          //                                       <button
-          //                                         type="button"
-          //                                         onClick={() => {
-          //                                           let content = u.sops.find(
-          //                                             (e) => e._id === row._id
-          //                                           );
-          //                                           setEType("SOP");
-          //                                           setOrgStatusContent(
-          //                                             content
-          //                                           );
-          //                                           setOrgStatus(true);
-          //                                         }}
-          //                                         className="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2"
-          //                                       >
-          //                                         Edit Status
-          //                                       </button>
-          //                                     </TableCell>
-          //                                   );
-          //                                 } else {
-          //                                   return (
-          //                                     <TableCell
-          //                                       key={column.id}
-          //                                       align={column.align}
-          //                                     ></TableCell>
-          //                                   );
-          //                                 }
-          //                               }
-          //                             } else if (column.id === "status") {
-          //                               return (
-          //                                 <TableCell
-          //                                   key={column.id}
-          //                                   align={column.align}
-          //                                 >
-          //                                   {row.status === "Draft" && (
-          //                                     <span className="bg-gray-500 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
-          //                                       Draft
-          //                                     </span>
-          //                                   )}
-          //                                   {row.status === "In Progress" && (
-          //                                     <span className="bg-indigo-600 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
-          //                                       In Progress
-          //                                     </span>
-          //                                   )}
-          //                                   {row.status === "Approved" && (
-          //                                     <span className="bg-emerald-500 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
-          //                                       Approved
-          //                                     </span>
-          //                                   )}
-          //                                   {row.status === "Rejected" && (
-          //                                     <span className="bg-red-500 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
-          //                                       Rejected
-          //                                     </span>
-          //                                   )}
-          //                                 </TableCell>
-          //                               );
-          //                             } else if (column.id === "view") {
-          //                               const value = row[column.id];
-          //                               return (
-          //                                 <TableCell
-          //                                   key={column.id}
-          //                                   align={column.align}
-          //                                 >
-          //                                   <a
-          //                                     href="#"
-          //                                     className="font-medium text-blue-600 hover:underline"
-          //                                     onClick={(e) => {
-          //                                       e.preventDefault();
-          //                                       let content = u.sops.find(
-          //                                         (e) => e._id === row._id
-          //                                       );
-          //                                       setSopContent(content);
-          //                                       setSopModal(true);
-          //                                     }}
-          //                                   >
-          //                                     View
-          //                                   </a>
-          //                                 </TableCell>
-          //                               );
-          //                             } else {
-          //                               const value = row[column.id];
-          //                               return (
-          //                                 <TableCell
-          //                                   key={column.id}
-          //                                   align={column.align}
-          //                                 >
-          //                                   {column.format &&
-          //                                   typeof value === "number"
-          //                                     ? column.format(value)
-          //                                     : value}
-          //                                 </TableCell>
-          //                               );
-          //                             }
-          //                           })}
-          //                         </TableRow>
-          //                       );
-          //                     })
-          //                 )}
-          //             </TableBody>
-          //           </Table>
-          //         </TableContainer>
-          //         <TablePagination
-          //           rowsPerPageOptions={[8, 16, 100]}
-          //           component="div"
-          //           count={finalCount && finalCount}
-          //           rowsPerPage={rowsPerPage}
-          //           page={page}
-          //           onPageChange={handleChangePage}
-          //           onRowsPerPageChange={handleChangeRowsPerPage}
-          //         />
-          //       </div>
-          //     ) : findOrgRole === "Write" ? (
-          //       <div className="relative overflow-x-auto">
-          //         <TableContainer sx={{ maxHeight: "100%" }}>
-          //           <Table
-          //             stickyHeader
-          //             aria-label="sticky table"
-          //             className="custom-font-mui"
-          //           >
-          //             <TableHead>
-          //               <TableRow>
-          //                 {columns.map((column) => (
-          //                   <TableCell
-          //                     key={column.id}
-          //                     align={column.align}
-          //                     style={{ minWidth: column.minWidth }}
-          //                   >
-          //                     {column.label}
-          //                   </TableCell>
-          //                 ))}
-          //               </TableRow>
-          //             </TableHead>
-          //             <TableBody>
-          //               {orgContent &&
-          //                 orgContent.orgData.map((u) =>
-          //                   u.protocols
-          //                     .map(
-          //                       ({
-          //                         title: name,
-          //                         createdAt: createdAt,
-          //                         _id,
-          //                         status,
-          //                         statusBy,
-          //                       }) => ({
-          //                         _id,
-          //                         name,
-          //                         type: "Protocol",
-          //                         status,
-          //                         statusBy: statusBy ? statusBy : "-",
-          //                         createdBy: u.name,
-          //                         createdAt: new Date(
-          //                           createdAt
-          //                         ).toLocaleString(),
-          //                       })
-          //                     )
-          //                     .slice(
-          //                       page * rowsPerPage,
-          //                       page * rowsPerPage + rowsPerPage
-          //                     )
-          //                     .map((row) => {
-          //                       return (
-          //                         <TableRow
-          //                           hover
-          //                           role="checkbox"
-          //                           tabIndex={-1}
-          //                           key={row.code}
-          //                         >
-          //                           {columns.map((column) => {
-          //                             if (column.id === "edit") {
-          //                               if (findOrgRole) {
-          //                                 if (findOrgRole === "Owner") {
-          //                                   return (
-          //                                     <TableCell
-          //                                       key={column.id}
-          //                                       align={column.align}
-          //                                     >
-          //                                       <button
-          //                                         type="button"
-          //                                         onClick={() => {
-          //                                           let content = u.protocols.find(
-          //                                             (e) => e._id === row._id
-          //                                           );
-          //                                           setEType("Protocol");
-          //                                           setOrgStatusContent(
-          //                                             content
-          //                                           );
-          //                                           setOrgStatus(true);
-          //                                         }}
-          //                                         className="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2"
-          //                                       >
-          //                                         Edit Status
-          //                                       </button>
-          //                                     </TableCell>
-          //                                   );
-          //                                 } else {
-          //                                   return (
-          //                                     <TableCell
-          //                                       key={column.id}
-          //                                       align={column.align}
-          //                                     ></TableCell>
-          //                                   );
-          //                                 }
-          //                               }
-          //                             } else if (column.id === "status") {
-          //                               return (
-          //                                 <TableCell
-          //                                   key={column.id}
-          //                                   align={column.align}
-          //                                 >
-          //                                   {row.status === "Draft" && (
-          //                                     <span className="bg-gray-500 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
-          //                                       Draft
-          //                                     </span>
-          //                                   )}
-          //                                   {row.status === "In Progress" && (
-          //                                     <span className="bg-indigo-600 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
-          //                                       In Progress
-          //                                     </span>
-          //                                   )}
-          //                                   {row.status === "Approved" && (
-          //                                     <span className="bg-emerald-500 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
-          //                                       Approved
-          //                                     </span>
-          //                                   )}
-          //                                   {row.status === "Rejected" && (
-          //                                     <span className="bg-red-500 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
-          //                                       Rejected
-          //                                     </span>
-          //                                   )}
-          //                                 </TableCell>
-          //                               );
-          //                             } else if (column.id === "view") {
-          //                               const value = row[column.id];
-          //                               return (
-          //                                 <TableCell
-          //                                   key={column.id}
-          //                                   align={column.align}
-          //                                 >
-          //                                   <a
-          //                                     href="#"
-          //                                     className="font-medium text-blue-600 hover:underline"
-          //                                     onClick={(e) => {
-          //                                       e.preventDefault();
-          //                                       let content = u.protocols.find(
-          //                                         (e) => e._id === row._id
-          //                                       );
-          //                                       setProtocolContent(content);
-          //                                       setProtocolModal(true);
-          //                                     }}
-          //                                   >
-          //                                     View
-          //                                   </a>
-          //                                 </TableCell>
-          //                               );
-          //                             } else {
-          //                               const value = row[column.id];
-          //                               return (
-          //                                 <TableCell
-          //                                   key={column.id}
-          //                                   align={column.align}
-          //                                 >
-          //                                   {column.format &&
-          //                                   typeof value === "number"
-          //                                     ? column.format(value)
-          //                                     : value}
-          //                                 </TableCell>
-          //                               );
-          //                             }
-          //                           })}
-          //                         </TableRow>
-          //                       );
-          //                     })
-          //                 )}
-          //               {orgContent &&
-          //                 orgContent.orgData.map((u) =>
-          //                   u.sops
-          //                     .map(
-          //                       ({
-          //                         title: name,
-          //                         createdAt: createdAt,
-          //                         _id,
-          //                         status,
-          //                         statusBy,
-          //                       }) => ({
-          //                         _id,
-          //                         name,
-          //                         type: "SOP",
-          //                         status,
-          //                         statusBy: statusBy ? statusBy : "-",
-          //                         createdBy: u.name,
-          //                         createdAt: new Date(
-          //                           createdAt
-          //                         ).toLocaleString(),
-          //                       })
-          //                     )
-          //                     .slice(
-          //                       page * rowsPerPage,
-          //                       page * rowsPerPage + rowsPerPage
-          //                     )
-          //                     .map((row) => {
-          //                       return (
-          //                         <TableRow
-          //                           hover
-          //                           role="checkbox"
-          //                           tabIndex={-1}
-          //                           key={row.code}
-          //                         >
-          //                           {columns.map((column) => {
-          //                             if (column.id === "edit") {
-          //                               if (findOrgRole) {
-          //                                 if (findOrgRole === "Owner") {
-          //                                   return (
-          //                                     <TableCell
-          //                                       key={column.id}
-          //                                       align={column.align}
-          //                                     >
-          //                                       <button
-          //                                         type="button"
-          //                                         onClick={() => {
-          //                                           let content = u.sops.find(
-          //                                             (e) => e._id === row._id
-          //                                           );
-          //                                           setEType("SOP");
-          //                                           setOrgStatusContent(
-          //                                             content
-          //                                           );
-          //                                           setOrgStatus(true);
-          //                                         }}
-          //                                         className="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2"
-          //                                       >
-          //                                         Edit Status
-          //                                       </button>
-          //                                     </TableCell>
-          //                                   );
-          //                                 } else {
-          //                                   return (
-          //                                     <TableCell
-          //                                       key={column.id}
-          //                                       align={column.align}
-          //                                     ></TableCell>
-          //                                   );
-          //                                 }
-          //                               }
-          //                             } else if (column.id === "status") {
-          //                               return (
-          //                                 <TableCell
-          //                                   key={column.id}
-          //                                   align={column.align}
-          //                                 >
-          //                                   {row.status === "Draft" && (
-          //                                     <span className="bg-gray-500 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
-          //                                       Draft
-          //                                     </span>
-          //                                   )}
-          //                                   {row.status === "In Progress" && (
-          //                                     <span className="bg-indigo-600 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
-          //                                       In Progress
-          //                                     </span>
-          //                                   )}
-          //                                   {row.status === "Approved" && (
-          //                                     <span className="bg-emerald-500 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
-          //                                       Approved
-          //                                     </span>
-          //                                   )}
-          //                                   {row.status === "Rejected" && (
-          //                                     <span className="bg-red-500 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
-          //                                       Rejected
-          //                                     </span>
-          //                                   )}
-          //                                 </TableCell>
-          //                               );
-          //                             } else if (column.id === "view") {
-          //                               const value = row[column.id];
-          //                               return (
-          //                                 <TableCell
-          //                                   key={column.id}
-          //                                   align={column.align}
-          //                                 >
-          //                                   <a
-          //                                     href="#"
-          //                                     className="font-medium text-blue-600 hover:underline"
-          //                                     onClick={(e) => {
-          //                                       e.preventDefault();
-          //                                       let content = u.sops.find(
-          //                                         (e) => e._id === row._id
-          //                                       );
-          //                                       setSopContent(content);
-          //                                       setSopModal(true);
-          //                                     }}
-          //                                   >
-          //                                     View
-          //                                   </a>
-          //                                 </TableCell>
-          //                               );
-          //                             } else {
-          //                               const value = row[column.id];
-          //                               return (
-          //                                 <TableCell
-          //                                   key={column.id}
-          //                                   align={column.align}
-          //                                 >
-          //                                   {column.format &&
-          //                                   typeof value === "number"
-          //                                     ? column.format(value)
-          //                                     : value}
-          //                                 </TableCell>
-          //                               );
-          //                             }
-          //                           })}
-          //                         </TableRow>
-          //                       );
-          //                     })
-          //                 )}
-          //             </TableBody>
-          //           </Table>
-          //         </TableContainer>
-          //         <TablePagination
-          //           rowsPerPageOptions={[8, 16, 100]}
-          //           component="div"
-          //           count={finalCount && finalCount}
-          //           rowsPerPage={rowsPerPage}
-          //           page={page}
-          //           onPageChange={handleChangePage}
-          //           onRowsPerPageChange={handleChangeRowsPerPage}
-          //         />
-          //       </div>
-          //     ) : findOrgRole === "Owner" ? (
-          //       <div className="relative overflow-x-auto">
-          //         <TableContainer sx={{ maxHeight: "100%" }}>
-          //           <Table
-          //             stickyHeader
-          //             aria-label="sticky table"
-          //             className="custom-font-mui"
-          //           >
-          //             <TableHead>
-          //               <TableRow>
-          //                 {columns.map((column) => (
-          //                   <TableCell
-          //                     key={column.id}
-          //                     align={column.align}
-          //                     style={{ minWidth: column.minWidth }}
-          //                   >
-          //                     {column.label}
-          //                   </TableCell>
-          //                 ))}
-          //               </TableRow>
-          //             </TableHead>
-          //             <TableBody>
-          //               {orgContent &&
-          //                 orgContent.orgData.map((u) =>
-          //                   u.protocols
-          //                     .map(
-          //                       ({
-          //                         title: name,
-          //                         createdAt: createdAt,
-          //                         _id,
-          //                         status,
-          //                         statusBy,
-          //                       }) => ({
-          //                         _id,
-          //                         name,
-          //                         type: "Protocol",
-          //                         status,
-          //                         statusBy: statusBy ? statusBy : "-",
-          //                         createdBy: u.name,
-          //                         createdAt: new Date(
-          //                           createdAt
-          //                         ).toLocaleString(),
-          //                       })
-          //                     )
-          //                     .slice(
-          //                       page * rowsPerPage,
-          //                       page * rowsPerPage + rowsPerPage
-          //                     )
-          //                     .map((row) => {
-          //                       return (
-          //                         <TableRow
-          //                           hover
-          //                           role="checkbox"
-          //                           tabIndex={-1}
-          //                           key={row.code}
-          //                         >
-          //                           {columns.map((column) => {
-          //                             if (column.id === "edit") {
-          //                               if (findOrgRole) {
-          //                                 if (findOrgRole === "Owner") {
-          //                                   return (
-          //                                     <TableCell
-          //                                       key={column.id}
-          //                                       align={column.align}
-          //                                     >
-          //                                       <button
-          //                                         type="button"
-          //                                         onClick={() => {
-          //                                           let content = u.protocols.find(
-          //                                             (e) => e._id === row._id
-          //                                           );
-          //                                           setEType("Protocol");
-          //                                           setOrgStatusContent(
-          //                                             content
-          //                                           );
-          //                                           setOrgStatus(true);
-          //                                         }}
-          //                                         className="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2"
-          //                                       >
-          //                                         Edit Status
-          //                                       </button>
-          //                                     </TableCell>
-          //                                   );
-          //                                 } else {
-          //                                   return (
-          //                                     <TableCell
-          //                                       key={column.id}
-          //                                       align={column.align}
-          //                                     ></TableCell>
-          //                                   );
-          //                                 }
-          //                               }
-          //                             } else if (column.id === "status") {
-          //                               return (
-          //                                 <TableCell
-          //                                   key={column.id}
-          //                                   align={column.align}
-          //                                 >
-          //                                   {row.status === "Draft" && (
-          //                                     <span className="bg-gray-500 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
-          //                                       Draft
-          //                                     </span>
-          //                                   )}
-          //                                   {row.status === "In Progress" && (
-          //                                     <span className="bg-indigo-600 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
-          //                                       In Progress
-          //                                     </span>
-          //                                   )}
-          //                                   {row.status === "Approved" && (
-          //                                     <span className="bg-emerald-500 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
-          //                                       Approved
-          //                                     </span>
-          //                                   )}
-          //                                   {row.status === "Rejected" && (
-          //                                     <span className="bg-red-500 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
-          //                                       Rejected
-          //                                     </span>
-          //                                   )}
-          //                                 </TableCell>
-          //                               );
-          //                             } else if (column.id === "view") {
-          //                               const value = row[column.id];
-          //                               return (
-          //                                 <TableCell
-          //                                   key={column.id}
-          //                                   align={column.align}
-          //                                 >
-          //                                   <a
-          //                                     href="#"
-          //                                     className="font-medium text-blue-600 hover:underline"
-          //                                     onClick={(e) => {
-          //                                       e.preventDefault();
-          //                                       let content = u.protocols.find(
-          //                                         (e) => e._id === row._id
-          //                                       );
-          //                                       setProtocolContent(content);
-          //                                       setProtocolModal(true);
-          //                                     }}
-          //                                   >
-          //                                     View
-          //                                   </a>
-          //                                 </TableCell>
-          //                               );
-          //                             } else {
-          //                               const value = row[column.id];
-          //                               return (
-          //                                 <TableCell
-          //                                   key={column.id}
-          //                                   align={column.align}
-          //                                 >
-          //                                   {column.format &&
-          //                                   typeof value === "number"
-          //                                     ? column.format(value)
-          //                                     : value}
-          //                                 </TableCell>
-          //                               );
-          //                             }
-          //                           })}
-          //                         </TableRow>
-          //                       );
-          //                     })
-          //                 )}
-          //               {orgContent &&
-          //                 orgContent.orgData.map((u) =>
-          //                   u.sops
-          //                     .map(
-          //                       ({
-          //                         title: name,
-          //                         createdAt: createdAt,
-          //                         _id,
-          //                         status,
-          //                         statusBy,
-          //                       }) => ({
-          //                         _id,
-          //                         name,
-          //                         type: "SOP",
-          //                         status,
-          //                         statusBy: statusBy ? statusBy : "-",
-          //                         createdBy: u.name,
-          //                         createdAt: new Date(
-          //                           createdAt
-          //                         ).toLocaleString(),
-          //                       })
-          //                     )
-          //                     .slice(
-          //                       page * rowsPerPage,
-          //                       page * rowsPerPage + rowsPerPage
-          //                     )
-          //                     .map((row) => {
-          //                       return (
-          //                         <TableRow
-          //                           hover
-          //                           role="checkbox"
-          //                           tabIndex={-1}
-          //                           key={row.code}
-          //                         >
-          //                           {columns.map((column) => {
-          //                             if (column.id === "edit") {
-          //                               if (findOrgRole) {
-          //                                 if (findOrgRole === "Owner") {
-          //                                   return (
-          //                                     <TableCell
-          //                                       key={column.id}
-          //                                       align={column.align}
-          //                                     >
-          //                                       <button
-          //                                         type="button"
-          //                                         onClick={() => {
-          //                                           let content = u.sops.find(
-          //                                             (e) => e._id === row._id
-          //                                           );
-          //                                           setEType("SOP");
-          //                                           setOrgStatusContent(
-          //                                             content
-          //                                           );
-          //                                           setOrgStatus(true);
-          //                                         }}
-          //                                         className="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2"
-          //                                       >
-          //                                         Edit Status
-          //                                       </button>
-          //                                     </TableCell>
-          //                                   );
-          //                                 } else {
-          //                                   return (
-          //                                     <TableCell
-          //                                       key={column.id}
-          //                                       align={column.align}
-          //                                     ></TableCell>
-          //                                   );
-          //                                 }
-          //                               }
-          //                             } else if (column.id === "status") {
-          //                               return (
-          //                                 <TableCell
-          //                                   key={column.id}
-          //                                   align={column.align}
-          //                                 >
-          //                                   {row.status === "Draft" && (
-          //                                     <span className="bg-gray-500 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
-          //                                       Draft
-          //                                     </span>
-          //                                   )}
-          //                                   {row.status === "In Progress" && (
-          //                                     <span className="bg-indigo-600 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
-          //                                       In Progress
-          //                                     </span>
-          //                                   )}
-          //                                   {row.status === "Approved" && (
-          //                                     <span className="bg-emerald-500 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
-          //                                       Approved
-          //                                     </span>
-          //                                   )}
-          //                                   {row.status === "Rejected" && (
-          //                                     <span className="bg-red-500 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
-          //                                       Rejected
-          //                                     </span>
-          //                                   )}
-          //                                 </TableCell>
-          //                               );
-          //                             } else if (column.id === "view") {
-          //                               const value = row[column.id];
-          //                               return (
-          //                                 <TableCell
-          //                                   key={column.id}
-          //                                   align={column.align}
-          //                                 >
-          //                                   <a
-          //                                     href="#"
-          //                                     className="font-medium text-blue-600 hover:underline"
-          //                                     onClick={(e) => {
-          //                                       e.preventDefault();
-          //                                       let content = u.sops.find(
-          //                                         (e) => e._id === row._id
-          //                                       );
-          //                                       setSopContent(content);
-          //                                       setSopModal(true);
-          //                                     }}
-          //                                   >
-          //                                     View
-          //                                   </a>
-          //                                 </TableCell>
-          //                               );
-          //                             } else {
-          //                               const value = row[column.id];
-          //                               return (
-          //                                 <TableCell
-          //                                   key={column.id}
-          //                                   align={column.align}
-          //                                 >
-          //                                   {column.format &&
-          //                                   typeof value === "number"
-          //                                     ? column.format(value)
-          //                                     : value}
-          //                                 </TableCell>
-          //                               );
-          //                             }
-          //                           })}
-          //                         </TableRow>
-          //                       );
-          //                     })
-          //                 )}
-          //             </TableBody>
-          //           </Table>
-          //         </TableContainer>
-          //         <TablePagination
-          //           rowsPerPageOptions={[8, 16, 100]}
-          //           component="div"
-          //           count={finalCount && finalCount}
-          //           rowsPerPage={rowsPerPage}
-          //           page={page}
-          //           onPageChange={handleChangePage}
-          //           onRowsPerPageChange={handleChangeRowsPerPage}
-          //         />
-          //       </div>
-          //     ) : (
-          //       <div className="w-[30%] mx-auto h-full flex items-center justify-center">
-          //         <div
-          //           type="button"
-          //           className="relative block w-full border-2 border-gray-300 border-dashed rounded-lg p-12 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          //         >
-          //           <svg
-          //             className="mx-auto h-12 w-12 text-gray-400"
-          //             xmlns="http://www.w3.org/2000/svg"
-          //             stroke="currentColor"
-          //             fill="none"
-          //             viewBox="0 0 48 48"
-          //             aria-hidden="true"
-          //           >
-          //             <path
-          //               strokeLinecap="round"
-          //               strokeLinejoin="round"
-          //               strokeWidth={2}
-          //               d="M8 14v20c0 4.418 7.163 8 16 8 1.381 0 2.721-.087 4-.252M8 14c0 4.418 7.163 8 16 8s16-3.582 16-8M8 14c0-4.418 7.163-8 16-8s16 3.582 16 8m0 0v14m0-4c0 4.418-7.163 8-16 8S8 28.418 8 24m32 10v6m0 0v6m0-6h6m-6 0h-6"
+          //                 {findOrg &&
+          //                   findOrg.collaborators &&
+          //                   findOrg.collaborators.length > 0 &&
+          //                   findOrg.collaborators.map((person) => (
+          //                     <li key={person.userEmail} className="py-4 flex">
+          //                       <img
+          //                         className="h-10 w-10 rounded-full"
+          //                         src={`https://api.dicebear.com/7.x/thumbs/svg?seed=${person.userName}`}
+          //                         alt=""
+          //                       />
+          //                       <div className="ml-3 flex flex-col">
+          //                         <span className="text-sm font-medium text-gray-900">
+          //                           {person.userName
+          //                             ? person.userName
+          //                             : person.user}
+          //                         </span>
+          //                         <span className="text-sm text-gray-500">
+          //                           {person.userEmail}
+          //                         </span>
+          //                       </div>
+          //                     </li>
+          //                   ))}
+          //               </ul>
+          //             </div>
+          //           </div>
+
+          //           <div>
+          //             <label
+          //               htmlFor="tags"
+          //               className="block text-sm font-medium text-gray-700"
+          //             >
+          //               Tags
+          //             </label>
+          //             <input
+          //               type="text"
+          //               name="tags"
+          //               id="tags"
+          //               className="mt-1 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded-md"
           //             />
-          //           </svg>
-          //           <span className="mt-2 block text-sm font-medium text-gray-900">
-          //             No Access
-          //           </span>
+          //           </div>
+
+          //           <div className="flex justify-end">
+          //             <button
+          //               type="submit"
+          //               onClick={(e) => {
+          //                 if (findOrg) {
+          //                   e.preventDefault();
+          //                   setOrgContentSettings(findOrg);
+          //                   setOrgSettings(true);
+          //                 }
+          //               }}
+          //               className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-500 hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          //             >
+          //               View Settings
+          //             </button>
+          //           </div>
           //         </div>
-          //       </div>
-          //     )}
+          //       </form>
+          //     </main>
           //   </div>
           // </div>
         )}

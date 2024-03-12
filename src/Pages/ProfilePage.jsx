@@ -19,6 +19,7 @@ import toast, { Toaster } from "react-hot-toast";
 import ContactAdmin from "./Modals/ContactAdmin";
 import { TimezoneSelectMain, finalTime } from "./Modals/TimezoneSelect";
 import { addTime } from "../Components/Functions/addTime";
+import DeactivateModal from "./Deactivate/DeactivateModal";
 
 function ProfilePage() {
   const navigate = useNavigate();
@@ -112,7 +113,7 @@ function ProfilePage() {
     await dispatch({ type: USER_UPDATE_PROFILE_RESET });
   };
 
-  console.log(userInfo);
+  const [deactivateAlertModal, setDAlertModal] = useState(false);
   return (
     <div className="profile-component">
       <Helmet>
@@ -420,6 +421,35 @@ function ProfilePage() {
                     </button>
                   </div>
                 </form>
+                <div className="bg-white shadow sm:rounded-lg mt-5 font-dmsans">
+                  <DeactivateModal
+                    open={deactivateAlertModal}
+                    setOpen={setDAlertModal}
+                  />
+                  <div className="px-4 py-5 sm:p-6">
+                    <h3 className="text-lg leading-6 font-medium text-gray-900">
+                      Deactivate your account
+                    </h3>
+                    <div className="mt-2 max-w-xl text-sm text-gray-500">
+                      <p>
+                        Once you deactivate your account, you will not be able
+                        to login again using the same account.
+                      </p>
+                    </div>
+                    <div className="mt-5">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setDAlertModal(true);
+                        }}
+                        className="inline-flex items-center justify-center px-4 py-2 border border-transparent font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:text-sm"
+                      >
+                        Deactivate account
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
             {/* <div className="profile-content-scrollbar">
