@@ -110,6 +110,7 @@ function ListOrganizations({
   const [updateUserId, setUpdateUserId] = useState();
   const [loader, setLoader] = useState(false);
   const [logs, setLogs] = useState(false);
+
   const roleOptions = [
     {
       value: "Lab Member",
@@ -269,6 +270,12 @@ function ListOrganizations({
       : null;
 
   console.log(findOrgRole);
+
+  const [name, setName] = useState(findOrg && findOrg.name);
+  const [description, setDescription] = useState(
+    findOrg && findOrg.description
+  );
+
   const getProjectStats = async () => {
     var data = JSON.stringify({
       orgId: findOrg._id,
@@ -549,6 +556,38 @@ function ListOrganizations({
 
   const [alreadyMadeRoles, setAlreadyMadeRoles] = useState();
 
+  const updateOrgProfile = async () => {
+    const data = {
+      name: name,
+      description: description,
+    };
+    var config = {
+      method: "put",
+      url: `${URL}api/organs/${findOrg._id}`,
+      headers: {
+        Authorization: `Bearer ${userInfo.token}`,
+        "Content-Type": "application/json",
+      },
+      data: data,
+    };
+
+    axios(config)
+      .then(async function(response) {
+        const logObject = {
+          entryId: findOrg._id,
+          user: userInfo._id,
+          userName: userInfo.name,
+          userEmail: userInfo.email,
+          message: `Updated the organization.`,
+        };
+        await addOrgLogs(logObject);
+        setNewCollab(true);
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
+  };
+
   const fetchallRoles = async () => {
     var config = {
       method: "get",
@@ -576,9 +615,11 @@ function ListOrganizations({
   };
   useEffect(() => {
     if (!alreadyMadeRoles) {
-      fetchallRoles();
+      if (findOrg) {
+        fetchallRoles();
+      }
     }
-  }, [alreadyMadeRoles]);
+  }, [alreadyMadeRoles, findOrg]);
 
   return (
     <div className="project-component">
@@ -702,644 +743,657 @@ function ListOrganizations({
                     setNewCollab={setNewCollab}
                     setWhichTabisActive={setWhichTabisActive}
                   />
-                  <div className="max-w-screen-xl mx-auto pb-6 px-4 sm:px-6 lg:pb-16 lg:px-8">
-                    <div className="bg-white rounded-lg shadow overflow-hidden max-w-5xl mx-auto">
-                      <div className="divide-y divide-gray-200 lg:grid lg:grid-cols-12 lg:divide-y-0 lg:divide-x">
-                        <aside className="py-6 lg:col-span-3">
-                          <nav className="space-y-1">
-                            {subNavigation.map((item) => (
-                              <a
-                                key={item.name}
-                                href={item.href}
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  setActiveSub(item.id);
-                                }}
-                                className={classNames(
-                                  item.id == activeSub
-                                    ? "bg-indigo-50 border-indigo-500 text-indigo-700 hover:bg-indigo-50 hover:text-indigo-700"
-                                    : "border-transparent text-gray-900 hover:bg-gray-50 hover:text-gray-900",
-                                  "group border-l-4 px-3 py-2 flex items-center text-sm font-medium"
-                                )}
-                              >
-                                <item.icon
-                                  className={classNames(
-                                    item.id == activeSub
-                                      ? "text-indigo-500 group-hover:text-indigo-500"
-                                      : "text-gray-400 group-hover:text-gray-500",
-                                    "flex-shrink-0 -ml-1 mr-3 h-6 w-6"
-                                  )}
-                                  aria-hidden="true"
-                                />
-                                <span className="truncate">{item.name}</span>
-                              </a>
-                            ))}
-                          </nav>
-                        </aside>
-                        {activeSub == 1 && (
-                          <form className="divide-y divide-gray-200 lg:col-span-9">
-                            <div className="py-6 px-4 sm:p-6 lg:pb-8">
-                              <div>
-                                <h2 className="text-lg leading-6 font-medium text-gray-900">
-                                  About {findOrg.name}
-                                </h2>
-                                <p className="mt-1 text-sm text-gray-500">
-                                  This organization was created on{" "}
-                                  {addTime(findOrg.createdAt)}.
-                                </p>
-                              </div>
-
-                              <div className="mt-6 flex flex-col lg:flex-row">
-                                <div className="flex-grow space-y-6">
-                                  <div>
-                                    <label
-                                      htmlFor="username"
-                                      className="block text-sm font-medium text-gray-700"
-                                    >
-                                      Organization ID
-                                    </label>
-                                    <div className="mt-1 rounded-md shadow-sm flex">
-                                      <span className="bg-gray-50 border border-r-0 border-gray-300 rounded-l-md px-3 inline-flex items-center text-gray-500 sm:text-sm">
-                                        ORG-
-                                      </span>
-                                      <input
-                                        type="text"
-                                        name="username"
-                                        id="username"
-                                        autoComplete="username"
-                                        className="focus:ring-indigo-500 focus:border-indigo-500 flex-grow block w-full min-w-0 rounded-none rounded-r-md sm:text-sm border-gray-300"
-                                        value={findOrg && findOrg._id}
-                                        disabled
-                                      />
-                                    </div>
-                                  </div>
-                                  <div className="col-span-12 sm:col-span-6">
-                                    <label
-                                      htmlFor="first-name"
-                                      className="block text-sm font-medium text-gray-700"
-                                    >
-                                      Name
-                                    </label>
-                                    <input
-                                      value={findOrg && findOrg.name}
-                                      type="text"
-                                      name="first-name"
-                                      id="first-name"
-                                      disabled
-                                      autoComplete="given-name"
-                                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                    />
-                                  </div>
-                                  <div>
-                                    <label
-                                      htmlFor="about"
-                                      className="block text-sm font-medium text-gray-700"
-                                    >
-                                      About
-                                    </label>
-                                    <div className="mt-1">
-                                      <textarea
-                                        id="about"
-                                        name="about"
-                                        rows={3}
-                                        value={findOrg && findOrg.description}
-                                        className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border border-gray-300 rounded-md"
-                                        defaultValue={""}
-                                      />
-                                    </div>
-                                    <p className="mt-2 text-sm text-gray-500">
-                                      Brief description about the organization.
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-
-                              <div className="mt-6">
-                                <label
-                                  htmlFor="about"
-                                  className="block text-sm font-medium text-gray-700 mb-4"
-                                >
-                                  Invitation Code
-                                </label>
-
+                  {findOrg && (
+                    <div className="max-w-screen-xl mx-auto pb-6 px-4 sm:px-6 lg:pb-16 lg:px-8">
+                      <div className="bg-white rounded-lg shadow overflow-hidden max-w-5xl mx-auto">
+                        <div className="divide-y divide-gray-200 lg:grid lg:grid-cols-12 lg:divide-y-0 lg:divide-x">
+                          <aside className="py-6 lg:col-span-3">
+                            <nav className="space-y-1">
+                              {subNavigation.map((item) => (
                                 <a
-                                  href="#"
+                                  key={item.name}
+                                  href={item.href}
                                   onClick={(e) => {
                                     e.preventDefault();
-                                    setLoader(true);
-                                    if (findOrgRole != "Read") {
-                                      window.setTimeout(() => {
-                                        setLoader(false);
-                                        navigator.clipboard.writeText(
-                                          `ORG-${findOrg._id}`
-                                        );
-                                        toast.success(
-                                          "Code copied to clipboard"
-                                        );
-                                      }, 3000);
-                                    } else {
-                                      window.setTimeout(() => {
-                                        setLoader(false);
-
-                                        toast.error(
-                                          "You dont have permissions to add new members."
-                                        );
-                                      }, 3000);
-                                    }
+                                    setActiveSub(item.id);
                                   }}
-                                  className="text-indigo-600 rounded-xl flex items-center justify-left shadow-md px-5 py-2 w-fit"
+                                  className={classNames(
+                                    item.id == activeSub
+                                      ? "bg-indigo-50 border-indigo-500 text-indigo-700 hover:bg-indigo-50 hover:text-indigo-700"
+                                      : "border-transparent text-gray-900 hover:bg-gray-50 hover:text-gray-900",
+                                    "group border-l-4 px-3 py-2 flex items-center text-sm font-medium"
+                                  )}
                                 >
-                                  <Copy className="w-4 mr-2" />
-                                  Generate invite code
+                                  <item.icon
+                                    className={classNames(
+                                      item.id == activeSub
+                                        ? "text-indigo-500 group-hover:text-indigo-500"
+                                        : "text-gray-400 group-hover:text-gray-500",
+                                      "flex-shrink-0 -ml-1 mr-3 h-6 w-6"
+                                    )}
+                                    aria-hidden="true"
+                                  />
+                                  <span className="truncate">{item.name}</span>
                                 </a>
-                              </div>
-                            </div>
-
-                            <div className="pt-6 divide-y divide-gray-200">
-                              <div className="mt-4 py-4 px-4 flex justify-end sm:px-6">
-                                <button
-                                  type="button"
-                                  className="bg-white border border-gray-300 rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                >
-                                  Cancel
-                                </button>
-                                <button
-                                  type="submit"
-                                  className="ml-5 bg-indigo-700 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                >
-                                  Save
-                                </button>
-                              </div>
-                            </div>
-                          </form>
-                        )}
-                        {activeSub == 2 && (
-                          <form className="divide-y divide-gray-200 lg:col-span-9">
-                            {findOrgRole && findOrgRole != "Read" ? (
+                              ))}
+                            </nav>
+                          </aside>
+                          {activeSub == 1 && (
+                            <form className="divide-y divide-gray-200 lg:col-span-9">
                               <div className="py-6 px-4 sm:p-6 lg:pb-8">
                                 <div>
                                   <h2 className="text-lg leading-6 font-medium text-gray-900">
-                                    Add new members
+                                    About {findOrg.name}
                                   </h2>
                                   <p className="mt-1 text-sm text-gray-500">
-                                    This information will be displayed publicly
-                                    so be careful what you share.
+                                    This organization was created on{" "}
+                                    {addTime(findOrg.createdAt)}.
                                   </p>
                                 </div>
-                                <div className="space-y-1 max-w-md mt-6">
-                                  <label
-                                    htmlFor="add-team-members"
-                                    className="block text-sm font-medium text-gray-700"
-                                  >
-                                    Add Team Members
-                                  </label>
-                                  <p
-                                    id="add-team-members-helper"
-                                    className="sr-only"
-                                  >
-                                    Search by email address
-                                  </p>
-                                  <div className="flex">
-                                    <div className="flex-grow">
+
+                                <div className="mt-6 flex flex-col lg:flex-row">
+                                  <div className="flex-grow space-y-6">
+                                    <div>
+                                      <label
+                                        htmlFor="username"
+                                        className="block text-sm font-medium text-gray-700"
+                                      >
+                                        Organization ID
+                                      </label>
+                                      <div className="mt-1 rounded-md shadow-sm flex">
+                                        <span className="bg-gray-50 border border-r-0 border-gray-300 rounded-l-md px-3 inline-flex items-center text-gray-500 sm:text-sm">
+                                          ORG-
+                                        </span>
+                                        <input
+                                          type="text"
+                                          name="username"
+                                          id="username"
+                                          autoComplete="username"
+                                          className="focus:ring-indigo-500 focus:border-indigo-500 flex-grow block w-full min-w-0 rounded-none rounded-r-md sm:text-sm border-gray-300"
+                                          value={findOrg && findOrg._id}
+                                          disabled
+                                        />
+                                      </div>
+                                    </div>
+                                    <div className="col-span-12 sm:col-span-6">
+                                      <label
+                                        htmlFor="first-name"
+                                        className="block text-sm font-medium text-gray-700"
+                                      >
+                                        Name
+                                      </label>
                                       <input
-                                        type="text"
-                                        name="add-team-members"
-                                        id="add-team-members"
-                                        className="block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded-md"
-                                        placeholder="Email address"
+                                        value={name}
                                         onChange={(e) =>
-                                          setEmail(e.target.value)
+                                          setName(e.target.value)
                                         }
-                                        aria-describedby="add-team-members-helper"
+                                        type="text"
+                                        name="first-name"
+                                        id="first-name"
+                                        autoComplete="given-name"
+                                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                       />
                                     </div>
-                                    <span className="ml-3">
-                                      <button
-                                        type="button"
-                                        onClick={(e) => {
-                                          e.preventDefault();
-                                          addCollaborator();
-                                        }}
-                                        className="bg-white inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
+                                    <div>
+                                      <label
+                                        htmlFor="about"
+                                        className="block text-sm font-medium text-gray-700"
                                       >
-                                        <PlusIcon
-                                          className="-ml-2 mr-1 h-5 w-5 text-gray-400"
-                                          aria-hidden="true"
+                                        About
+                                      </label>
+                                      <div className="mt-1">
+                                        <textarea
+                                          id="about"
+                                          name="about"
+                                          rows={5}
+                                          onChange={(e) =>
+                                            setDescription(e.target.value)
+                                          }
+                                          value={description}
+                                          className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border border-gray-300 rounded-md"
+                                          defaultValue={""}
                                         />
-                                        <span>Add</span>
-                                      </button>
-                                    </span>
+                                      </div>
+                                      <p className="mt-2 text-sm text-gray-500">
+                                        Brief description about the
+                                        organization.
+                                      </p>
+                                    </div>
                                   </div>
                                 </div>
-                                <div className="mt-10 max-w-md">
-                                  <div className="flow-root mt-6">
-                                    <ul
-                                      role="list"
-                                      className="-my-5 divide-y divide-gray-200"
-                                    >
-                                      {findOrg &&
-                                      findOrg.collaborators &&
-                                      findOrg.collaborators.length > 0 ? (
-                                        findOrg.collaborators
-                                          .filter(
-                                            (f) => f.userStatus == "Invited"
-                                          )
-                                          .map((person) => (
-                                            <li
-                                              key={person.user}
-                                              className="py-4"
-                                            >
-                                              <div className="flex items-center space-x-4">
-                                                <div className="flex-shrink-0">
-                                                  <img
-                                                    className="h-8 w-8 rounded-full"
-                                                    src={`https://api.dicebear.com/7.x/thumbs/svg?seed=${person.userName}`}
-                                                    alt=""
-                                                  />
-                                                </div>
-                                                <div className="flex-1 min-w-0">
-                                                  <p className="text-sm font-medium text-gray-900 truncate">
-                                                    {person.userName}
-                                                  </p>
-                                                  <p className="text-sm text-gray-500 truncate">
-                                                    {person.userEmail}
-                                                  </p>
-                                                </div>
-                                                <div>
-                                                  <a
-                                                    href="#"
-                                                    className="inline-flex items-center shadow-sm px-2.5 py-0.5 border border-gray-300 text-sm leading-5 font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50"
-                                                  >
-                                                    Invited
-                                                  </a>
-                                                </div>
-                                              </div>
-                                            </li>
-                                          ))
-                                      ) : (
-                                        <>0 members</>
-                                      )}
-                                    </ul>
-                                  </div>
+
+                                <div className="mt-6">
+                                  <label
+                                    htmlFor="about"
+                                    className="block text-sm font-medium text-gray-700 mb-4"
+                                  >
+                                    Invitation Code
+                                  </label>
+
+                                  <a
+                                    href="#"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      setLoader(true);
+                                      if (findOrgRole != "Read") {
+                                        window.setTimeout(() => {
+                                          setLoader(false);
+                                          navigator.clipboard.writeText(
+                                            `ORG-${findOrg._id}`
+                                          );
+                                          toast.success(
+                                            "Code copied to clipboard"
+                                          );
+                                        }, 3000);
+                                      } else {
+                                        window.setTimeout(() => {
+                                          setLoader(false);
+
+                                          toast.error(
+                                            "You dont have permissions to add new members."
+                                          );
+                                        }, 3000);
+                                      }
+                                    }}
+                                    className="text-indigo-600 rounded-xl flex items-center justify-left shadow-md px-5 py-2 w-fit"
+                                  >
+                                    <Copy className="w-4 mr-2" />
+                                    Generate invite code
+                                  </a>
                                 </div>
                               </div>
-                            ) : (
-                              <div className="py-6 px-4 sm:p-6 lg:pb-8">
-                                <div>
-                                  <h2 className="text-lg leading-6 font-medium text-gray-900">
-                                    Add new members
-                                  </h2>
-                                  <p className="mt-1 text-sm text-gray-500">
-                                    This information will be displayed publicly
-                                    so be careful what you share.
-                                  </p>
+
+                              <div className="pt-6 divide-y divide-gray-200">
+                                <div className="mt-4 py-4 px-4 flex justify-end sm:px-6">
+                                  <button
+                                    type="button"
+                                    className="bg-white border border-gray-300 rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                  >
+                                    Cancel
+                                  </button>
+                                  <button
+                                    type="submit"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      updateOrgProfile();
+                                    }}
+                                    className="ml-5 bg-indigo-700 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                  >
+                                    Save
+                                  </button>
                                 </div>
-                                <div className="space-y-1 max-w-md mt-6">
-                                  <div className="">
-                                    <Ban className="text-red-500 my-2" />{" "}
-                                    <p
-                                      id="add-team-members-helper"
-                                      className="font-dmsans"
-                                    >
-                                      You dont have permissions to add new
-                                      members.
+                              </div>
+                            </form>
+                          )}
+                          {activeSub == 2 && (
+                            <form className="divide-y divide-gray-200 lg:col-span-9">
+                              {findOrgRole && findOrgRole != "Read" ? (
+                                <div className="py-6 px-4 sm:p-6 lg:pb-8">
+                                  <div>
+                                    <h2 className="text-lg leading-6 font-medium text-gray-900">
+                                      Add new members
+                                    </h2>
+                                    <p className="mt-1 text-sm text-gray-500">
+                                      This information will be displayed
+                                      publicly so be careful what you share.
                                     </p>
                                   </div>
-                                </div>
-                                <div className="mt-10 max-w-md">
-                                  <div className="flow-root mt-6">
-                                    <ul
-                                      role="list"
-                                      className="-my-5 divide-y divide-gray-200"
+                                  <div className="space-y-1 max-w-md mt-6">
+                                    <label
+                                      htmlFor="add-team-members"
+                                      className="block text-sm font-medium text-gray-700"
                                     >
-                                      {findOrg &&
-                                      findOrg.collaborators &&
-                                      findOrg.collaborators.length > 0 ? (
-                                        findOrg.collaborators
-                                          .filter(
-                                            (f) => f.userStatus == "Invited"
-                                          )
-                                          .map((person) => (
-                                            <li
-                                              key={person.user}
-                                              className="py-4"
-                                            >
-                                              <div className="flex items-center space-x-4">
-                                                <div className="flex-shrink-0">
-                                                  <img
-                                                    className="h-8 w-8 rounded-full"
-                                                    src={`https://api.dicebear.com/7.x/thumbs/svg?seed=${person.userName}`}
-                                                    alt=""
-                                                  />
-                                                </div>
-                                                <div className="flex-1 min-w-0">
-                                                  <p className="text-sm font-medium text-gray-900 truncate">
-                                                    {person.userName}
-                                                  </p>
-                                                  <p className="text-sm text-gray-500 truncate">
-                                                    {person.userEmail}
-                                                  </p>
-                                                </div>
-                                                <div>
-                                                  <a
-                                                    href="#"
-                                                    className="inline-flex items-center shadow-sm px-2.5 py-0.5 border border-gray-300 text-sm leading-5 font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50"
-                                                  >
-                                                    Invited
-                                                  </a>
-                                                </div>
-                                              </div>
-                                            </li>
-                                          ))
-                                      ) : (
-                                        <>0 members</>
-                                      )}
-                                    </ul>
+                                      Add Team Members
+                                    </label>
+                                    <p
+                                      id="add-team-members-helper"
+                                      className="sr-only"
+                                    >
+                                      Search by email address
+                                    </p>
+                                    <div className="flex">
+                                      <div className="flex-grow">
+                                        <input
+                                          type="text"
+                                          name="add-team-members"
+                                          id="add-team-members"
+                                          className="block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded-md"
+                                          placeholder="Email address"
+                                          onChange={(e) =>
+                                            setEmail(e.target.value)
+                                          }
+                                          aria-describedby="add-team-members-helper"
+                                        />
+                                      </div>
+                                      <span className="ml-3">
+                                        <button
+                                          type="button"
+                                          onClick={(e) => {
+                                            e.preventDefault();
+                                            addCollaborator();
+                                          }}
+                                          className="bg-white inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
+                                        >
+                                          <PlusIcon
+                                            className="-ml-2 mr-1 h-5 w-5 text-gray-400"
+                                            aria-hidden="true"
+                                          />
+                                          <span>Add</span>
+                                        </button>
+                                      </span>
+                                    </div>
                                   </div>
-                                </div>
-                              </div>
-                            )}
-
-                            <div className="pt-6 divide-y divide-gray-200">
-                              <div className="mt-4 py-4 px-4 flex justify-end sm:px-6">
-                                <button
-                                  type="button"
-                                  className="bg-white border border-gray-300 rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                >
-                                  Cancel
-                                </button>
-                                <button
-                                  type="submit"
-                                  className="ml-5 bg-indigo-700 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                >
-                                  Save
-                                </button>
-                              </div>
-                            </div>
-                          </form>
-                        )}
-
-                        {activeSub == 3 && (
-                          <form className="divide-y divide-gray-200 lg:col-span-9">
-                            <div className="py-6 px-4 sm:p-6 lg:pb-8">
-                              <div>
-                                <h2 className="text-lg leading-6 font-medium text-gray-900">
-                                  Members
-                                </h2>
-                                <p className="mt-1 text-sm text-gray-500">
-                                  This information will be displayed publicly so
-                                  be careful what you share.
-                                </p>
-                              </div>
-
-                              <div className="mt-10 max-w-md">
-                                <div className="flow-root mt-6">
-                                  <ul
-                                    role="list"
-                                    className="-my-5 divide-y divide-gray-200"
-                                  >
-                                    {ownerUserData && (
-                                      <li
-                                        key={ownerUserData._id}
-                                        className="py-4"
-                                      >
-                                        <div className="flex items-center space-x-4">
-                                          <div className="flex-shrink-0">
-                                            <img
-                                              className="h-8 w-8 rounded-full"
-                                              src={`https://api.dicebear.com/7.x/thumbs/svg?seed=${ownerUserData.name}`}
-                                              alt=""
-                                            />
-                                          </div>
-                                          <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-medium text-gray-900 truncate">
-                                              {ownerUserData.name}{" "}
-                                              {ownerUserData._id ===
-                                                userInfo._id && "(You)"}
-                                            </p>
-                                            <p className="text-sm text-gray-500 truncate">
-                                              {ownerUserData.email}
-                                            </p>
-                                          </div>
-                                          <div>
-                                            <a
-                                              href="#"
-                                              className="inline-flex items-center shadow-sm px-2.5 py-0.5 border border-gray-300 text-sm leading-5 font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50"
-                                            >
-                                              Owner
-                                            </a>
-                                          </div>
-                                        </div>
-                                      </li>
-                                    )}
-                                    {findOrg &&
-                                    findOrg.collaborators &&
-                                    findOrg.collaborators.length > 0 ? (
-                                      findOrg.collaborators
-                                        .filter(
-                                          (u) => u.userStatus != "Invited"
-                                        )
-                                        .map((person) => (
-                                          <li
-                                            key={person.user}
-                                            className="py-4"
-                                          >
-                                            <div className="flex items-center space-x-4">
-                                              <div className="flex-shrink-0">
-                                                <img
-                                                  className="h-8 w-8 rounded-full"
-                                                  src={`https://api.dicebear.com/7.x/thumbs/svg?seed=${person.userName}`}
-                                                  alt=""
-                                                />
-                                              </div>
-                                              <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-medium text-gray-900 truncate">
-                                                  {person.userName}
-                                                </p>
-                                                <p className="text-sm text-gray-500 truncate">
-                                                  {person.userEmail}
-                                                </p>
-                                              </div>
-                                              <div>
-                                                <a
-                                                  href="#"
-                                                  className="inline-flex items-center shadow-sm px-2.5 py-0.5 border border-gray-300 text-sm leading-5 font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50"
-                                                >
-                                                  {person.userType}
-                                                </a>
-                                              </div>
-                                              {findOrgRole &&
-                                                findOrgRole !== "Read" && (
-                                                  <div>
-                                                    <a
-                                                      href="#"
-                                                      onClick={(e) => {
-                                                        e.preventDefault();
-                                                        setUpdateUserId(
-                                                          person.user
-                                                        );
-                                                        setSettingsModal(true);
-                                                      }}
-                                                      className="inline-flex items-center shadow-sm px-2.5 py-0.5 border border-indigo-300 text-sm leading-5 font-medium rounded-full text-indigo-700 bg-white hover:bg-gray-50"
-                                                    >
-                                                      change role
-                                                    </a>
-                                                  </div>
-                                                )}
-                                            </div>
-                                          </li>
-                                        ))
-                                    ) : (
-                                      <>0 members</>
-                                    )}
-                                  </ul>
-                                </div>
-                              </div>
-                            </div>
-
-                            <div className="pt-6 divide-y divide-gray-200">
-                              <div className="mt-4 py-4 px-4 flex justify-end sm:px-6">
-                                <button
-                                  type="button"
-                                  className="bg-white border border-gray-300 rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                >
-                                  Cancel
-                                </button>
-                                <button
-                                  type="submit"
-                                  className="ml-5 bg-indigo-700 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                >
-                                  Save
-                                </button>
-                              </div>
-                            </div>
-                          </form>
-                        )}
-                        {activeSub == 4 && (
-                          <form className="divide-y divide-gray-200 lg:col-span-9">
-                            <div className="py-6 px-4 sm:p-6 lg:pb-8">
-                              <div>
-                                <h2 className="text-lg leading-6 font-medium text-gray-900">
-                                  Organizational Roles
-                                </h2>
-                                <p className="mt-1 text-sm text-gray-500">
-                                  This organization was created on{" "}
-                                  {addTime(findOrg.createdAt)}.
-                                </p>
-                              </div>
-
-                              <div className="mt-6 flex flex-col lg:flex-row w-[90%] mx-auto">
-                                <div className="flex-grow space-y-6">
-                                  <div>
-                                    <div className="flow-root mt-6 pb-10">
+                                  <div className="mt-10 max-w-md">
+                                    <div className="flow-root mt-6">
                                       <ul
                                         role="list"
                                         className="-my-5 divide-y divide-gray-200"
                                       >
-                                        {roleOptions.map((announcement) => (
-                                          <li
-                                            key={announcement.label}
-                                            className="py-5"
-                                          >
-                                            <div className="relative focus-within:ring-2 focus-within:ring-indigo-500">
-                                              <h3 className="text-sm font-semibold text-gray-800">
-                                                <a
-                                                  href="#"
-                                                  className="hover:underline focus:outline-none"
-                                                >
-                                                  {/* Extend touch target to entire panel */}
-                                                  <span
-                                                    className="absolute inset-0"
-                                                    aria-hidden="true"
-                                                  />
-                                                  {announcement.label}
-                                                </a>
-                                              </h3>
-                                              <p className="mt-1 text-sm text-gray-600 line-clamp-2">
-                                                {announcement.permissions}
-                                              </p>
-                                            </div>
-                                          </li>
-                                        ))}
-                                        {alreadyMadeRoles &&
-                                          alreadyMadeRoles.length > 0 &&
-                                          alreadyMadeRoles.map(
-                                            (announcement) => (
+                                        {findOrg &&
+                                        findOrg.collaborators &&
+                                        findOrg.collaborators.length > 0 ? (
+                                          findOrg.collaborators
+                                            .filter(
+                                              (f) => f.userStatus == "Invited"
+                                            )
+                                            .map((person) => (
                                               <li
-                                                key={announcement.label}
-                                                className="py-5"
+                                                key={person.user}
+                                                className="py-4"
                                               >
-                                                <div className="relative focus-within:ring-2 focus-within:ring-indigo-500">
-                                                  <h3 className="text-sm font-semibold text-gray-800">
+                                                <div className="flex items-center space-x-4">
+                                                  <div className="flex-shrink-0">
+                                                    <img
+                                                      className="h-8 w-8 rounded-full"
+                                                      src={`https://api.dicebear.com/7.x/thumbs/svg?seed=${person.userName}`}
+                                                      alt=""
+                                                    />
+                                                  </div>
+                                                  <div className="flex-1 min-w-0">
+                                                    <p className="text-sm font-medium text-gray-900 truncate">
+                                                      {person.userName}
+                                                    </p>
+                                                    <p className="text-sm text-gray-500 truncate">
+                                                      {person.userEmail}
+                                                    </p>
+                                                  </div>
+                                                  <div>
                                                     <a
                                                       href="#"
-                                                      className="hover:underline focus:outline-none"
+                                                      className="inline-flex items-center shadow-sm px-2.5 py-0.5 border border-gray-300 text-sm leading-5 font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50"
                                                     >
-                                                      {/* Extend touch target to entire panel */}
-                                                      <span
-                                                        className="absolute inset-0"
-                                                        aria-hidden="true"
-                                                      />
-                                                      {announcement.label}
+                                                      Invited
                                                     </a>
-                                                  </h3>
-                                                  <p className="mt-1 text-sm text-gray-600 line-clamp-2">
-                                                    {announcement.permissions}
-                                                  </p>
+                                                  </div>
                                                 </div>
                                               </li>
-                                            )
-                                          )}
+                                            ))
+                                        ) : (
+                                          <>0 members</>
+                                        )}
                                       </ul>
                                     </div>
                                   </div>
                                 </div>
-                              </div>
-                            </div>
+                              ) : (
+                                <div className="py-6 px-4 sm:p-6 lg:pb-8">
+                                  <div>
+                                    <h2 className="text-lg leading-6 font-medium text-gray-900">
+                                      Add new members
+                                    </h2>
+                                    <p className="mt-1 text-sm text-gray-500">
+                                      This information will be displayed
+                                      publicly so be careful what you share.
+                                    </p>
+                                  </div>
+                                  <div className="space-y-1 max-w-md mt-6">
+                                    <div className="">
+                                      <Ban className="text-red-500 my-2" />{" "}
+                                      <p
+                                        id="add-team-members-helper"
+                                        className="font-dmsans"
+                                      >
+                                        You dont have permissions to add new
+                                        members.
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div className="mt-10 max-w-md">
+                                    <div className="flow-root mt-6">
+                                      <ul
+                                        role="list"
+                                        className="-my-5 divide-y divide-gray-200"
+                                      >
+                                        {findOrg &&
+                                        findOrg.collaborators &&
+                                        findOrg.collaborators.length > 0 ? (
+                                          findOrg.collaborators
+                                            .filter(
+                                              (f) => f.userStatus == "Invited"
+                                            )
+                                            .map((person) => (
+                                              <li
+                                                key={person.user}
+                                                className="py-4"
+                                              >
+                                                <div className="flex items-center space-x-4">
+                                                  <div className="flex-shrink-0">
+                                                    <img
+                                                      className="h-8 w-8 rounded-full"
+                                                      src={`https://api.dicebear.com/7.x/thumbs/svg?seed=${person.userName}`}
+                                                      alt=""
+                                                    />
+                                                  </div>
+                                                  <div className="flex-1 min-w-0">
+                                                    <p className="text-sm font-medium text-gray-900 truncate">
+                                                      {person.userName}
+                                                    </p>
+                                                    <p className="text-sm text-gray-500 truncate">
+                                                      {person.userEmail}
+                                                    </p>
+                                                  </div>
+                                                  <div>
+                                                    <a
+                                                      href="#"
+                                                      className="inline-flex items-center shadow-sm px-2.5 py-0.5 border border-gray-300 text-sm leading-5 font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50"
+                                                    >
+                                                      Invited
+                                                    </a>
+                                                  </div>
+                                                </div>
+                                              </li>
+                                            ))
+                                        ) : (
+                                          <>0 members</>
+                                        )}
+                                      </ul>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
 
-                            <div className="pt-6 divide-y divide-gray-200">
-                              <div className="mt-4 py-4 px-4 flex justify-end sm:px-6">
-                                <button
-                                  type="button"
-                                  className="bg-white border border-gray-300 rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                >
-                                  Cancel
-                                </button>
-                                <button
-                                  type="submit"
-                                  className="ml-5 bg-indigo-700 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                >
-                                  Save
-                                </button>
+                              <div className="pt-6 divide-y divide-gray-200">
+                                <div className="mt-4 py-4 px-4 flex justify-end sm:px-6">
+                                  <button
+                                    type="button"
+                                    className="bg-white border border-gray-300 rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                  >
+                                    Cancel
+                                  </button>
+                                  <button
+                                    type="submit"
+                                    className="ml-5 bg-indigo-700 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                  >
+                                    Save
+                                  </button>
+                                </div>
                               </div>
-                            </div>
-                          </form>
-                        )}
-                        {activeSub == 5 && (
-                          <form className="divide-y divide-gray-200 lg:col-span-9">
-                            <div className="py-6 px-4 sm:p-6 lg:pb-8">
-                              <div>
-                                <h2 className="text-lg leading-6 font-medium text-gray-900">
-                                  All Entities
-                                </h2>
-                                <p className="mt-1 text-sm text-gray-500">
-                                  This information will be displayed publicly so
-                                  be careful what you share.
-                                </p>
+                            </form>
+                          )}
+
+                          {activeSub == 3 && (
+                            <form className="divide-y divide-gray-200 lg:col-span-9">
+                              <div className="py-6 px-4 sm:p-6 lg:pb-8">
+                                <div>
+                                  <h2 className="text-lg leading-6 font-medium text-gray-900">
+                                    Members
+                                  </h2>
+                                  <p className="mt-1 text-sm text-gray-500">
+                                    This information will be displayed publicly
+                                    so be careful what you share.
+                                  </p>
+                                </div>
+
+                                <div className="mt-10 max-w-md">
+                                  <div className="flow-root mt-6">
+                                    <ul
+                                      role="list"
+                                      className="-my-5 divide-y divide-gray-200"
+                                    >
+                                      {ownerUserData && (
+                                        <li
+                                          key={ownerUserData._id}
+                                          className="py-4"
+                                        >
+                                          <div className="flex items-center space-x-4">
+                                            <div className="flex-shrink-0">
+                                              <img
+                                                className="h-8 w-8 rounded-full"
+                                                src={`https://api.dicebear.com/7.x/thumbs/svg?seed=${ownerUserData.name}`}
+                                                alt=""
+                                              />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                              <p className="text-sm font-medium text-gray-900 truncate">
+                                                {ownerUserData.name}{" "}
+                                                {ownerUserData._id ===
+                                                  userInfo._id && "(You)"}
+                                              </p>
+                                              <p className="text-sm text-gray-500 truncate">
+                                                {ownerUserData.email}
+                                              </p>
+                                            </div>
+                                            <div>
+                                              <a
+                                                href="#"
+                                                className="inline-flex items-center shadow-sm px-2.5 py-0.5 border border-gray-300 text-sm leading-5 font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50"
+                                              >
+                                                Owner
+                                              </a>
+                                            </div>
+                                          </div>
+                                        </li>
+                                      )}
+                                      {findOrg &&
+                                      findOrg.collaborators &&
+                                      findOrg.collaborators.length > 0 ? (
+                                        findOrg.collaborators
+                                          .filter(
+                                            (u) => u.userStatus != "Invited"
+                                          )
+                                          .map((person) => (
+                                            <li
+                                              key={person.user}
+                                              className="py-4"
+                                            >
+                                              <div className="flex items-center space-x-4">
+                                                <div className="flex-shrink-0">
+                                                  <img
+                                                    className="h-8 w-8 rounded-full"
+                                                    src={`https://api.dicebear.com/7.x/thumbs/svg?seed=${person.userName}`}
+                                                    alt=""
+                                                  />
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                  <p className="text-sm font-medium text-gray-900 truncate">
+                                                    {person.userName}
+                                                  </p>
+                                                  <p className="text-sm text-gray-500 truncate">
+                                                    {person.userEmail}
+                                                  </p>
+                                                </div>
+                                                <div>
+                                                  <a
+                                                    href="#"
+                                                    className="inline-flex items-center shadow-sm px-2.5 py-0.5 border border-gray-300 text-sm leading-5 font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50"
+                                                  >
+                                                    {person.userType}
+                                                  </a>
+                                                </div>
+                                                {findOrgRole &&
+                                                  findOrgRole !== "Read" && (
+                                                    <div>
+                                                      <a
+                                                        href="#"
+                                                        onClick={(e) => {
+                                                          e.preventDefault();
+                                                          setUpdateUserId(
+                                                            person.user
+                                                          );
+                                                          setSettingsModal(
+                                                            true
+                                                          );
+                                                        }}
+                                                        className="inline-flex items-center shadow-sm px-2.5 py-0.5 border border-indigo-300 text-sm leading-5 font-medium rounded-full text-indigo-700 bg-white hover:bg-gray-50"
+                                                      >
+                                                        change role
+                                                      </a>
+                                                    </div>
+                                                  )}
+                                              </div>
+                                            </li>
+                                          ))
+                                      ) : (
+                                        <>0 members</>
+                                      )}
+                                    </ul>
+                                  </div>
+                                </div>
                               </div>
-                              <div className="mt-6">
-                                <a
-                                  href="#"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    setWhichTabisActive("orgListEntities");
-                                  }}
-                                  className="text-indigo-600 rounded-md flex items-center justify-left shadow-md px-5 py-2 w-fit"
-                                >
-                                  <ExternalLink className="w-4 mr-2" />
-                                  Click here
-                                </a>
-                                {/* <div className="flex flex-col">
+
+                              <div className="pt-6 divide-y divide-gray-200">
+                                <div className="mt-4 py-4 px-4 flex justify-end sm:px-6">
+                                  <button
+                                    type="button"
+                                    className="bg-white border border-gray-300 rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                  >
+                                    Cancel
+                                  </button>
+                                  <button
+                                    type="submit"
+                                    className="ml-5 bg-indigo-700 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                  >
+                                    Save
+                                  </button>
+                                </div>
+                              </div>
+                            </form>
+                          )}
+                          {activeSub == 4 && (
+                            <form className="divide-y divide-gray-200 lg:col-span-9">
+                              <div className="py-6 px-4 sm:p-6 lg:pb-8">
+                                <div>
+                                  <h2 className="text-lg leading-6 font-medium text-gray-900">
+                                    Organizational Roles
+                                  </h2>
+                                  <p className="mt-1 text-sm text-gray-500">
+                                    This organization was created on{" "}
+                                    {addTime(findOrg.createdAt)}.
+                                  </p>
+                                </div>
+
+                                <div className="mt-6 flex flex-col lg:flex-row w-[90%] mx-auto">
+                                  <div className="flex-grow space-y-6">
+                                    <div>
+                                      <div className="flow-root mt-6 pb-10">
+                                        <ul
+                                          role="list"
+                                          className="-my-5 divide-y divide-gray-200"
+                                        >
+                                          {roleOptions.map((announcement) => (
+                                            <li
+                                              key={announcement.label}
+                                              className="py-5"
+                                            >
+                                              <div className="relative focus-within:ring-2 focus-within:ring-indigo-500">
+                                                <h3 className="text-sm font-semibold text-gray-800">
+                                                  <a
+                                                    href="#"
+                                                    className="hover:underline focus:outline-none"
+                                                  >
+                                                    {/* Extend touch target to entire panel */}
+                                                    <span
+                                                      className="absolute inset-0"
+                                                      aria-hidden="true"
+                                                    />
+                                                    {announcement.label}
+                                                  </a>
+                                                </h3>
+                                                <p className="mt-1 text-sm text-gray-600 line-clamp-2">
+                                                  {announcement.permissions}
+                                                </p>
+                                              </div>
+                                            </li>
+                                          ))}
+                                          {alreadyMadeRoles &&
+                                            alreadyMadeRoles.length > 0 &&
+                                            alreadyMadeRoles.map(
+                                              (announcement) => (
+                                                <li
+                                                  key={announcement.label}
+                                                  className="py-5"
+                                                >
+                                                  <div className="relative focus-within:ring-2 focus-within:ring-indigo-500">
+                                                    <h3 className="text-sm font-semibold text-gray-800">
+                                                      <a
+                                                        href="#"
+                                                        className="hover:underline focus:outline-none"
+                                                      >
+                                                        {/* Extend touch target to entire panel */}
+                                                        <span
+                                                          className="absolute inset-0"
+                                                          aria-hidden="true"
+                                                        />
+                                                        {announcement.label}
+                                                      </a>
+                                                    </h3>
+                                                    <p className="mt-1 text-sm text-gray-600 line-clamp-2">
+                                                      {announcement.permissions}
+                                                    </p>
+                                                  </div>
+                                                </li>
+                                              )
+                                            )}
+                                        </ul>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="pt-6 divide-y divide-gray-200">
+                                <div className="mt-4 py-4 px-4 flex justify-end sm:px-6">
+                                  <button
+                                    type="button"
+                                    className="bg-white border border-gray-300 rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                  >
+                                    Cancel
+                                  </button>
+                                  <button
+                                    type="submit"
+                                    className="ml-5 bg-indigo-700 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                  >
+                                    Save
+                                  </button>
+                                </div>
+                              </div>
+                            </form>
+                          )}
+                          {activeSub == 5 && (
+                            <form className="divide-y divide-gray-200 lg:col-span-9">
+                              <div className="py-6 px-4 sm:p-6 lg:pb-8">
+                                <div>
+                                  <h2 className="text-lg leading-6 font-medium text-gray-900">
+                                    All Entities
+                                  </h2>
+                                  <p className="mt-1 text-sm text-gray-500">
+                                    This information will be displayed publicly
+                                    so be careful what you share.
+                                  </p>
+                                </div>
+                                <div className="mt-6">
+                                  <a
+                                    href="#"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      setWhichTabisActive("orgListEntities");
+                                    }}
+                                    className="text-indigo-600 rounded-md flex items-center justify-left shadow-md px-5 py-2 w-fit"
+                                  >
+                                    <ExternalLink className="w-4 mr-2" />
+                                    Click here
+                                  </a>
+                                  {/* <div className="flex flex-col">
                                   <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                                     <div className="py-2 align-middle inline-block min-w-fit sm:px-6 lg:px-8">
                                       <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
@@ -1400,168 +1454,169 @@ function ListOrganizations({
                                     </div>
                                   </div>
                                 </div> */}
+                                </div>
                               </div>
-                            </div>
 
-                            <div className="pt-6 divide-y divide-gray-200">
-                              <div className="mt-4 py-4 px-4 flex justify-end sm:px-6">
-                                <button
-                                  type="button"
-                                  className="bg-white border border-gray-300 rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                >
-                                  Cancel
-                                </button>
-                                <button
-                                  type="submit"
-                                  className="ml-5 bg-indigo-700 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                >
-                                  Save
-                                </button>
+                              <div className="pt-6 divide-y divide-gray-200">
+                                <div className="mt-4 py-4 px-4 flex justify-end sm:px-6">
+                                  <button
+                                    type="button"
+                                    className="bg-white border border-gray-300 rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                  >
+                                    Cancel
+                                  </button>
+                                  <button
+                                    type="submit"
+                                    className="ml-5 bg-indigo-700 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                  >
+                                    Save
+                                  </button>
+                                </div>
                               </div>
-                            </div>
-                          </form>
-                        )}
-                        {activeSub == 6 && (
-                          <form className="divide-y divide-gray-200 lg:col-span-9">
-                            <div className="py-6 px-4 sm:p-6 lg:pb-8">
-                              <div>
-                                <h2 className="text-lg leading-6 font-medium text-gray-900">
-                                  Logs
-                                </h2>
-                                <p className="mt-1 text-sm text-gray-500">
-                                  This information will be displayed publicly so
-                                  be careful what you share.
-                                </p>
+                            </form>
+                          )}
+                          {activeSub == 6 && (
+                            <form className="divide-y divide-gray-200 lg:col-span-9">
+                              <div className="py-6 px-4 sm:p-6 lg:pb-8">
+                                <div>
+                                  <h2 className="text-lg leading-6 font-medium text-gray-900">
+                                    Logs
+                                  </h2>
+                                  <p className="mt-1 text-sm text-gray-500">
+                                    This information will be displayed publicly
+                                    so be careful what you share.
+                                  </p>
+                                </div>
+                                <div className="mt-6">
+                                  <a
+                                    href="#"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      setLogs(true);
+                                    }}
+                                    className="text-indigo-600 rounded-xl flex items-center justify-left shadow-md px-5 py-2 w-fit"
+                                  >
+                                    <ExternalLink className="w-4 mr-2" />
+                                    Click here to view logs
+                                  </a>
+                                </div>
                               </div>
-                              <div className="mt-6">
-                                <a
-                                  href="#"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    setLogs(true);
-                                  }}
-                                  className="text-indigo-600 rounded-xl flex items-center justify-left shadow-md px-5 py-2 w-fit"
-                                >
-                                  <ExternalLink className="w-4 mr-2" />
-                                  Click here to view logs
-                                </a>
-                              </div>
-                            </div>
 
-                            <div className="pt-6 divide-y divide-gray-200">
-                              <div className="mt-4 py-4 px-4 flex justify-end sm:px-6">
-                                <button
-                                  type="button"
-                                  className="bg-white border border-gray-300 rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                >
-                                  Cancel
-                                </button>
-                                <button
-                                  type="submit"
-                                  className="ml-5 bg-indigo-700 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                >
-                                  Save
-                                </button>
+                              <div className="pt-6 divide-y divide-gray-200">
+                                <div className="mt-4 py-4 px-4 flex justify-end sm:px-6">
+                                  <button
+                                    type="button"
+                                    className="bg-white border border-gray-300 rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                  >
+                                    Cancel
+                                  </button>
+                                  <button
+                                    type="submit"
+                                    className="ml-5 bg-indigo-700 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                  >
+                                    Save
+                                  </button>
+                                </div>
                               </div>
-                            </div>
-                          </form>
-                        )}
-                        {activeSub == 7 && (
-                          <form className="divide-y divide-gray-200 lg:col-span-9">
-                            <div className="py-6 px-4 sm:p-6 lg:pb-8">
-                              <div>
-                                <h2 className="text-lg leading-6 font-medium text-gray-900">
-                                  Leave Organization
-                                </h2>
-                                <p className="mt-1 text-sm text-gray-500">
-                                  This information will be displayed publicly so
-                                  be careful what you share.
-                                </p>
-                              </div>
-                              <div className="mt-6">
-                                {findOrgRole && findOrgRole === "Owner" ? (
-                                  <div className="py-5">
-                                    <div className="relative focus-within:ring-2 focus-within:ring-indigo-500">
-                                      <h3 className="text-sm font-semibold text-gray-800">
-                                        <a
-                                          href="#"
-                                          className="hover:underline focus:outline-none"
-                                        >
-                                          {/* Extend touch target to entire panel */}
-                                          <span
-                                            className="absolute inset-0"
-                                            aria-hidden="true"
-                                          />
-                                          {userInfo.name &&
-                                            findOrgRole &&
-                                            `${ownerUserData.name} (Owner)`}
-                                        </a>
-                                      </h3>
-                                      <p className="mt-1 text-sm text-gray-600 line-clamp-2">
-                                        {" "}
-                                        As a owner you cannot leave the
-                                        organization.
-                                      </p>
+                            </form>
+                          )}
+                          {activeSub == 7 && (
+                            <form className="divide-y divide-gray-200 lg:col-span-9">
+                              <div className="py-6 px-4 sm:p-6 lg:pb-8">
+                                <div>
+                                  <h2 className="text-lg leading-6 font-medium text-gray-900">
+                                    Leave Organization
+                                  </h2>
+                                  <p className="mt-1 text-sm text-gray-500">
+                                    This information will be displayed publicly
+                                    so be careful what you share.
+                                  </p>
+                                </div>
+                                <div className="mt-6">
+                                  {findOrgRole && findOrgRole === "Owner" ? (
+                                    <div className="py-5">
+                                      <div className="relative focus-within:ring-2 focus-within:ring-indigo-500">
+                                        <h3 className="text-sm font-semibold text-gray-800">
+                                          <a
+                                            href="#"
+                                            className="hover:underline focus:outline-none"
+                                          >
+                                            {/* Extend touch target to entire panel */}
+                                            <span
+                                              className="absolute inset-0"
+                                              aria-hidden="true"
+                                            />
+                                            {userInfo.name &&
+                                              findOrgRole &&
+                                              `${ownerUserData.name} (Owner)`}
+                                          </a>
+                                        </h3>
+                                        <p className="mt-1 text-sm text-gray-600 line-clamp-2">
+                                          {" "}
+                                          As a owner you cannot leave the
+                                          organization.
+                                        </p>
+                                      </div>
                                     </div>
-                                  </div>
-                                ) : (
-                                  <div className="py-5">
-                                    <div className="relative">
-                                      <h3 className="text-sm font-semibold text-gray-800">
-                                        <a
-                                          href="#"
-                                          className="hover:underline focus:outline-none"
+                                  ) : (
+                                    <div className="py-5">
+                                      <div className="relative">
+                                        <h3 className="text-sm font-semibold text-gray-800">
+                                          <a
+                                            href="#"
+                                            className="hover:underline focus:outline-none"
+                                          >
+                                            {/* Extend touch target to entire panel */}
+
+                                            {userInfo &&
+                                              findOrgRole &&
+                                              `${userInfo.name} (${findOrgRole})`}
+                                          </a>
+                                        </h3>
+                                        <p className="mt-1 text-sm text-gray-600 line-clamp-2">
+                                          {" "}
+                                          Leaving the organization will make you
+                                          lose all the perks and establishments
+                                          from the organization.
+                                        </p>
+                                        <button
+                                          type="submit"
+                                          onClick={(e) => {
+                                            e.preventDefault();
+                                            setLeaveOrg(true);
+                                          }}
+                                          className="mt-4 bg-pink-700 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-pink-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
                                         >
-                                          {/* Extend touch target to entire panel */}
-
-                                          {userInfo &&
-                                            findOrgRole &&
-                                            `${userInfo.name} (${findOrgRole})`}
-                                        </a>
-                                      </h3>
-                                      <p className="mt-1 text-sm text-gray-600 line-clamp-2">
-                                        {" "}
-                                        Leaving the organization will make you
-                                        lose all the perks and establishments
-                                        from the organization.
-                                      </p>
-                                      <button
-                                        type="submit"
-                                        onClick={(e) => {
-                                          e.preventDefault();
-                                          setLeaveOrg(true);
-                                        }}
-                                        className="mt-4 bg-pink-700 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-pink-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
-                                      >
-                                        Leave the organization
-                                      </button>
+                                          Leave the organization
+                                        </button>
+                                      </div>
                                     </div>
-                                  </div>
-                                )}
+                                  )}
+                                </div>
                               </div>
-                            </div>
 
-                            <div className="pt-6 divide-y divide-gray-200">
-                              <div className="mt-4 py-4 px-4 flex justify-end sm:px-6">
-                                <button
-                                  type="button"
-                                  className="bg-white border border-gray-300 rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                >
-                                  Cancel
-                                </button>
-                                <button
-                                  type="submit"
-                                  className="ml-5 bg-indigo-700 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                >
-                                  Save
-                                </button>
+                              <div className="pt-6 divide-y divide-gray-200">
+                                <div className="mt-4 py-4 px-4 flex justify-end sm:px-6">
+                                  <button
+                                    type="button"
+                                    className="bg-white border border-gray-300 rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                  >
+                                    Cancel
+                                  </button>
+                                  <button
+                                    type="submit"
+                                    className="ml-5 bg-indigo-700 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                  >
+                                    Save
+                                  </button>
+                                </div>
                               </div>
-                            </div>
-                          </form>
-                        )}
+                            </form>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )}
                 </main>
               ) : (
                 <main className="relative -mt-32">
