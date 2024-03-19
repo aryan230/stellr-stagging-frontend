@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import URL from "./../../../Data/data.json";
+import { addOrgLogs } from "../../Functions/addOrgLogs";
 function JoinOrgModal({
   setCreateOrg,
   setNewOrg,
@@ -37,11 +38,19 @@ function JoinOrgModal({
     };
 
     axios(config)
-      .then(function(responseData) {
+      .then(async function(responseData) {
         setCreateOrg(false);
         setNewOrg(true);
         setShowBannerOrg(false);
         setWhichTabisActive("orgList");
+        const logObject = {
+          entryId: inviteCode.split("-")[1],
+          user: userInfo._id,
+          userName: userInfo.name,
+          userEmail: userInfo.email,
+          message: `Joined the organization using an invite code.`,
+        };
+        await addOrgLogs(logObject);
       })
       .catch(function(error) {
         console.log(error);

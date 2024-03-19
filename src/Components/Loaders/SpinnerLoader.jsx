@@ -18,7 +18,7 @@ function SpinnerLoader({ text }) {
             </svg>
           </div>
 
-          <span className="text-base font-medium text-slate-500">
+          <span className="text-base font-medium text-slate-800">
             {text ? text : "Loading"}...
           </span>
         </div>

@@ -8,11 +8,11 @@ import InputWithLabel from "../../UI/Input/InputWithLabel";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import { addNotification } from "../Functions/addNotification";
+import { addOrgLogs } from "../Functions/addOrgLogs";
 
 function OrgSettingsModal({
   project,
   id,
-  setOrgSettings,
   setSettingsModal,
   setUpdatedUserCollabRoleOrg,
   setUpdateCollabRole,
@@ -104,10 +104,17 @@ function OrgSettingsModal({
     };
 
     axios(config)
-      .then(function(response) {
+      .then(async function(response) {
         setUpdateCollabRole(true);
         setSettingsModal(false);
-        setOrgSettings(false);
+        const logObject = {
+          entryId: project._id,
+          user: userInfo._id,
+          userName: userInfo.name,
+          userEmail: userInfo.email,
+          message: `Added a new role with name ${newRoleName} and permissions ${newRoleType.label}`,
+        };
+        await addOrgLogs(logObject);
       })
       .catch(function(error) {
         console.log(error);
@@ -146,10 +153,17 @@ function OrgSettingsModal({
     };
 
     axios(config)
-      .then(function(response) {
+      .then(async function(response) {
         setUpdateCollabRole(true);
         setSettingsModal(false);
-        setOrgSettings(false);
+        const logObject = {
+          entryId: project._id,
+          user: userInfo._id,
+          userName: userInfo.name,
+          userEmail: userInfo.email,
+          message: `Changed the role of the user with id ${id} to ${selectedRole.label}`,
+        };
+        await addOrgLogs(logObject);
       })
       .catch(function(error) {
         console.log(error);

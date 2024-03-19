@@ -27,7 +27,7 @@ import { PaperClipIcon, PlusIcon } from "@heroicons/react/solid";
 
 import { Disclosure, Menu, Switch, Transition } from "@headlessui/react";
 
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { SearchIcon } from "@heroicons/react/solid";
 import {
   BellIcon,
@@ -39,8 +39,35 @@ import {
   ViewGridAddIcon,
   XIcon,
 } from "@heroicons/react/outline";
-import { Building, LogOut, UserPlus, Users } from "lucide-react";
+import {
+  Ban,
+  Building,
+  CheckCircle2,
+  Clipboard,
+  Copy,
+  Database,
+  ExternalLink,
+  FileText,
+  Fingerprint,
+  HardDrive,
+  Key,
+  LogOut,
+  ShieldCheck,
+  UserPlus,
+  Users,
+  X,
+} from "lucide-react";
 import LeaveOrganization from "./OrganizationSettings/LeaveOrganization";
+import OrgSettingsModal from "./OrganizationSettings/OrgSettingsModal";
+import { addTime } from "./Functions/addTime";
+import MainLoader from "./Loaders/MainLoader";
+import CompleteLoader from "./Loaders/CompleteLoader";
+import SpinnerLoader from "./Loaders/SpinnerLoader";
+import SecondInsideLoader from "./Loader/SecondInsideLoader";
+import InsideLoader from "./Loader/InsideLoader";
+import SecondLoaderWithText from "./Loaders/SecondLoaderWithText";
+import { addOrgLogs } from "./Functions/addOrgLogs";
+import LogsModal from "./Logs/LogsModal";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -54,6 +81,8 @@ function ListOrganizations({
   setProtocolModal,
   setSopContent,
   setSopModal,
+  setWhichTabisActive,
+  setCreateOrg,
 }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -77,9 +106,56 @@ function ListOrganizations({
   const [leaveOrg, setLeaveOrg] = useState(false);
   const [email, setEmail] = useState();
   const [activeSub, setActiveSub] = useState(1);
+  const [settingsModal, setSettingsModal] = useState(false);
+  const [updateUserId, setUpdateUserId] = useState();
+  const [loader, setLoader] = useState(false);
+  const [logs, setLogs] = useState(false);
+  const roleOptions = [
+    {
+      value: "Lab Member",
+      label: "Lab Member",
+      permissions: "Read",
+    },
+    {
+      value: "Lab Manager",
+      label: "Lab Manager",
+      permissions: "Admin",
+    },
+    {
+      value: "Data Analyst",
+      label: "Data Analyst",
+      permissions: "Admin",
+    },
+    {
+      value: "Data Scientist",
+      label: "Data Scientist",
+      permissions: "Admin",
+    },
+    {
+      value: "Compliance Officer",
+      label: "Compliance Officer",
+      permissions: "Admin",
+    },
+    { value: "Project Lead", label: "Project Lead", permissions: "Admin" },
+    { value: "Researcher", label: "Researcher", permissions: "Admin" },
+    { value: "Scientist", label: "Scientist", permissions: "Admin" },
+    { value: "IT Specialist", label: "IT Specialist", permissions: "Admin" },
+    { value: "Safety Officer", label: "Safety Officer", permissions: "Admin" },
+    { value: "Chemist", label: "Chemist", permissions: "Write" },
+    {
+      value: "Field Researcher",
+      label: "Field Researcher",
+      permissions: "Write",
+    },
+    {
+      value: "Quality Control Officer",
+      label: "Quality Control Officer",
+      permissions: "Admin",
+    },
+  ];
 
   const subNavigation = [
-    { id: 1, name: "Organization", href: "#", icon: Building, current: true },
+    { id: 1, name: "About", href: "#", icon: Building, current: true },
     {
       id: 2,
       name: "Add new members",
@@ -90,6 +166,27 @@ function ListOrganizations({
     { id: 3, name: "Members", href: "#", icon: Users, current: false },
     {
       id: 4,
+      name: "Organizational Roles",
+      href: "#",
+      icon: ShieldCheck,
+      current: false,
+    },
+    {
+      id: 5,
+      name: "Entities",
+      href: "#",
+      icon: Database,
+      current: false,
+    },
+    {
+      id: 6,
+      name: "Logs",
+      href: "#",
+      icon: FileText,
+      current: false,
+    },
+    {
+      id: 7,
       name: "Leave Organization",
       href: "#",
       icon: LogOut,
@@ -110,32 +207,6 @@ function ListOrganizations({
   const orgListMyCollab = useSelector((state) => state.orgListMyCollab);
   const { sucess: sucessCollab, orgs: orgsCollab } = orgListMyCollab;
 
-  const people = [
-    {
-      name: "Leonard Krasner",
-      handle: "leonardkrasner",
-      imageUrl:
-        "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-    },
-    {
-      name: "Floyd Miles",
-      handle: "floydmiles",
-      imageUrl:
-        "https://images.unsplash.com/photo-1463453091185-61582044d556?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-    },
-    {
-      name: "Emily Selman",
-      handle: "emilyselman",
-      imageUrl:
-        "https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-    },
-    {
-      name: "Kristin Watson",
-      handle: "kristinwatson",
-      imageUrl:
-        "https://images.unsplash.com/photo-1500917293891-ef795e70e1f6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-    },
-  ];
   useEffect(() => {
     dispatch(listMyOrgs());
   }, [dispatch]);
@@ -177,6 +248,17 @@ function ListOrganizations({
       ? orgsCollab[0]
       : null;
 
+  const [userStatus, setUserStatus] = useState(
+    findOrg &&
+      findOrg.collaborators.find((u) => u.user === userInfo._id) &&
+      findOrg.collaborators.find((u) => u.user === userInfo._id).userStatus
+  );
+
+  console.log(
+    findOrg &&
+      findOrg.collaborators.find((u) => u.user === userInfo._id) &&
+      findOrg.collaborators.find((u) => u.user === userInfo._id).userStatus
+  );
   const findOrgRole =
     orgs && orgs.length > 0
       ? orgs[0].user == userInfo._id && "Owner"
@@ -380,10 +462,28 @@ function ListOrganizations({
           };
 
           axios(config)
-            .then(function(responseData) {
+            .then(async (responseData) => {
+              const logObject = {
+                entryId: findOrg._id,
+                user: userInfo._id,
+                userName: userInfo.name,
+                userEmail: userInfo.email,
+                message: `Invited the user with name ${
+                  response.data[0].name ? response.data[0].name : ""
+                }`,
+              };
+              await addOrgLogs(logObject);
+              await addNotification({
+                id: response.data[0]._id,
+                type: "Not read",
+                value: JSON.stringify({
+                  subject: `You have been invited to join ${findOrg.name} by ${userInfo.name}`,
+                  date: new Date(),
+                }),
+                token: userInfo.token,
+              });
               setNewCollab(true);
               setOrgSettings(false);
-              console.log(JSON.stringify(responseData.data));
             })
             .catch(function(error) {
               console.log(error);
@@ -397,6 +497,88 @@ function ListOrganizations({
         console.log(error);
       });
   };
+
+  const updateUserStatusOrg = async (e, status, id) => {
+    e.preventDefault();
+
+    // await addNotification({
+    //   id: id,
+    //   type: "Not read",
+    //   value: JSON.stringify({
+    //     subject:
+    //       "Your role has been updated to " +
+    //       selectedRole.label +
+    //       " by " +
+    //       userInfo.name,
+    //     date: new Date(),
+    //   }),
+    //   token: userInfo.token,
+    // });
+    const data = {
+      projectId: findOrg._id,
+      status: status,
+      id: id,
+    };
+    var config = {
+      method: "post",
+      url: `${URL}api/organs/collab/update/status`,
+      headers: {
+        Authorization: `Bearer ${userInfo.token}`,
+        "Content-Type": "application/json",
+      },
+      data: data,
+    };
+
+    axios(config)
+      .then(async function(response) {
+        const logObject = {
+          entryId: findOrg._id,
+          user: userInfo._id,
+          userName: userInfo.name,
+          userEmail: userInfo.email,
+          message: `Accepted the invitation and joined the organization.`,
+        };
+        await addOrgLogs(logObject);
+        setNewCollab(true);
+        setUserStatus("Joined");
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
+  };
+
+  const [alreadyMadeRoles, setAlreadyMadeRoles] = useState();
+
+  const fetchallRoles = async () => {
+    var config = {
+      method: "get",
+      url: `${URL}api/orgRole/${findOrg._id}`,
+      headers: {
+        Authorization: `Bearer ${userInfo.token}`,
+        "Content-Type": "application/json",
+      },
+    };
+    axios(config)
+      .then(function(response) {
+        setAlreadyMadeRoles(
+          response.data.map(
+            ({ name: label, name: value, permissions: permissions }) => ({
+              label,
+              value,
+              permissions,
+            })
+          )
+        );
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
+  };
+  useEffect(() => {
+    if (!alreadyMadeRoles) {
+      fetchallRoles();
+    }
+  }, [alreadyMadeRoles]);
 
   return (
     <div className="project-component">
@@ -487,7 +669,7 @@ function ListOrganizations({
                     </div>
                     <header className="relative py-10">
                       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <h1 className="text-3xl font-bold text-white">
+                        <h1 className="text-3xl font-bold text-white font-body">
                           Organizational Settings
                         </h1>
                       </div>
@@ -495,12 +677,30 @@ function ListOrganizations({
                   </>
                 )}
               </Disclosure>
-              {findOrg ? (
+              {findOrg && userStatus != "Invited" ? (
                 <main className="relative -mt-32">
+                  <LogsModal
+                    setOpen={setLogs}
+                    open={logs}
+                    logs={findOrg && findOrg.logs ? findOrg.logs : []}
+                  />
+                  {loader && <SpinnerLoader />}
+                  {settingsModal && (
+                    <OrgSettingsModal
+                      setSettingsModal={setSettingsModal}
+                      project={findOrg}
+                      id={updateUserId}
+                      setUpdatedUserCollabRoleOrg={setUpdatedUserCollabRoleOrg}
+                      setUpdateCollabRole={setUpdateCollabRole}
+                    />
+                  )}
                   <LeaveOrganization
                     open={leaveOrg}
                     setOpen={setLeaveOrg}
                     findOrg={findOrg && findOrg}
+                    setUserStatus={setUserStatus}
+                    setNewCollab={setNewCollab}
+                    setWhichTabisActive={setWhichTabisActive}
                   />
                   <div className="max-w-screen-xl mx-auto pb-6 px-4 sm:px-6 lg:pb-16 lg:px-8">
                     <div className="bg-white rounded-lg shadow overflow-hidden max-w-5xl mx-auto">
@@ -541,11 +741,11 @@ function ListOrganizations({
                             <div className="py-6 px-4 sm:p-6 lg:pb-8">
                               <div>
                                 <h2 className="text-lg leading-6 font-medium text-gray-900">
-                                  Profile
+                                  About {findOrg.name}
                                 </h2>
                                 <p className="mt-1 text-sm text-gray-500">
-                                  This information will be displayed publicly so
-                                  be careful what you share.
+                                  This organization was created on{" "}
+                                  {addTime(findOrg.createdAt)}.
                                 </p>
                               </div>
 
@@ -602,6 +802,7 @@ function ListOrganizations({
                                         id="about"
                                         name="about"
                                         rows={3}
+                                        value={findOrg && findOrg.description}
                                         className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border border-gray-300 rounded-md"
                                         defaultValue={""}
                                       />
@@ -613,37 +814,44 @@ function ListOrganizations({
                                 </div>
                               </div>
 
-                              <div className="mt-6 grid grid-cols-12 gap-6">
-                                {/* <div className="col-span-12">
-                              <label
-                                htmlFor="url"
-                                className="block text-sm font-medium text-gray-700"
-                              >
-                                URL
-                              </label>
-                              <input
-                                type="text"
-                                name="url"
-                                id="url"
-                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                              />
-                            </div>
+                              <div className="mt-6">
+                                <label
+                                  htmlFor="about"
+                                  className="block text-sm font-medium text-gray-700 mb-4"
+                                >
+                                  Invitation Code
+                                </label>
 
-                            <div className="col-span-12 sm:col-span-6">
-                              <label
-                                htmlFor="company"
-                                className="block text-sm font-medium text-gray-700"
-                              >
-                                Company
-                              </label>
-                              <input
-                                type="text"
-                                name="company"
-                                id="company"
-                                autoComplete="organization"
-                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                              />
-                            </div> */}
+                                <a
+                                  href="#"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    setLoader(true);
+                                    if (findOrgRole != "Read") {
+                                      window.setTimeout(() => {
+                                        setLoader(false);
+                                        navigator.clipboard.writeText(
+                                          `ORG-${findOrg._id}`
+                                        );
+                                        toast.success(
+                                          "Code copied to clipboard"
+                                        );
+                                      }, 3000);
+                                    } else {
+                                      window.setTimeout(() => {
+                                        setLoader(false);
+
+                                        toast.error(
+                                          "You dont have permissions to add new members."
+                                        );
+                                      }, 3000);
+                                    }
+                                  }}
+                                  className="text-indigo-600 rounded-xl flex items-center justify-left shadow-md px-5 py-2 w-fit"
+                                >
+                                  <Copy className="w-4 mr-2" />
+                                  Generate invite code
+                                </a>
                               </div>
                             </div>
 
@@ -667,109 +875,190 @@ function ListOrganizations({
                         )}
                         {activeSub == 2 && (
                           <form className="divide-y divide-gray-200 lg:col-span-9">
-                            <div className="py-6 px-4 sm:p-6 lg:pb-8">
-                              <div>
-                                <h2 className="text-lg leading-6 font-medium text-gray-900">
-                                  Add new members
-                                </h2>
-                                <p className="mt-1 text-sm text-gray-500">
-                                  This information will be displayed publicly so
-                                  be careful what you share.
-                                </p>
-                              </div>
-                              <div className="space-y-1 max-w-md mt-6">
-                                <label
-                                  htmlFor="add-team-members"
-                                  className="block text-sm font-medium text-gray-700"
-                                >
-                                  Add Team Members
-                                </label>
-                                <p
-                                  id="add-team-members-helper"
-                                  className="sr-only"
-                                >
-                                  Search by email address
-                                </p>
-                                <div className="flex">
-                                  <div className="flex-grow">
-                                    <input
-                                      type="text"
-                                      name="add-team-members"
-                                      id="add-team-members"
-                                      className="block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded-md"
-                                      placeholder="Email address"
-                                      onChange={(e) => setEmail(e.target.value)}
-                                      aria-describedby="add-team-members-helper"
-                                    />
-                                  </div>
-                                  <span className="ml-3">
-                                    <button
-                                      type="button"
-                                      onClick={(e) => {
-                                        e.preventDefault();
-                                        addCollaborator();
-                                      }}
-                                      className="bg-white inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
-                                    >
-                                      <PlusIcon
-                                        className="-ml-2 mr-1 h-5 w-5 text-gray-400"
-                                        aria-hidden="true"
-                                      />
-                                      <span>Add</span>
-                                    </button>
-                                  </span>
+                            {findOrgRole && findOrgRole != "Read" ? (
+                              <div className="py-6 px-4 sm:p-6 lg:pb-8">
+                                <div>
+                                  <h2 className="text-lg leading-6 font-medium text-gray-900">
+                                    Add new members
+                                  </h2>
+                                  <p className="mt-1 text-sm text-gray-500">
+                                    This information will be displayed publicly
+                                    so be careful what you share.
+                                  </p>
                                 </div>
-                              </div>
-                              {/* <div className="mt-10 max-w-md">
-                                <div className="flow-root mt-6">
-                                  <ul
-                                    role="list"
-                                    className="-my-5 divide-y divide-gray-200"
+                                <div className="space-y-1 max-w-md mt-6">
+                                  <label
+                                    htmlFor="add-team-members"
+                                    className="block text-sm font-medium text-gray-700"
                                   >
-                                    {findOrg &&
-                                    findOrg.collaborators &&
-                                    findOrg.collaborators.length > 0 ? (
-                                      findOrg.collaborators
-                                        .filter((f) => f.userStatus != "Joined")
-                                        .map((person) => (
-                                          <li
-                                            key={person.user}
-                                            className="py-4"
-                                          >
-                                            <div className="flex items-center space-x-4">
-                                              <div className="flex-shrink-0">
-                                                <img
-                                                  className="h-8 w-8 rounded-full"
-                                                  src={`https://api.dicebear.com/7.x/thumbs/svg?seed=${person.userName}`}
-                                                  alt=""
-                                                />
-                                              </div>
-                                              <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-medium text-gray-900 truncate">
-                                                  {person.userName}
-                                                </p>
-                                                <p className="text-sm text-gray-500 truncate">
-                                                  {person.userEmail}
-                                                </p>
-                                              </div>
-                                              <div>
-                                                <a
-                                                  href="#"
-                                                  className="inline-flex items-center shadow-sm px-2.5 py-0.5 border border-gray-300 text-sm leading-5 font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50"
-                                                >
-                                                  Invited
-                                                </a>
-                                              </div>
-                                            </div>
-                                          </li>
-                                        ))
-                                    ) : (
-                                      <>0 members</>
-                                    )}
-                                  </ul>
+                                    Add Team Members
+                                  </label>
+                                  <p
+                                    id="add-team-members-helper"
+                                    className="sr-only"
+                                  >
+                                    Search by email address
+                                  </p>
+                                  <div className="flex">
+                                    <div className="flex-grow">
+                                      <input
+                                        type="text"
+                                        name="add-team-members"
+                                        id="add-team-members"
+                                        className="block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded-md"
+                                        placeholder="Email address"
+                                        onChange={(e) =>
+                                          setEmail(e.target.value)
+                                        }
+                                        aria-describedby="add-team-members-helper"
+                                      />
+                                    </div>
+                                    <span className="ml-3">
+                                      <button
+                                        type="button"
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          addCollaborator();
+                                        }}
+                                        className="bg-white inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
+                                      >
+                                        <PlusIcon
+                                          className="-ml-2 mr-1 h-5 w-5 text-gray-400"
+                                          aria-hidden="true"
+                                        />
+                                        <span>Add</span>
+                                      </button>
+                                    </span>
+                                  </div>
                                 </div>
-                              </div> */}
-                            </div>
+                                <div className="mt-10 max-w-md">
+                                  <div className="flow-root mt-6">
+                                    <ul
+                                      role="list"
+                                      className="-my-5 divide-y divide-gray-200"
+                                    >
+                                      {findOrg &&
+                                      findOrg.collaborators &&
+                                      findOrg.collaborators.length > 0 ? (
+                                        findOrg.collaborators
+                                          .filter(
+                                            (f) => f.userStatus == "Invited"
+                                          )
+                                          .map((person) => (
+                                            <li
+                                              key={person.user}
+                                              className="py-4"
+                                            >
+                                              <div className="flex items-center space-x-4">
+                                                <div className="flex-shrink-0">
+                                                  <img
+                                                    className="h-8 w-8 rounded-full"
+                                                    src={`https://api.dicebear.com/7.x/thumbs/svg?seed=${person.userName}`}
+                                                    alt=""
+                                                  />
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                  <p className="text-sm font-medium text-gray-900 truncate">
+                                                    {person.userName}
+                                                  </p>
+                                                  <p className="text-sm text-gray-500 truncate">
+                                                    {person.userEmail}
+                                                  </p>
+                                                </div>
+                                                <div>
+                                                  <a
+                                                    href="#"
+                                                    className="inline-flex items-center shadow-sm px-2.5 py-0.5 border border-gray-300 text-sm leading-5 font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50"
+                                                  >
+                                                    Invited
+                                                  </a>
+                                                </div>
+                                              </div>
+                                            </li>
+                                          ))
+                                      ) : (
+                                        <>0 members</>
+                                      )}
+                                    </ul>
+                                  </div>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="py-6 px-4 sm:p-6 lg:pb-8">
+                                <div>
+                                  <h2 className="text-lg leading-6 font-medium text-gray-900">
+                                    Add new members
+                                  </h2>
+                                  <p className="mt-1 text-sm text-gray-500">
+                                    This information will be displayed publicly
+                                    so be careful what you share.
+                                  </p>
+                                </div>
+                                <div className="space-y-1 max-w-md mt-6">
+                                  <div className="">
+                                    <Ban className="text-red-500 my-2" />{" "}
+                                    <p
+                                      id="add-team-members-helper"
+                                      className="font-dmsans"
+                                    >
+                                      You dont have permissions to add new
+                                      members.
+                                    </p>
+                                  </div>
+                                </div>
+                                <div className="mt-10 max-w-md">
+                                  <div className="flow-root mt-6">
+                                    <ul
+                                      role="list"
+                                      className="-my-5 divide-y divide-gray-200"
+                                    >
+                                      {findOrg &&
+                                      findOrg.collaborators &&
+                                      findOrg.collaborators.length > 0 ? (
+                                        findOrg.collaborators
+                                          .filter(
+                                            (f) => f.userStatus == "Invited"
+                                          )
+                                          .map((person) => (
+                                            <li
+                                              key={person.user}
+                                              className="py-4"
+                                            >
+                                              <div className="flex items-center space-x-4">
+                                                <div className="flex-shrink-0">
+                                                  <img
+                                                    className="h-8 w-8 rounded-full"
+                                                    src={`https://api.dicebear.com/7.x/thumbs/svg?seed=${person.userName}`}
+                                                    alt=""
+                                                  />
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                  <p className="text-sm font-medium text-gray-900 truncate">
+                                                    {person.userName}
+                                                  </p>
+                                                  <p className="text-sm text-gray-500 truncate">
+                                                    {person.userEmail}
+                                                  </p>
+                                                </div>
+                                                <div>
+                                                  <a
+                                                    href="#"
+                                                    className="inline-flex items-center shadow-sm px-2.5 py-0.5 border border-gray-300 text-sm leading-5 font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50"
+                                                  >
+                                                    Invited
+                                                  </a>
+                                                </div>
+                                              </div>
+                                            </li>
+                                          ))
+                                      ) : (
+                                        <>0 members</>
+                                      )}
+                                    </ul>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
 
                             <div className="pt-6 divide-y divide-gray-200">
                               <div className="mt-4 py-4 px-4 flex justify-end sm:px-6">
@@ -846,35 +1135,60 @@ function ListOrganizations({
                                     {findOrg &&
                                     findOrg.collaborators &&
                                     findOrg.collaborators.length > 0 ? (
-                                      findOrg.collaborators.map((person) => (
-                                        <li key={person.user} className="py-4">
-                                          <div className="flex items-center space-x-4">
-                                            <div className="flex-shrink-0">
-                                              <img
-                                                className="h-8 w-8 rounded-full"
-                                                src={`https://api.dicebear.com/7.x/thumbs/svg?seed=${person.userName}`}
-                                                alt=""
-                                              />
+                                      findOrg.collaborators
+                                        .filter(
+                                          (u) => u.userStatus != "Invited"
+                                        )
+                                        .map((person) => (
+                                          <li
+                                            key={person.user}
+                                            className="py-4"
+                                          >
+                                            <div className="flex items-center space-x-4">
+                                              <div className="flex-shrink-0">
+                                                <img
+                                                  className="h-8 w-8 rounded-full"
+                                                  src={`https://api.dicebear.com/7.x/thumbs/svg?seed=${person.userName}`}
+                                                  alt=""
+                                                />
+                                              </div>
+                                              <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-medium text-gray-900 truncate">
+                                                  {person.userName}
+                                                </p>
+                                                <p className="text-sm text-gray-500 truncate">
+                                                  {person.userEmail}
+                                                </p>
+                                              </div>
+                                              <div>
+                                                <a
+                                                  href="#"
+                                                  className="inline-flex items-center shadow-sm px-2.5 py-0.5 border border-gray-300 text-sm leading-5 font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50"
+                                                >
+                                                  {person.userType}
+                                                </a>
+                                              </div>
+                                              {findOrgRole &&
+                                                findOrgRole !== "Read" && (
+                                                  <div>
+                                                    <a
+                                                      href="#"
+                                                      onClick={(e) => {
+                                                        e.preventDefault();
+                                                        setUpdateUserId(
+                                                          person.user
+                                                        );
+                                                        setSettingsModal(true);
+                                                      }}
+                                                      className="inline-flex items-center shadow-sm px-2.5 py-0.5 border border-indigo-300 text-sm leading-5 font-medium rounded-full text-indigo-700 bg-white hover:bg-gray-50"
+                                                    >
+                                                      change role
+                                                    </a>
+                                                  </div>
+                                                )}
                                             </div>
-                                            <div className="flex-1 min-w-0">
-                                              <p className="text-sm font-medium text-gray-900 truncate">
-                                                {person.userName}
-                                              </p>
-                                              <p className="text-sm text-gray-500 truncate">
-                                                {person.userEmail}
-                                              </p>
-                                            </div>
-                                            <div>
-                                              <a
-                                                href="#"
-                                                className="inline-flex items-center shadow-sm px-2.5 py-0.5 border border-gray-300 text-sm leading-5 font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50"
-                                              >
-                                                {person.userType}
-                                              </a>
-                                            </div>
-                                          </div>
-                                        </li>
-                                      ))
+                                          </li>
+                                        ))
                                     ) : (
                                       <>0 members</>
                                     )}
@@ -902,6 +1216,257 @@ function ListOrganizations({
                           </form>
                         )}
                         {activeSub == 4 && (
+                          <form className="divide-y divide-gray-200 lg:col-span-9">
+                            <div className="py-6 px-4 sm:p-6 lg:pb-8">
+                              <div>
+                                <h2 className="text-lg leading-6 font-medium text-gray-900">
+                                  Organizational Roles
+                                </h2>
+                                <p className="mt-1 text-sm text-gray-500">
+                                  This organization was created on{" "}
+                                  {addTime(findOrg.createdAt)}.
+                                </p>
+                              </div>
+
+                              <div className="mt-6 flex flex-col lg:flex-row w-[90%] mx-auto">
+                                <div className="flex-grow space-y-6">
+                                  <div>
+                                    <div className="flow-root mt-6 pb-10">
+                                      <ul
+                                        role="list"
+                                        className="-my-5 divide-y divide-gray-200"
+                                      >
+                                        {roleOptions.map((announcement) => (
+                                          <li
+                                            key={announcement.label}
+                                            className="py-5"
+                                          >
+                                            <div className="relative focus-within:ring-2 focus-within:ring-indigo-500">
+                                              <h3 className="text-sm font-semibold text-gray-800">
+                                                <a
+                                                  href="#"
+                                                  className="hover:underline focus:outline-none"
+                                                >
+                                                  {/* Extend touch target to entire panel */}
+                                                  <span
+                                                    className="absolute inset-0"
+                                                    aria-hidden="true"
+                                                  />
+                                                  {announcement.label}
+                                                </a>
+                                              </h3>
+                                              <p className="mt-1 text-sm text-gray-600 line-clamp-2">
+                                                {announcement.permissions}
+                                              </p>
+                                            </div>
+                                          </li>
+                                        ))}
+                                        {alreadyMadeRoles &&
+                                          alreadyMadeRoles.length > 0 &&
+                                          alreadyMadeRoles.map(
+                                            (announcement) => (
+                                              <li
+                                                key={announcement.label}
+                                                className="py-5"
+                                              >
+                                                <div className="relative focus-within:ring-2 focus-within:ring-indigo-500">
+                                                  <h3 className="text-sm font-semibold text-gray-800">
+                                                    <a
+                                                      href="#"
+                                                      className="hover:underline focus:outline-none"
+                                                    >
+                                                      {/* Extend touch target to entire panel */}
+                                                      <span
+                                                        className="absolute inset-0"
+                                                        aria-hidden="true"
+                                                      />
+                                                      {announcement.label}
+                                                    </a>
+                                                  </h3>
+                                                  <p className="mt-1 text-sm text-gray-600 line-clamp-2">
+                                                    {announcement.permissions}
+                                                  </p>
+                                                </div>
+                                              </li>
+                                            )
+                                          )}
+                                      </ul>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="pt-6 divide-y divide-gray-200">
+                              <div className="mt-4 py-4 px-4 flex justify-end sm:px-6">
+                                <button
+                                  type="button"
+                                  className="bg-white border border-gray-300 rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                >
+                                  Cancel
+                                </button>
+                                <button
+                                  type="submit"
+                                  className="ml-5 bg-indigo-700 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                >
+                                  Save
+                                </button>
+                              </div>
+                            </div>
+                          </form>
+                        )}
+                        {activeSub == 5 && (
+                          <form className="divide-y divide-gray-200 lg:col-span-9">
+                            <div className="py-6 px-4 sm:p-6 lg:pb-8">
+                              <div>
+                                <h2 className="text-lg leading-6 font-medium text-gray-900">
+                                  All Entities
+                                </h2>
+                                <p className="mt-1 text-sm text-gray-500">
+                                  This information will be displayed publicly so
+                                  be careful what you share.
+                                </p>
+                              </div>
+                              <div className="mt-6">
+                                <a
+                                  href="#"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    setWhichTabisActive("orgListEntities");
+                                  }}
+                                  className="text-indigo-600 rounded-md flex items-center justify-left shadow-md px-5 py-2 w-fit"
+                                >
+                                  <ExternalLink className="w-4 mr-2" />
+                                  Click here
+                                </a>
+                                {/* <div className="flex flex-col">
+                                  <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                                    <div className="py-2 align-middle inline-block min-w-fit sm:px-6 lg:px-8">
+                                      <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                                        <table className="min-w-fit divide-y divide-gray-200">
+                                          <thead className="bg-gray-50">
+                                            <tr>
+                                              <th
+                                                scope="col"
+                                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                              >
+                                                Name
+                                              </th>
+
+                                              <th
+                                                scope="col"
+                                                className="relative px-6 py-3"
+                                              >
+                                                <span className="sr-only">
+                                                  Edit
+                                                </span>
+                                              </th>
+                                            </tr>
+                                          </thead>
+                                          <tbody>
+                                            {[{ name: "protocols" }].map(
+                                              (person, personIdx) => (
+                                                <tr
+                                                  key={person.email}
+                                                  className={
+                                                    personIdx % 2 === 0
+                                                      ? "bg-white"
+                                                      : "bg-gray-50"
+                                                  }
+                                                >
+                                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                    {person.name}
+                                                  </td>
+
+                                                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                    <a
+                                                      href="#"
+                                                      onClick={(e) => {
+                                                        setWhichTabisActive(
+                                                          "orgListEntities"
+                                                        );
+                                                      }}
+                                                      className="text-indigo-600 hover:text-indigo-900"
+                                                    >
+                                                      View
+                                                    </a>
+                                                  </td>
+                                                </tr>
+                                              )
+                                            )}
+                                          </tbody>
+                                        </table>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div> */}
+                              </div>
+                            </div>
+
+                            <div className="pt-6 divide-y divide-gray-200">
+                              <div className="mt-4 py-4 px-4 flex justify-end sm:px-6">
+                                <button
+                                  type="button"
+                                  className="bg-white border border-gray-300 rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                >
+                                  Cancel
+                                </button>
+                                <button
+                                  type="submit"
+                                  className="ml-5 bg-indigo-700 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                >
+                                  Save
+                                </button>
+                              </div>
+                            </div>
+                          </form>
+                        )}
+                        {activeSub == 6 && (
+                          <form className="divide-y divide-gray-200 lg:col-span-9">
+                            <div className="py-6 px-4 sm:p-6 lg:pb-8">
+                              <div>
+                                <h2 className="text-lg leading-6 font-medium text-gray-900">
+                                  Logs
+                                </h2>
+                                <p className="mt-1 text-sm text-gray-500">
+                                  This information will be displayed publicly so
+                                  be careful what you share.
+                                </p>
+                              </div>
+                              <div className="mt-6">
+                                <a
+                                  href="#"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    setLogs(true);
+                                  }}
+                                  className="text-indigo-600 rounded-xl flex items-center justify-left shadow-md px-5 py-2 w-fit"
+                                >
+                                  <ExternalLink className="w-4 mr-2" />
+                                  Click here to view logs
+                                </a>
+                              </div>
+                            </div>
+
+                            <div className="pt-6 divide-y divide-gray-200">
+                              <div className="mt-4 py-4 px-4 flex justify-end sm:px-6">
+                                <button
+                                  type="button"
+                                  className="bg-white border border-gray-300 rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                >
+                                  Cancel
+                                </button>
+                                <button
+                                  type="submit"
+                                  className="ml-5 bg-indigo-700 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                >
+                                  Save
+                                </button>
+                              </div>
+                            </div>
+                          </form>
+                        )}
+                        {activeSub == 7 && (
                           <form className="divide-y divide-gray-200 lg:col-span-9">
                             <div className="py-6 px-4 sm:p-6 lg:pb-8">
                               <div>
@@ -1002,42 +1567,102 @@ function ListOrganizations({
                 <main className="relative -mt-32">
                   <div className="max-w-screen-xl mx-auto pb-6 px-4 sm:px-6 lg:pb-16 lg:px-8">
                     <div className="bg-white rounded-lg shadow overflow-hidden max-w-5xl mx-auto">
-                      <div className="min-h-[50vh] flex items-center justify-center w-full">
-                        <div className="space-y-1 w-[60%] mt-6">
-                          <label
-                            htmlFor="add-team-members"
-                            className="block text-sm font-medium text-gray-700"
-                          >
-                            Join an organization
-                          </label>
-                          <p id="add-team-members-helper" className="sr-only">
-                            Search by email address
-                          </p>
-                          <div className="flex">
-                            <div className="flex-grow">
-                              <input
-                                type="text"
-                                name="add-team-members"
-                                id="add-team-members"
-                                className="block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded-md"
-                                placeholder="Paste the invite link"
-                                aria-describedby="add-team-members-helper"
-                              />
-                            </div>
-                            <span className="ml-3">
-                              <button
-                                type="button"
-                                className="bg-white inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
+                      <div className="min-h-[50vh] flex items-start justify-center w-full mt-10">
+                        {findOrg ? (
+                          <div className="space-y-5 w-[60%] mt-6">
+                            <label
+                              htmlFor="add-team-members"
+                              className="block font-medium text-gray-700 text-xl font-bod"
+                            >
+                              Your Invitations
+                            </label>
+                            <>
+                              {" "}
+                              <p
+                                id="add-team-members-helper"
+                                className="sr-only"
                               >
-                                <PlusIcon
-                                  className="-ml-2 mr-1 h-5 w-5 text-gray-400"
-                                  aria-hidden="true"
-                                />
-                                <span>Join</span>
-                              </button>
-                            </span>
+                                Search by email address
+                              </p>{" "}
+                              <div className="flex">
+                                <div className="flex-grow">
+                                  <input
+                                    type="text"
+                                    name="add-team-members"
+                                    id="add-team-members"
+                                    disabled
+                                    value={findOrg && findOrg.name}
+                                    className="block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded-md"
+                                    placeholder="Paste the invite link"
+                                    aria-describedby="add-team-members-helper"
+                                  />
+                                </div>
+                                <span className="ml-3">
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      updateUserStatusOrg(
+                                        e,
+                                        "Joined",
+                                        userInfo._id
+                                      );
+                                    }}
+                                    className="bg-white inline-flex items-center px-4 py-2 border border-indigo-300 shadow-sm text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                  >
+                                    <CheckCircle2
+                                      className="-ml-2 mr-1 h-5 w-5 text-indigo-400"
+                                      aria-hidden="true"
+                                    />
+                                    <span>Accept</span>
+                                  </button>
+                                </span>
+                                <span className="ml-3">
+                                  <button
+                                    type="button"
+                                    className="bg-white inline-flex items-center px-4 py-2 border border-red-300 shadow-sm text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                                  >
+                                    <X
+                                      className="-ml-2 mr-1 h-5 w-5 text-red-400"
+                                      aria-hidden="true"
+                                    />
+                                    <span>Decline</span>
+                                  </button>
+                                </span>
+                              </div>
+                              <a
+                                href="#"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  setCreateOrg(true);
+                                }}
+                                className="text-indigo-600 rounded-xl flex items-center justify-left shadow-md px-5 py-2 w-fit"
+                              >
+                                <ExternalLink className="w-4 mr-2" />
+                                Join or create a new organization
+                              </a>
+                            </>
                           </div>
-                        </div>
+                        ) : (
+                          <div className="space-y-5 w-[60%] mt-6">
+                            <label
+                              htmlFor="add-team-members"
+                              className="block font-medium text-gray-700 text-xl font-bod"
+                            >
+                              Join or Create an Organization
+                            </label>
+                            <a
+                              href="#"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                setCreateOrg(true);
+                              }}
+                              className="text-indigo-600 rounded-xl flex items-center justify-left shadow-md px-5 py-2 w-fit"
+                            >
+                              <ExternalLink className="w-4 mr-2" />
+                              Click here
+                            </a>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>

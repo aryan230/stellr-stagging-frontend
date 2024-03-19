@@ -7,8 +7,16 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import URL from "../../Data/data.json";
 import { toast } from "sonner";
+import { addOrgLogs } from "../Functions/addOrgLogs";
 
-function LeaveOrganization({ open, setOpen, findOrg }) {
+function LeaveOrganization({
+  open,
+  setOpen,
+  findOrg,
+  setUserStatus,
+  setNewCollab,
+  setWhichTabisActive,
+}) {
   const userLogin = useSelector((state) => state.userLogin);
 
   const { userInfo } = userLogin;
@@ -33,8 +41,19 @@ function LeaveOrganization({ open, setOpen, findOrg }) {
       };
 
       axios(config)
-        .then(function(responseData) {
+        .then(async function(responseData) {
           toast.success("Removed success");
+          setNewCollab(true);
+          setUserStatus(null);
+          setWhichTabisActive("home");
+          const logObject = {
+            entryId: findOrg._id,
+            user: userInfo._id,
+            userName: userInfo.name,
+            userEmail: userInfo.email,
+            message: `Left the organization.`,
+          };
+          await addOrgLogs(logObject);
         })
         .catch(function(error) {
           console.log(error);

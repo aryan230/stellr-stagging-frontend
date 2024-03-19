@@ -74,7 +74,7 @@ function LogsModal({ open, setOpen, logs, name }) {
               leaveFrom="translate-x-0"
               leaveTo="translate-x-full"
             >
-              <div className="w-screen max-w-3xl">
+              <div className="w-screen max-w-4xl font-dmsans">
                 <div className="h-full flex flex-col bg-white shadow-xl">
                   <div className="py-6 px-4 bg-indigo-700 sm:px-6">
                     <div className="flex items-center justify-between">

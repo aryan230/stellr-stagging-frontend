@@ -81,6 +81,7 @@ import { toast } from "sonner";
 import ListLabsheetsAll from "./ListLabsheetsAll";
 import ListEntriesMainAll from "./ListEntriesMainAll";
 import TemplateSettingsNew from "./TemplateSettingsNew";
+import ListOrgEntities from "./ListOrgEntities";
 
 function EditorComponent({ expire, setExpire }) {
   const mainDiv = useRef();
@@ -476,14 +477,14 @@ function EditorComponent({ expire, setExpire }) {
       <Notification />
       <div className="main-content">
         {showBanner && <Banner setShowBanner={setShowBanner} />}
-        {showBannerOrg && (
+        {/* {showBannerOrg && (
           <BannerOrg
             setCreateOrg={setCreateOrg}
             setWhichTabisActive={setWhichTabisActive}
             setNewOrg={setNewOrg}
             setUpdatedUserCollabRoleOrg={setUpdatedUserCollabRoleOrg}
           />
-        )}
+        )} */}
         <div className="mobile-nav-shower-icon">
           <MenuIcon
             sx={{ color: "white", fontSize: "3rem" }}
@@ -1102,9 +1103,22 @@ function EditorComponent({ expire, setExpire }) {
                 setProtocolModal={setProtocolModal}
                 setSopContent={setSopContent}
                 setSopModal={setSopModal}
+                setWhichTabisActive={setWhichTabisActive}
+                setCreateOrg={setCreateOrg}
               />
             )}
-
+            {whichTabisActive === "orgListEntities" && (
+              <ListOrgEntities
+                newOrg={newOrg}
+                setUpdatedUserCollabRoleOrg={setUpdatedUserCollabRoleOrg}
+                UpdatedUserCollabRoleOrg={UpdatedUserCollabRoleOrg}
+                setProtocolContent={setProtocolContent}
+                setProtocolModal={setProtocolModal}
+                setSopContent={setSopContent}
+                setSopModal={setSopModal}
+                setWhichTabisActive={setWhichTabisActive}
+              />
+            )}
             {whichTabisActive === "projectList" && (
               <ListProjects
                 setProjectListActive={setProjectListActive}
