@@ -1,0 +1,14 @@
+.custom-rte-editor-input {
+  .quill {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    .ql-container {
+      font-family: "DM Sans";
+      min-height: 30vh;
+    }
+    .ql-toolbar {
+      border: 0px;
+      border-bottom: 1px solid #ccc;
+    }
+  }
+}

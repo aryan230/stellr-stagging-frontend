@@ -1,0 +1,766 @@
+:root {
+  --color-primary: transparent;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+*,
+*::after,
+*::before {
+  box-sizing: inherit;
+}
+
+html {
+  box-sizing: border-box;
+  font-size: 80%;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+
+  @media (max-width: 800px) {
+    font-size: 65%;
+  }
+
+  // @media (max-width: 600px) {
+  //   font-size: 50%;
+  // }
+}
+
+body {
+  font-family: GothamBook;
+}
+
+.ql-formats {
+  button,
+  .ql-picker {
+    &[class^="ql-"] {
+      position: relative;
+      &::after {
+        white-space: nowrap;
+        position: absolute;
+        display: none;
+        top: 150%;
+        left: 0%;
+        // transform: translate(-50%, -10px);
+        font-family: GothamBook;
+        border-radius: 5px;
+        background-color: #000;
+        color: #fff;
+        padding: 5px 10px;
+      }
+      &::before {
+        content: "";
+        position: absolute;
+        display: none;
+        width: 0px;
+        height: 0px;
+        border-width: 0;
+        border-style: solid;
+        border-color: rgb(34, 41, 85) transparent transparent;
+        left: 0px;
+        transform: translate(30%, -8px);
+        z-index: 199999;
+      }
+      &:hover {
+        &::after,
+        &::before {
+          display: block;
+        }
+      }
+    }
+    &.ql-bold::after {
+      content: "Bold";
+    }
+    &.ql-italic::after {
+      content: "Italic";
+    }
+    &.ql-underline::after {
+      content: "Underline";
+    }
+    &.ql-strike::after {
+      content: "Strikethrough";
+    }
+    &.ql-font-style::after {
+      content: "Font Style";
+    }
+    &.ql-align {
+      &[value=""]::after {
+        content: "Align Left";
+      }
+      &[value="center"]::after {
+        content: "Align Center";
+      }
+      &[value="right"]::after {
+        content: "Align Right";
+      }
+      &[value="justify"]::after {
+        content: "Align Justify";
+      }
+    }
+    &.ql-list {
+      &[value="bullet"]::after {
+        content: "Bullet List";
+      }
+      &[value="ordered"]::after {
+        content: "Numbered List";
+      }
+    }
+    &.ql-blockquote::after {
+      content: "Blockquote";
+    }
+    &.ql-link::after {
+      content: "Link";
+    }
+    &.ql-clean::after {
+      content: "Clean Markup";
+    }
+    &.ql-color::after {
+      content: "Text Color";
+    }
+    &.ql-background::after {
+      content: "Background Color";
+    }
+    &.ql-video::after {
+      content: "Video";
+    }
+    &.ql-img::after {
+      content: "Spreadsheet";
+    }
+    &.ql-fileUploadAttach::after {
+      content: "File Upload";
+    }
+  }
+}
+
+.custom-react-quill-editor {
+  .quill {
+    border-radius: 15px !important;
+
+    .ql-toolbar {
+      background-color: transparent !important;
+      border-bottom: 1px solid black;
+      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+      border-radius: 15px 15px 0 0;
+    }
+    .ql-formats {
+      border: 0px !important;
+    }
+    .ql-container {
+      border: 1px solid black;
+    }
+    .ql-editor {
+      min-height: 150px;
+      max-height: fit-content;
+    }
+  }
+}
+
+.everything-alignment-center {
+  width: 100%;
+  height: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  img {
+    width: 20%;
+  }
+
+  p {
+    margin-top: 1rem;
+    color: #808080;
+    font-family: Karla;
+    font-size: 1.5rem;
+  }
+}
+
+.mobile-responsive {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    width: 5rem;
+    margin-bottom: 1rem;
+  }
+  p {
+    text-align: center;
+    font-size: 1.2rem;
+  }
+}
+
+.link-hidder {
+  text-decoration: none;
+}
+
+.ql-editor .ql-size-small {
+  font-size: 12px; /* Define your desired small font size */
+}
+
+.ql-editor .ql-size-large {
+  font-size: 18px; /* Define your desired large font size */
+}
+
+.input-editor {
+  margin: 0.8rem 0;
+  width: 80%;
+  padding: 1rem 0.8rem;
+  border-radius: 0.125rem;
+  border: 1px solid #d1c9c9;
+  color: #000000;
+  font-family: Poppins;
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  &::placeholder {
+    color: #8f8585;
+  }
+  &:focus {
+    outline: 0px;
+  }
+}
+
+.margin-maker {
+  margin: 1rem 0;
+}
+
+.modal {
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.432);
+  z-index: 999;
+  -webkit-backface-visibility: hidden;
+}
+
+.fixed-element {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.267);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999999;
+}
+
+#container {
+  z-index: 9999;
+}
+
+.loader-inside {
+  background-color: transparent;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 9;
+  h1 {
+    color: #ffffff;
+    text-align: center;
+    font-family: Poppins;
+    font-size: 2rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    margin-top: 2rem;
+  }
+}
+
+.div-editor-js {
+  display: flex;
+  flex-direction: column;
+}
+
+.mention_tool_at,
+.mention-here,
+.custom-element-mention {
+  width: fit-content;
+  font-family: "Poppins";
+  font-weight: 600;
+  // background-color: #0a80f3;
+  // padding: 0.5rem 2rem !important;
+  color: #0a80f3 !important;
+  text-decoration: none !important;
+  border-radius: 9999px;
+  &:hover {
+    cursor: pointer;
+  }
+}
+.tribute-container {
+  width: 50%;
+  background-color: white !important;
+  border-radius: 8px;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,
+    rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+  max-height: 200px !important;
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  /* Track */
+  &::-webkit-scrollbar-track {
+    background: #ffffff;
+  }
+
+  /* Handle */
+  &::-webkit-scrollbar-thumb {
+    background: #888;
+  }
+
+  /* Handle on hover */
+  &::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+}
+.tribute-container ul {
+  li {
+    background-color: white !important;
+    border-bottom: 1px solid rgb(218, 218, 218);
+    font-family: karla;
+    font-weight: 400;
+    &:hover {
+      background-color: #cfcfcf18 !important;
+    }
+    transition: 0.2s all;
+    .tribute-item {
+      display: flex;
+      align-items: center;
+      justify-content: left;
+      img {
+        width: 30px;
+        height: 30px;
+        border-radius: 100px;
+        margin-right: 5px;
+      }
+      svg {
+        margin-right: 5px;
+      }
+    }
+  }
+}
+
+.tribute-active {
+  outline: none !important;
+  /* Add any other styles as needed */
+}
+
+// Some styles
+.user-mention-toolbar {
+  position: fixed;
+  top: 20px;
+  left: 40px;
+  width: 200px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  border-radius: 4px;
+  z-index: 99;
+  transition: all 0.5s ease-in-out;
+}
+
+.user-mention-search-bar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  border-radius: 999px;
+  padding-inline: 10px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  color: black;
+  background-color: #e8ebea;
+  animation: showSlowly 0.2s ease;
+}
+
+@keyframes showSlowly {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.user-mention-search-bar .search-icon {
+  color: #000;
+  cursor: default;
+}
+
+.user-mention-search-bar .search-textbox {
+  color: #000;
+  border: none;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  margin-left: -2px;
+}
+
+.search-textbox::placeholder {
+  color: #bcbcbc;
+}
+.search-textbox {
+  padding-left: 4px;
+  transform: translateY(1px);
+}
+
+.users-list-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0px;
+  margin-top: 5px;
+  padding: 0;
+  border-radius: 8px;
+  max-height: 195px;
+  border: 1px solid rgba(0, 0, 0, 0.02);
+  box-shadow: 0 10px 20px 6px rgb(104 112 118 / 0.08);
+  overflow-y: auto;
+  animation: showSlowlyBouncing 0.2s ease;
+}
+
+@keyframes showSlowlyBouncing {
+  0% {
+    opacity: 0;
+    transform: translateY(0px);
+  }
+  50% {
+    opacity: 0.5;
+    transform: translateY(5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+}
+
+.users-list-wrapper::-webkit-scrollbar {
+  width: 0px;
+  height: 3px;
+  border-radius: 99px;
+}
+
+.user-slug::-webkit-scrollbar {
+  width: 0px;
+  height: 3px;
+  border-radius: 99px;
+}
+
+.user-list-item-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  margin: 0;
+  padding: 8px 12px;
+  box-sizing: border-box;
+  width: 100%;
+  cursor: pointer;
+  background-color: #ffffff;
+}
+
+.user-list-item-wrapper:hover {
+  background-color: #efefef;
+}
+
+.user-list-item-wrapper .user-profile-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #d6d6d6;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  margin-right: 10px;
+  position: relative;
+}
+
+.user-list-item-wrapper .user-profile-container .user-image-avatar {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.user-list-item-wrapper .user-profile-container .user-name-initial {
+  color: rgb(90, 90, 90);
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 14px;
+}
+
+.user-list-item-wrapper .user-metadata-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 70%;
+}
+
+.user-list-item-wrapper .user-metadata-container .user-full-name {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 16px;
+  margin-bottom: 4px;
+}
+
+.user-list-item-wrapper .user-metadata-container .user-slug {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 12px;
+  color: #808080;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: auto;
+}
+
+.mention_tool_at {
+  background: #0a80f3;
+  color: white;
+  text-decoration: none !important;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.mention_tool_dollar {
+  color: #1570ef;
+  text-decoration: none !important;
+}
+
+.ce-paragraph a {
+  text-decoration: none;
+  color: white;
+  background: #0a80f3;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.ql-mention-list-container {
+  width: 270px;
+  border: 1px solid #f0f0f0;
+  border-radius: 4px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 12px 0 rgba(30, 30, 30, 0.08);
+  z-index: 9001;
+  overflow: auto;
+  bottom: 0px !important;
+  height: 50%;
+}
+
+.ql-mention-loading {
+  line-height: 44px;
+  padding: 0 20px;
+  vertical-align: middle;
+  font-size: 16px;
+}
+
+.ql-mention-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.ql-mention-list-item {
+  cursor: pointer;
+  line-height: 44px;
+  font-size: 16px;
+  padding: 0 20px;
+  vertical-align: middle;
+}
+
+.ql-mention-list-item.disabled {
+  cursor: auto;
+}
+
+.ql-mention-list-item.selected {
+  background-color: #d3e1eb;
+  text-decoration: none;
+}
+
+.mention {
+  height: 24px;
+  width: 65px;
+  border-radius: 6px;
+  background-color: #4655ff;
+  color: white;
+  padding: 3px 0;
+  margin-right: 2px;
+  user-select: all;
+}
+
+.mention > span {
+  margin: 0 3px;
+}
+
+a#file-opener {
+  &::after {
+    content: attr(title);
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+button#spreadsheet-opener {
+  &::after {
+    content: " " attr(dataName) ".xlsx";
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+div.ql-tooltip {
+  left: 20% !important;
+}
+
+/* Set droplist names - -item is the currently selected font, -label is the font's appearance in the droplist*/
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value=""]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value=""]::before {
+  content: "Poppins";
+  font-family: Poppins;
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="arial"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="arial"]::before {
+  content: "Arial";
+  font-family: "Arial";
+}
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="inter"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="inter"]::before {
+  content: "Inter";
+  font-family: "Inter";
+}
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="roboto"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="roboto"]::before {
+  content: "Roboto";
+  font-family: "Roboto";
+}
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="karla"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="karla"]::before {
+  content: "Karla";
+  font-family: "Karla";
+}
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="open-sans"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="open-sans"]::before {
+  content: "Open Sans";
+  font-family: "Open Sans";
+}
+
+/****************************************************
+   Set the font-family content used for the HTML content.
+   *****************************************************/
+.ql-font-arial {
+  font-family: "Arial";
+}
+
+.ql-font-inter {
+  font-family: "Inter";
+}
+
+.ql-font-open-sans {
+  font-family: "Open Sans";
+}
+.ql-font-karla {
+  font-family: "Karla";
+}
+.ql-font-roboto {
+  font-family: "Roboto";
+}
+
+.read-only-container-editor {
+  position: relative;
+  .read-only-container-blur {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    // background-color: rgba(255, 255, 255, 0.15);
+
+    // backdrop-filter: blur(0px);
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    h2 {
+      margin: 0.5rem;
+    }
+  }
+}
+
+.details-modal-section-bottom {
+  margin-top: 2rem;
+  h3 {
+    font-family: Karla;
+  }
+}
+
+.hover-div-ql {
+  visibility: hidden;
+  width: 120px;
+  background-color: rgba(0, 0, 0, 0.37);
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+  top: 2rem;
+  /* Position the tooltip text - see examples below! */
+  position: absolute;
+  z-index: 1;
+}
+
+.ql-formats button:hover {
+  .hover-div-ql {
+    visibility: visible;
+  }
+}
+
+.main-content-inside-modals {
+  width: 100%;
+  height: 70%;
+  padding: 1rem 0;
+  .inside-modal-main-content-edit {
+    display: flex;
+  }
+  // .custom-scrollbar {
+  //   overflow-y: auto;
+  // }
+}
+
+.MuiTable-root {
+  font-family: "GothamBook", sans-serif !important;
+}
+
+/* Target table header cells */
+.MuiTableCell-head {
+  font-family: "GothamBold", sans-serif !important;
+}
+
+/* Target table body cells */
+.MuiTableCell-body {
+  font-family: "Poppins", sans-serif !important;
+}
