@@ -1922,7 +1922,8 @@ function TextEditorTwo({
                     href="#"
                     onClick={async (e) => {
                       e.preventDefault();
-                      setApprovalDetails(true);
+                      window.setTimeout(() => {setApprovalDetails(true);}, Math.floor(Math.random() * 3) + 1)
+                      
                     }}
                     className="ml-2 font-karla flex items-center text-sm justify-center bg-indigo-600 text-white py-3 px-5 rounded-lg"
                   >
@@ -1934,7 +1935,8 @@ function TextEditorTwo({
                     href="#"
                     onClick={async (e) => {
                       e.preventDefault();
-                      setApproval(true);
+                      window.setTimeout(() => { setApproval(true);}, Math.floor(Math.random() * 3) + 1)
+                     
                     }}
                     className="ml-5 font-karla flex items-center text-sm justify-center bg-indigo-600 text-white py-3 px-5 rounded-lg"
                   >
