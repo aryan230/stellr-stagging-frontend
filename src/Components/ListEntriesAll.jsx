@@ -34,7 +34,6 @@ function ListEntriesAll({
   const navigate = useNavigate();
   const [projectStats, setProjectStats] = useState();
   const [projectEntryData, setProjectEntryData] = useState([]);
-
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
 
