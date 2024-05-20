@@ -447,7 +447,6 @@ function TextEditorTwo({
       );
       setStyle(newStyle);
       if(tab.isEdit){
-        console.log('change')
         socket.emit("send-changes", delta);
       }
     };
