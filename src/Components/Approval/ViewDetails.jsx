@@ -135,16 +135,20 @@ function ViewDetails({ open, setOpen, data, role, resubmitforApproval }) {
                         Date & time
                       </dt>
                       <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        {/* {data.logs.filter((l) =>
+                        {data.logs.filter((l) =>
                           l.message.includes("The status")
                         ) &&
                           addTime(
                             data.logs.filter((l) =>
                               l.message.includes("The status")
-                            )[0].date && data.logs.filter((l) =>
-                              l.message.includes("The status")
-                            )[0].date
-                          )} */}
+                            )[0] &&
+                              data.logs.filter((l) =>
+                                l.message.includes("The status")
+                              )[0].date &&
+                              data.logs.filter((l) =>
+                                l.message.includes("The status")
+                              )[0].date
+                          )}
                       </dd>
                     </div>
                   </>
