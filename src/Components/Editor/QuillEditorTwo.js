@@ -39,6 +39,7 @@ import {
   Lock,
   LockKeyhole,
   Pen,
+  SquareGanttIcon,
   Table2,
   Trash,
   UploadCloud,
@@ -120,6 +121,7 @@ import { addTime } from "../Functions/addTime";
 import ShareMain from "../Share/ShareMain";
 import ViewOnly from "../Share/ViewOnly";
 import { addToState } from "../../redux/actions/stateActions";
+import EntryTimeline from "./Drawer/EntryTimeline";
 
 const zip = new JSZip();
 
@@ -235,7 +237,7 @@ function TextEditorTwo({
   setSampleContent,
   setSampleModal,
   setCreateDrawingModal,
-  setTabId
+  setTabId,
 }) {
   const [text, setText] = useState("");
   const quill = useRef(null);
@@ -270,7 +272,7 @@ function TextEditorTwo({
   const [filePreview, setFilePreview] = useState(false);
   const [fileData, setFileData] = useState();
   const [bottom, setBottom] = useState(false);
-
+  const [entryTimeline, setEntryTimeline] = useState(false);
   const onScroll = () => {};
 
   //e-sign
@@ -446,7 +448,7 @@ function TextEditorTwo({
         cursorData.right
       );
       setStyle(newStyle);
-      if(tab.isEdit){
+      if (tab.isEdit) {
         socket.emit("send-changes", delta);
       }
     };
@@ -598,33 +600,41 @@ function TextEditorTwo({
 
   const [quillLength, setQuillLength] = useState();
 
-
   useEffect(() => {
     if (quill == null) return;
     if (tab && tab.isEdit === false) {
-      
       const toolbar = document.querySelector(".ql-toolbar");
       const editor = document.querySelector(".ql-editor");
       const main = document.querySelector(".ql-container");
 
-   
       if (toolbar) {
         toolbar.style.display = "none";
       }
       if (editor && main) {
         window.setTimeout(() => {
-          if(tab.eSign){
-            quill.current.editor.insertText(quill.current.getLength(), "\n\neSigned By", 'bold', true)
+          if (tab.eSign) {
+            quill.current.editor.insertText(
+              quill.current.getLength(),
+              "\n\neSigned By",
+              "bold",
+              true
+            );
 
-            quill.current.editor.insertEmbed(quill.current.getLength() + 5, "image", JSON.parse(tab.eSign).sign)
-            quill.current.editor.insertText(quill.current.getLength() + 5 , `\n${JSON.parse(tab.eSign).name} - ${JSON.parse(tab.eSign).job}`)
-            quill.current.editor.insertText(quill.current.getLength() + 5 , `${addTime(JSON.parse(tab.eSign).date)}`)
-
+            quill.current.editor.insertEmbed(
+              quill.current.getLength() + 5,
+              "image",
+              JSON.parse(tab.eSign).sign
+            );
+            quill.current.editor.insertText(
+              quill.current.getLength() + 5,
+              `\n${JSON.parse(tab.eSign).name} - ${JSON.parse(tab.eSign).job}`
+            );
+            quill.current.editor.insertText(
+              quill.current.getLength() + 5,
+              `${addTime(JSON.parse(tab.eSign).date)}`
+            );
           }
-          
-          
-        }, 3000)
-      
+        }, 3000);
       }
     }
   }, [quill, tab]);
@@ -724,13 +734,12 @@ function TextEditorTwo({
     if (!mainLoader) {
       const interval = setInterval(() => {
         console.log(quill.current.getContents());
-        if(tab.isEdit){
+        if (tab.isEdit) {
           socket.emit("save-document", {
             data: quill.current.getContents(),
             user: userInfo._id,
           });
         }
-       
       }, SAVE_INTERVAL_MS);
       return () => {
         clearInterval(interval);
@@ -753,7 +762,7 @@ function TextEditorTwo({
     socket.once("load-document", ({ document, user }) => {
       socket.emit("joinLobby", userInfo);
       console.log(document);
-      setQuillLength(quill.current.scroll.length())
+      setQuillLength(quill.current.scroll.length());
       if (typeof document === "string") {
         setHtmlData(document);
         setMainLoader(false);
@@ -761,12 +770,11 @@ function TextEditorTwo({
         setHtmlData(document);
         setMainLoader(false);
       }
-      if(!tab.isEdit){
+      if (!tab.isEdit) {
         quill.current.enable(false);
-      }else {
+      } else {
         quill.current.enable();
       }
-      
     });
     socket.emit("get-document", {
       documentId: tab._id,
@@ -857,10 +865,9 @@ function TextEditorTwo({
   };
 
   const reEdit = async () => {
-
     var data = JSON.stringify({
       submittedforApproval: false,
-      isEdit: true
+      isEdit: true,
     });
 
     var config = {
@@ -870,7 +877,7 @@ function TextEditorTwo({
         Authorization: `Bearer ${userInfo.token}`,
         "Content-Type": "application/json",
       },
-      data: data
+      data: data,
     };
 
     axios(config)
@@ -892,7 +899,7 @@ function TextEditorTwo({
         setLoader(false);
         console.log(error);
       });
-  }
+  };
 
   const [style, setStyle] = useState({
     position: "absolute",
@@ -938,7 +945,15 @@ function TextEditorTwo({
       )}
 
       {loader && <Loader />}
-
+      {
+        <EntryTimeline
+          open={entryTimeline}
+          setOpen={setEntryTimeline}
+          logs={[]}
+          project={project}
+          tab={tab}
+        />
+      }
       {
         <DetailSlideOver
           open={details}
@@ -974,7 +989,15 @@ function TextEditorTwo({
           }}
         />
       }
-      {<SubmitForApproval open={approval} setOpen={setApproval} tab={tab} setEntryUpdate={setEntryUpdate} setWhichTabisActive={setWhichTabisActive}/>}
+      {
+        <SubmitForApproval
+          open={approval}
+          setOpen={setApproval}
+          tab={tab}
+          setEntryUpdate={setEntryUpdate}
+          setWhichTabisActive={setWhichTabisActive}
+        />
+      }
       {
         <ViewDetails
           open={approvalDetails}
@@ -1092,7 +1115,7 @@ function TextEditorTwo({
       >
         {mainLoader && <MainLoaderWithText text="Getting your entry ready" />}
 
-        {tab && tab.submittedForApproval  && (
+        {tab && tab.submittedForApproval && (
           <div className="absolute -translate-x-1/2 -translate-y-1/2 top-2/4 left-1/2 w-[100%] h-[100%] bg-white bg-opacity-95 flex items-center justify-center z-[999999]">
             <div className="main-loader-scss-inside">
               <div className="flex items-center justify-center space-x-2 mb-2">
@@ -1244,6 +1267,30 @@ function TextEditorTwo({
                             </a>
                           )}
                         </Menu.Item>
+                        {/* <Menu.Item>
+                          {({ active }) => (
+                            <a
+                              href="#"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                const editor = quill.current.editor;
+                                setEntryTimeline(true);
+                              }}
+                              className={classNames(
+                                active
+                                  ? "bg-gray-100 text-gray-900"
+                                  : "text-gray-700",
+                                "group flex items-center px-4 py-2 text-base"
+                              )}
+                            >
+                              <SquareGanttIcon
+                                className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                                aria-hidden="true"
+                              />
+                              View Timeline
+                            </a>
+                          )}
+                        </Menu.Item> */}
                       </div>
                       {/* <div className="py-1">
                         <Menu.Item>
@@ -1854,76 +1901,82 @@ function TextEditorTwo({
                 </Popover> */}
               </Popover.Group>
               <div className="flex items-center md:ml-12">
-                {tab.isEdit ? (<>
-                  {savingData ? (
-                  <div aria-label="Loading..." role="status">
-                    <svg
-                      className="animate-spin w-6 h-6 fill-slate-800"
-                      viewBox="3 3 18 18"
-                    >
-                      <path
-                        className="opacity-20"
-                        d="M12 5C8.13401 5 5 8.13401 5 12C5 15.866 8.13401 19 12 19C15.866 19 19 15.866 19 12C19 8.13401 15.866 5 12 5ZM3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12Z"
-                      ></path>
-                      <path d="M16.9497 7.05015C14.2161 4.31648 9.78392 4.31648 7.05025 7.05015C6.65973 7.44067 6.02656 7.44067 5.63604 7.05015C5.24551 6.65962 5.24551 6.02646 5.63604 5.63593C9.15076 2.12121 14.8492 2.12121 18.364 5.63593C18.7545 6.02646 18.7545 6.65962 18.364 7.05015C17.9734 7.44067 17.3403 7.44067 16.9497 7.05015Z"></path>
-                    </svg>
-                  </div>
-                ) : (
-                  <p className="flex items-center justify-center font-sans text-xs">
-                    {" "}
-                    <svg
-                      className="w-6 h-6 mr-1 text-indigo-300"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <g id="SVGRepo_bgCarrier" strokeWidth={0} />
-                      <g
-                        id="SVGRepo_tracerCarrier"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        stroke="#CCCCCC"
-                        strokeWidth="0.72"
-                      />
-                      <g id="SVGRepo_iconCarrier">
+                {tab.isEdit ? (
+                  <>
+                    {savingData ? (
+                      <div aria-label="Loading..." role="status">
+                        <svg
+                          className="animate-spin w-6 h-6 fill-slate-800"
+                          viewBox="3 3 18 18"
+                        >
+                          <path
+                            className="opacity-20"
+                            d="M12 5C8.13401 5 5 8.13401 5 12C5 15.866 8.13401 19 12 19C15.866 19 19 15.866 19 12C19 8.13401 15.866 5 12 5ZM3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12Z"
+                          ></path>
+                          <path d="M16.9497 7.05015C14.2161 4.31648 9.78392 4.31648 7.05025 7.05015C6.65973 7.44067 6.02656 7.44067 5.63604 7.05015C5.24551 6.65962 5.24551 6.02646 5.63604 5.63593C9.15076 2.12121 14.8492 2.12121 18.364 5.63593C18.7545 6.02646 18.7545 6.65962 18.364 7.05015C17.9734 7.44067 17.3403 7.44067 16.9497 7.05015Z"></path>
+                        </svg>
+                      </div>
+                    ) : (
+                      <p className="flex items-center justify-center font-sans text-xs">
                         {" "}
-                        <path
-                          d="M9 13.2222L10.8462 15L15 11M8.4 19C5.41766 19 3 16.6044 3 13.6493C3 11.2001 4.8 8.9375 7.5 8.5C8.34694 6.48637 10.3514 5 12.6893 5C15.684 5 18.1317 7.32251 18.3 10.25C19.8893 10.9449 21 12.6503 21 14.4969C21 16.9839 18.9853 19 16.5 19L8.4 19Z"
-                          stroke="gray"
-                          strokeWidth={2}
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />{" "}
-                      </g>
-                    </svg>
-                    This file is being autosaved.
-                  </p>
-                )}</>) : (<>
-                  <p className="flex items-center justify-center font-dmsans text-xs">
-                    <Eye className="w-6 h-6 mr-1 text-indigo-300"/>
-                    {" "}
-                  
-                    Read Only
-                  </p></>)}
-                
-               {!tab.isEdit && (<a
+                        <svg
+                          className="w-6 h-6 mr-1 text-indigo-300"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <g id="SVGRepo_bgCarrier" strokeWidth={0} />
+                          <g
+                            id="SVGRepo_tracerCarrier"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            stroke="#CCCCCC"
+                            strokeWidth="0.72"
+                          />
+                          <g id="SVGRepo_iconCarrier">
+                            {" "}
+                            <path
+                              d="M9 13.2222L10.8462 15L15 11M8.4 19C5.41766 19 3 16.6044 3 13.6493C3 11.2001 4.8 8.9375 7.5 8.5C8.34694 6.48637 10.3514 5 12.6893 5C15.684 5 18.1317 7.32251 18.3 10.25C19.8893 10.9449 21 12.6503 21 14.4969C21 16.9839 18.9853 19 16.5 19L8.4 19Z"
+                              stroke="gray"
+                              strokeWidth={2}
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />{" "}
+                          </g>
+                        </svg>
+                        This file is being autosaved.
+                      </p>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <p className="flex items-center justify-center font-dmsans text-xs">
+                      <Eye className="w-6 h-6 mr-1 text-indigo-300" /> Read Only
+                    </p>
+                  </>
+                )}
+
+                {!tab.isEdit && (
+                  <a
                     href="#"
                     onClick={async (e) => {
                       e.preventDefault();
-                      reEdit()
+                      reEdit();
                     }}
                     className="ml-5 font-karla flex items-center text-sm justify-center bg-indigo-600 text-white py-3 px-5 rounded-lg"
                   >
                     <Pen className="mr-2" size={16} />
                     Edit
-                  </a>)}
+                  </a>
+                )}
                 {!tab.isEdit ? (
                   <a
                     href="#"
                     onClick={async (e) => {
                       e.preventDefault();
-                      window.setTimeout(() => {setApprovalDetails(true);}, Math.floor(Math.random() * 3) + 1)
-                      
+                      window.setTimeout(() => {
+                        setApprovalDetails(true);
+                      }, Math.floor(Math.random() * 3) + 1);
                     }}
                     className="ml-2 font-karla flex items-center text-sm justify-center bg-indigo-600 text-white py-3 px-5 rounded-lg"
                   >
@@ -1935,8 +1988,9 @@ function TextEditorTwo({
                     href="#"
                     onClick={async (e) => {
                       e.preventDefault();
-                      window.setTimeout(() => { setApproval(true);}, Math.floor(Math.random() * 3) + 1)
-                     
+                      window.setTimeout(() => {
+                        setApproval(true);
+                      }, Math.floor(Math.random() * 3) + 1);
                     }}
                     className="ml-5 font-karla flex items-center text-sm justify-center bg-indigo-600 text-white py-3 px-5 rounded-lg"
                   >
@@ -2051,8 +2105,7 @@ function TextEditorTwo({
         {userType && userType === "Read" && (
           <div className="absolute -translate-x-1/2 -translate-y-1/2 top-2/4 left-1/2 w-[100%] overflow-y-auto h-[100%] bg-white bg-opacity-50 flex items-center justify-center z-[999999]"></div>
         )}
-       
-        
+
         {userType && userType != "Read" ? (
           <ShareMain
             styles="absolute bottom-10 right-10 z-[9999999]"
@@ -2095,7 +2148,7 @@ function TextEditorTwo({
             </div>
           )}
         </div>
-        
+
         <RichTextEditor
           className="relative"
           modules={{
