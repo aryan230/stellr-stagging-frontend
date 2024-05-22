@@ -87,6 +87,7 @@ function SmallEntries({
     <li>
       <a
         href="#"
+        tokenid={doc._id}
         onClick={async (e) => {
           e.preventDefault();
           if (doc.type === "Lab Sheet") {

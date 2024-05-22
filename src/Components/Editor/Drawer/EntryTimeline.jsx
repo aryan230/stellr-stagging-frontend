@@ -5,6 +5,7 @@ import { XIcon } from "@heroicons/react/outline";
 import { ChevronDownIcon } from "@heroicons/react/solid";
 import moment from "moment";
 import { addTime } from "../../Functions/addTime";
+import { userAvatar } from "../../Functions/userAvatar";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -64,7 +65,7 @@ function EntryTimeline({ open, setOpen, tab, project }) {
                   </div>
                   <div className="relative flex-1 pb-6 px-4 sm:px-6 h-full overflow-y-auto">
                     {/* Replace with your content */}
-                    <div className="max-w-xl p-8 mx-auto">
+                    {/* <div className="max-w-xl p-8 mx-auto">
                       <ul className="space-y-12">
                         {data
                           .filter((str) =>
@@ -106,7 +107,58 @@ function EntryTimeline({ open, setOpen, tab, project }) {
                             </li>
                           ))}
                       </ul>
-                    </div>
+                    </div> */}
+                    <>
+                      {/*<!-- Component: User feed --> */}
+                      <ul
+                        aria-label="User feed"
+                        role="feed"
+                        className="relative flex flex-col gap-12 py-12 pl-8 before:absolute before:top-0 before:left-8 before:h-full before:-translate-x-1/2 before:border before:border-dashed before:border-slate-200 after:absolute after:top-6 after:left-8 after:bottom-6 after:-translate-x-1/2 after:border after:border-slate-200 "
+                      >
+                        {data
+                          .filter((str) =>
+                            strings.some((term) => str.message.includes(term))
+                          )
+                          .sort(function(a, b) {
+                            return new Date(b.date) - new Date(a.date);
+                          })
+                          .map((d) => (
+                            <li role="article" className="relative pl-8 ">
+                              <div className="flex flex-col flex-1 gap-4">
+                                <a
+                                  href="#"
+                                  className="absolute z-10 inline-flex items-center justify-center w-8 h-8 text-white rounded-full -left-4 ring-2 ring-white"
+                                >
+                                  <img
+                                    src={`${userAvatar(d.userName)}`}
+                                    alt="user name"
+                                    title="user name"
+                                    width="48"
+                                    height="48"
+                                    className="max-w-full rounded-full"
+                                  />
+                                </a>
+                                <h4 className="flex flex-col items-start text-lg font-medium leading-8 text-slate-700 md:flex-row lg:items-center">
+                                  <span className="flex-1">
+                                    {d.userName}
+                                    {/* <span className="text-base font-normal text-slate-500">
+                                      {" "}
+                                      created a new thread
+                                    </span> */}
+                                  </span>
+                                  <span className="text-sm font-normal text-slate-400">
+                                    {" "}
+                                    {addTime(d.date)}
+                                  </span>
+                                </h4>
+                                <p className=" text-slate-500">{d.message}</p>
+                              </div>
+                            </li>
+                          ))}
+                      </ul>
+                      {/*<!-- End User feed --> */}
+                    </>
+
                     {/* /End replace */}
                   </div>
                 </div>

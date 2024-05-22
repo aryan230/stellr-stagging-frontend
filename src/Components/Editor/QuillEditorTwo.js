@@ -865,6 +865,7 @@ function TextEditorTwo({
   };
 
   const reEdit = async () => {
+    setLoader(true);
     var data = JSON.stringify({
       submittedforApproval: false,
       isEdit: true,
@@ -894,6 +895,10 @@ function TextEditorTwo({
         await dispatch(removeFromCart(tab._id));
         setEntryUpdate(true);
         setWhichTabisActive("projectList");
+        window.setTimeout(() => {
+          document.querySelector(`[tokenid="${tab._id}"]`).click();
+          setLoader(false);
+        }, 3000);
       })
       .catch(function(error) {
         setLoader(false);
@@ -1267,7 +1272,7 @@ function TextEditorTwo({
                             </a>
                           )}
                         </Menu.Item>
-                        {/* <Menu.Item>
+                        <Menu.Item>
                           {({ active }) => (
                             <a
                               href="#"
@@ -1290,7 +1295,7 @@ function TextEditorTwo({
                               View Timeline
                             </a>
                           )}
-                        </Menu.Item> */}
+                        </Menu.Item>
                       </div>
                       {/* <div className="py-1">
                         <Menu.Item>
