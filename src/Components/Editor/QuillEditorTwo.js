@@ -884,6 +884,7 @@ function TextEditorTwo({
     axios(config)
       .then(async function(response) {
         setLoader(false);
+
         const logObject = {
           entryId: tab._id,
           user: userInfo._id,
@@ -897,7 +898,6 @@ function TextEditorTwo({
         setWhichTabisActive("projectList");
         window.setTimeout(() => {
           document.querySelector(`[tokenid="${tab._id}"]`).click();
-          setLoader(false);
         }, 3000);
       })
       .catch(function(error) {

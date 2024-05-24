@@ -65,7 +65,7 @@ function SubmitForApproval({
         setWhichTabisActive("projectList");
         setOpen(false);
         await dispatch(removeFromCart(tab._id));
-        toast.success("Updated");
+        toast.success("Entry submitted for approval");
       })
       .catch(function(error) {
         setLoader(false);
