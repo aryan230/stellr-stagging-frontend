@@ -6,6 +6,7 @@ export const addEntryLogs = async ({
   userName,
   userEmail,
   message,
+  anyData,
 }) => {
   var data = JSON.stringify({
     entryId: entryId,
@@ -14,6 +15,7 @@ export const addEntryLogs = async ({
       userName: userName,
       userEmail: userEmail,
       message: message,
+      anyData: anyData ? anyData : "null",
       date: Date.now(),
     },
   });

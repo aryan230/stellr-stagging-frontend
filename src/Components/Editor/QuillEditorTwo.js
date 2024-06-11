@@ -1,12 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import React from "react";
-// import EditorToolbar, { modules, formats } from "./EditorToolbar";
-import ImageResize from "quill-image-resize-module-react";
-import { Tooltip } from "@mui/material";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { storage } from "../../firebase";
-import { v4 as uuid } from "uuid";
-import CustomEmbedBlot from "./Tools/CustomReactBlot";
 import RichTextEditor from "quill-react-commercial";
 import URL from "./../../Data/data.json";
 import { io } from "socket.io-client";
@@ -14,51 +7,31 @@ import { useDispatch, useSelector } from "react-redux";
 import "highlight.js/styles/darcula.css";
 import Tribute from "tributejs";
 import "quill-mention";
-import { MentionBlot } from "./Tools/MentionBlot";
 import "tributejs/dist/tribute.css";
-import { QuillDeltaToHtmlConverter } from "quill-delta-to-html";
-import ReactQuill from "react-quill";
 import {
-  AlertTriangle,
-  BadgeCheck,
   Ban,
   Biohazard,
   Blocks,
-  Book,
-  BookMarked,
   Bookmark,
-  Check,
   ClipboardCheck,
-  Cloud,
-  CloudCog,
   Eye,
-  FileInput,
   FileText,
+  GitPullRequest,
   Info,
-  LayoutPanelTop,
-  Lock,
-  LockKeyhole,
   Pen,
   SquareGanttIcon,
-  Table2,
+  SquareStack,
   Trash,
   UploadCloud,
-  Vote,
   X,
 } from "lucide-react";
 import { Fragment } from "react";
-import { Disclosure, Menu, Popover, Transition } from "@headlessui/react";
+import { Menu, Popover, Transition } from "@headlessui/react";
 import {
-  ArchiveIcon,
-  ArrowCircleRightIcon,
-  BellIcon,
   DocumentTextIcon,
   DuplicateIcon,
-  HeartIcon,
   MenuIcon,
   PencilAltIcon,
-  TrashIcon,
-  UserAddIcon,
   XIcon,
 } from "@heroicons/react/outline";
 import WarningModal from "../Modals/WarningModal";
@@ -75,8 +48,6 @@ import { listMyEntries } from "../../redux/actions/entryActions";
 import { listMyProtocols } from "../../redux/actions/protocolActions";
 import { listMySops } from "../../redux/actions/sopActions";
 import _ from "lodash";
-import CompleteLoader from "../Loaders/CompleteLoader";
-import MainLoader from "../Loaders/MainLoader";
 import MainLoaderWithText from "../Loaders/MainLoaderWithText";
 import {
   ChartBarIcon,
@@ -100,10 +71,6 @@ import DetailSlideOver from "../../UI/SlideOvers/DetailSlideOver";
 import Delta from "quill-delta";
 import EditNameEditor from "./EditorSettings/EditNameEditor";
 import ChemicalDrawingEntry from "./EditorSettings/ChemicalDrawingEntry";
-import Quill from "quill";
-import LogsModal from "../Logs/LogsModal";
-import DropdownBasic from "../../UI/Dropdown/DropdownBasic";
-import { Details } from "@mui/icons-material";
 import moment from "moment";
 import ConformationModal from "../../UI/MainModals/ConformationModal";
 import axios from "axios";
@@ -111,113 +78,20 @@ import { CART_RESET } from "../../redux/constants/cartConstants";
 import SubmitForApproval from "../Approval/SubmitForApproval";
 import { addEntryLogs } from "../Functions/addEntryLogs";
 import ViewDetails from "../Approval/ViewDetails";
-import { addNotification } from "../Functions/addNotification";
 import CustomLogs from "../CustomLogs/CustomLogs";
 import InsertFileEditor from "./EditorSettings/InsertFileEditor";
 import FilePreview from "../Preview/FilePreview";
-import { addToCart, removeFromCart } from "../../redux/actions/cartActions";
+import { removeFromCart } from "../../redux/actions/cartActions";
 import { addToRC } from "../../redux/actions/rcActions";
 import { addTime } from "../Functions/addTime";
 import ShareMain from "../Share/ShareMain";
 import ViewOnly from "../Share/ViewOnly";
-import { addToState } from "../../redux/actions/stateActions";
 import EntryTimeline from "./Drawer/EntryTimeline";
+import EntryVersionHistory from "./Drawer/EntryVersionHistory";
+import EntryVersionControl from "./Drawer/EntryVersionControl";
+import ViewVersionControl from "./Drawer/ViewVersionControl";
 
 const zip = new JSZip();
-
-const fileOptions = [
-  {
-    name: "Save as Template",
-    slug: "saveAsTemplates",
-  },
-];
-
-const exportOptions = [
-  {
-    name: "Microsoft Word (.docx)",
-    slug: "docx",
-  },
-  {
-    name: "PDF Document (.pdf)",
-    slug: "pdf",
-  },
-
-  {
-    name: "Web Page (.html)",
-    slug: "html",
-  },
-  {
-    name: "JavaScript Object Notation (.json)",
-    slug: "json",
-  },
-];
-
-const solutions = [
-  {
-    name: "Analytics",
-    description:
-      "Get a better understanding of where your traffic is coming from.",
-    href: "#",
-    icon: ChartBarIcon,
-  },
-  {
-    name: "Engagement",
-    description: "Speak directly to your customers in a more meaningful way.",
-    href: "#",
-    icon: CursorClickIcon,
-  },
-  {
-    name: "Security",
-    description: "Your customers' data will be safe and secure.",
-    href: "#",
-    icon: ShieldCheckIcon,
-  },
-  {
-    name: "Integrations",
-    description: "Connect with third-party tools that you're already using.",
-    href: "#",
-    icon: ViewGridIcon,
-  },
-  {
-    name: "Automations",
-    description:
-      "Build strategic funnels that will drive your customers to convert",
-    href: "#",
-    icon: RefreshIcon,
-  },
-  {
-    name: "Reports",
-    description:
-      "Get detailed reports that will help you make more informed decisions ",
-    href: "#",
-    icon: DocumentReportIcon,
-  },
-];
-const resources = [
-  {
-    name: "Help Center",
-    description:
-      "Get all of your questions answered in our forums or contact support.",
-    href: "#",
-  },
-  {
-    name: "Guides",
-    description:
-      "Learn how to maximize our platform to get the most out of it.",
-    href: "#",
-  },
-  {
-    name: "Events",
-    description:
-      "See what meet-ups and other events we might be planning near you.",
-    href: "#",
-  },
-  {
-    name: "Security",
-    description: "Understand how we take your privacy seriously.",
-    href: "#",
-  },
-];
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -228,20 +102,12 @@ function TextEditorTwo({
   active,
   project,
   userType,
-  setProjectSettings,
-  setNewCollab,
-  setProjectUpdatedProfilers,
-  setUpdatedUserCollabRole,
   setEntryUpdate,
   setWhichTabisActive,
-  setSampleContent,
-  setSampleModal,
   setCreateDrawingModal,
-  setTabId,
 }) {
   const [text, setText] = useState("");
   const quill = useRef(null);
-  const reactQuill = useRef(null);
   const [value, setValue] = useState();
 
   const [socket, setSocket] = useState();
@@ -273,33 +139,10 @@ function TextEditorTwo({
   const [fileData, setFileData] = useState();
   const [bottom, setBottom] = useState(false);
   const [entryTimeline, setEntryTimeline] = useState(false);
-  const onScroll = () => {};
-
-  //e-sign
-  // useEffect(() => {
-  //   if (document.querySelectorAll(".ql-editor")) {
-  //     if (document.getElementById("eSignData")) {
-  //       document.querySelectorAll(".ql-editor").forEach((el, index) => {
-  //         if (el.scrollHeight > el.clientHeight) {
-  //           el.addEventListener("scroll", (event) => {
-  //             const { scrollHeight, scrollTop, clientHeight } = event.target;
-  //             const sign = document.getElementById("eSignData");
-  //             if (Math.abs(scrollHeight - clientHeight - scrollTop) < 1) {
-  //               setBottom(true);
-  //             } else {
-  //               setBottom(false);
-  //             }
-  //           });
-  //         } else {
-  //         }
-  //       });
-  //     }
-  //   }
-  // }, [
-  //   document.querySelectorAll(".ql-editor"),
-  //   document.getElementById("eSignData"),
-  // ]);
-
+  const [versionHistory, setVersionHistory] = useState(false);
+  const [versionControl, setVersionControl] = useState(false);
+  const [viewCurrentV, setViewCurrentV] = useState(false);
+  const [currenVData, setCurrentVData] = useState();
   const sampleListMy = useSelector((state) => state.sampleListMy);
   const {
     samples,
@@ -343,77 +186,29 @@ function TextEditorTwo({
   const userLogin = useSelector((state) => state.userLogin);
   let { loading, error, userInfo } = userLogin;
 
-  const insertCustomEmbed = () => {
-    const value = '<div class="custom-embed">Custom Embed Content</div>';
-    const quill = quillRef.current.getEditor();
-    quill.insertEmbed(quill.getSelection(true).index, "custom-embed", value);
-  };
+  const updateVersionControl = async () => {
+    var data = JSON.stringify({
+      entryId: tab._id,
+    });
 
-  function undoChange() {
-    this.quill.history.undo();
-  }
-  function redoChange() {
-    this.quill.history.redo();
-  }
+    var config = {
+      method: "put",
+      url: `${URL[0]}api/entries/newvc`,
+      headers: {
+        Authorization: `Bearer ${userInfo.token}`,
+        "Content-Type": "application/json",
+      },
+      data: data,
+    };
+
+    axios(config)
+      .then(async function(response) {
+        toast.success(response.data.a);
+      })
+      .catch(function(error) {});
+  };
 
   const SAVE_INTERVAL_MS = 2000;
-
-  const TOOLBAR_OPTIONS = [
-    [{ header: [1, 2, 3, 4, 5, 6, false] }],
-    [{ font: ["", "arial", "inter", "roboto", "open-sans", "karla"] }],
-    [{ list: "ordered" }, { list: "bullet" }],
-    ["bold", "italic", "underline", "strike"],
-    [{ color: [] }, { background: [] }],
-    [{ script: "sub" }, { script: "super" }],
-    [{ align: [] }],
-    ["blockquote", "code-block", "image"],
-    ["link"],
-    ["clean"],
-    ["video"],
-    ["img"],
-    ["fileUploadAttach"],
-    ["igAttach"],
-  ];
-
-  // const modules = {
-  //   toolbar: TOOLBAR_OPTIONS,
-  // };
-
-  console.log({
-    ops: [
-      {
-        insert: `Hello world`,
-      },
-    ],
-  });
-
-  const formats = [
-    "header",
-    "font",
-    "size",
-    "bold",
-    "italic",
-    "underline",
-    "align",
-    "strike",
-    "script",
-    "blockquote",
-    "background",
-    "list",
-    "bullet",
-    "indent",
-    "link",
-    "image",
-    "color",
-    "code-block",
-  ];
-
-  const handleTextChange = (value) => {
-    setText(value);
-  };
-
-  // Text to insert
-  var newText = "This is some inserted text.";
 
   const handleSaveTemplate = async () => {
     setLoader(true);
@@ -426,12 +221,7 @@ function TextEditorTwo({
     await dispatch(createEntryTemplate(data));
     toast.success("Saved as Template");
     setLoader(false);
-
-    // console.log(localStorage.getItem("tab"));
-    // console.log(localStorage.getItem("project"));
   };
-
-  const diplayLoader = async () => {};
 
   useEffect(() => {
     if (socket == null || quill.current == null) return;
@@ -470,11 +260,13 @@ function TextEditorTwo({
     };
   }, [socket, quill]);
   console.log(tab);
+
   useEffect(() => {
     if (socket == null || quill.current == null) return;
+
     socket.on("userJoined", (user) => {
       console.log(user);
-      setUsers((prevUsers) => [...prevUsers, user]);
+      setUsers(user);
     });
 
     socket.on("userLeft", (user) => {
@@ -666,21 +458,8 @@ function TextEditorTwo({
     }
   }, [document.querySelectorAll('a[href*="custom"]'), quill]);
 
-  console.log(commonUsers && commonUsers);
   var tribute;
 
-  // useEffect(() => {
-  //   if (quill) {
-  //     const editor = quill.current.editor;
-  //     editor.insertEmbed(
-  //       quill.current.scroll.length(),
-  //       "image",
-  //       "https://cdn.pixabay.com/photo/2022/02/08/09/28/boats-7001054_1280.jpg"
-  //     );
-  //   }
-  // }, [quill]);
-
-  const getMenuTemplate = async (item) => {};
   useEffect(() => {
     if (commonUsers) {
       tribute = new Tribute({
@@ -748,6 +527,29 @@ function TextEditorTwo({
   }, [socket, quill, mainLoader, tab]);
 
   useEffect(() => {
+    if (socket == null || quill.current == null) return;
+    if (!mainLoader) {
+      const interval = setInterval(() => {
+        console.log(quill.current.getContents());
+        if (tab.isEdit) {
+          socket.emit("save-vc", {
+            data: quill.current.getContents(),
+            user: userInfo._id,
+            userName: userInfo.name,
+            userEmail: userInfo.email,
+          });
+          socket.on("receive-vc-update", (data) => {
+            toast.success(data);
+          });
+        }
+      }, SAVE_INTERVAL_MS);
+      return () => {
+        clearInterval(interval);
+      };
+    }
+  }, [socket, quill, mainLoader, tab]);
+
+  useEffect(() => {
     const s = io(URL[0].substring(0, URL[0].length - 1), {
       maxHttpBufferSize: 1e8,
     });
@@ -760,8 +562,7 @@ function TextEditorTwo({
   useEffect(() => {
     if (socket == null || quill.current == null) return;
     socket.once("load-document", ({ document, user }) => {
-      socket.emit("joinLobby", userInfo);
-      console.log(document);
+      socket.emit("joinLobby", userInfo.email);
       setQuillLength(quill.current.scroll.length());
       if (typeof document === "string") {
         setHtmlData(document);
@@ -782,15 +583,6 @@ function TextEditorTwo({
     });
   }, [socket, quill, tab, value]);
 
-  // useEffect(() => {
-  //   if (document.querySelectorAll('li[data-list="bullet"]')) {
-  //     let element = document.querySelectorAll('li[data-list="bullet"]')[0]
-  //       .parentElement;
-  //     let ul = document.createElement("ul");
-  //     ul.innerHTML = element.innerHTML;
-  //     console.log()
-  //   }
-  // }, [document.querySelectorAll('li[data-list="bullet"]')]);
   const [details, setDetails] = useState(false);
   const [deleteEnt, setDelete] = useState(false);
   const modules = 1;
@@ -960,6 +752,26 @@ function TextEditorTwo({
         />
       }
       {
+        <EntryVersionHistory
+          open={versionHistory}
+          setOpen={setVersionHistory}
+          logs={[]}
+          project={project}
+          tab={tab}
+        />
+      }
+      {
+        <EntryVersionControl
+          open={versionControl}
+          setOpen={setVersionControl}
+          logs={[]}
+          project={project}
+          tab={tab}
+          setViewCurrentV={setViewCurrentV}
+          setCurrentVData={setCurrentVData}
+        />
+      }
+      {
         <DetailSlideOver
           open={details}
           setOpen={setDetails}
@@ -1001,6 +813,14 @@ function TextEditorTwo({
           tab={tab}
           setEntryUpdate={setEntryUpdate}
           setWhichTabisActive={setWhichTabisActive}
+        />
+      }
+      {
+        <ViewVersionControl
+          open={viewCurrentV}
+          setOpen={setViewCurrentV}
+          currenVData={currenVData}
+          setHtmlData={setHtmlData}
         />
       }
       {
@@ -1296,6 +1116,54 @@ function TextEditorTwo({
                             </a>
                           )}
                         </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <a
+                              href="#"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                const editor = quill.current.editor;
+                                setVersionControl(true);
+                              }}
+                              className={classNames(
+                                active
+                                  ? "bg-gray-100 text-gray-900"
+                                  : "text-gray-700",
+                                "group flex items-center px-4 py-2 text-base"
+                              )}
+                            >
+                              <GitPullRequest
+                                className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                                aria-hidden="true"
+                              />
+                              Version Control
+                            </a>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <a
+                              href="#"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                const editor = quill.current.editor;
+                                setVersionHistory(true);
+                              }}
+                              className={classNames(
+                                active
+                                  ? "bg-gray-100 text-gray-900"
+                                  : "text-gray-700",
+                                "group flex items-center px-4 py-2 text-base"
+                              )}
+                            >
+                              <SquareStack
+                                className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                                aria-hidden="true"
+                              />
+                              Version History
+                            </a>
+                          )}
+                        </Menu.Item>
                       </div>
                       {/* <div className="py-1">
                         <Menu.Item>
@@ -1421,7 +1289,7 @@ function TextEditorTwo({
                                 className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
                                 aria-hidden="true"
                               />
-                              Delete Entry
+                              Archive Entry
                             </a>
                           )}
                         </Menu.Item>
@@ -1949,16 +1817,16 @@ function TextEditorTwo({
                             />{" "}
                           </g>
                         </svg>
-                        This file is being autosaved.
+                        {users && users.map((u) => <p>{u}</p>)}
                       </p>
                     )}
                   </>
                 ) : (
-                  <>
-                    <p className="flex items-center justify-center font-dmsans text-xs">
-                      <Eye className="w-6 h-6 mr-1 text-indigo-300" /> Read Only
+                  <div className="p-3 rounded-lg border hover:cursor-pointer">
+                    <p className="flex items-center justify-center font-body text-xs">
+                      <Eye className="w-5 h-5 mr-2 text-indigo-600" /> Read Only
                     </p>
-                  </>
+                  </div>
                 )}
 
                 {!tab.isEdit && (
@@ -1970,7 +1838,7 @@ function TextEditorTwo({
                     }}
                     className="ml-5 font-karla flex items-center text-sm justify-center bg-indigo-600 text-white py-3 px-5 rounded-lg"
                   >
-                    <Pen className="mr-2" size={16} />
+                    <Pen className="mr-2" size={14} />
                     Edit
                   </a>
                 )}
