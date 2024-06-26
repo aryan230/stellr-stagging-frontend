@@ -90,6 +90,7 @@ import EntryTimeline from "./Drawer/EntryTimeline";
 import EntryVersionHistory from "./Drawer/EntryVersionHistory";
 import EntryVersionControl from "./Drawer/EntryVersionControl";
 import ViewVersionControl from "./Drawer/ViewVersionControl";
+import { userAvatar } from "../Functions/userAvatar";
 
 const zip = new JSZip();
 
@@ -129,7 +130,7 @@ function TextEditorTwo({
   const [originalContent, setOriginalContent] = useState();
   const [warningModal, setWarningModal] = useState(false);
   const [mainLoader, setMainLoader] = useState(true);
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState(["Aryan"]);
   const [chemicalDrawing, setChemicalDrawing] = useState(false);
   const [insertFile, setInsertFile] = useState(false);
   const [logs, setLogs] = useState(false);
@@ -209,6 +210,7 @@ function TextEditorTwo({
   };
 
   const SAVE_INTERVAL_MS = 2000;
+  const FETCH_INTERVAL_MS = 200000;
 
   const handleSaveTemplate = async () => {
     setLoader(true);
@@ -248,6 +250,24 @@ function TextEditorTwo({
     };
   }, [socket, quill, tab]);
 
+  // join-lobby
+  useEffect(() => {
+    if (socket == null || quill.current == null) return;
+    if (!mainLoader) {
+      const interval = setInterval(() => {
+        console.log(quill.current.getContents());
+        if (tab.isEdit) {
+          socket.emit("join-lobby", {
+            id: 23,
+          });
+        }
+      }, SAVE_INTERVAL_MS);
+      return () => {
+        clearInterval(interval);
+      };
+    }
+  }, [socket, quill, mainLoader, tab]);
+
   useEffect(() => {
     if (socket == null || quill.current == null) return;
     const handler = (delta) => {
@@ -259,29 +279,18 @@ function TextEditorTwo({
       socket.off("receive-change", handler);
     };
   }, [socket, quill]);
-  console.log(tab);
 
   useEffect(() => {
     if (socket == null || quill.current == null) return;
-
-    socket.on("userJoined", (user) => {
-      console.log(user);
-      setUsers(user);
-    });
-
-    socket.on("userLeft", (user) => {
-      console.log(user);
-      setUsers((prevUsers) => prevUsers.filter((u) => u !== user));
-    });
+    const handler = (users) => {
+      setUsers(users);
+    };
+    socket.on("get_users_in_room", handler);
 
     return () => {
-      socket.disconnect();
+      socket.off("get_users_in_room", handler);
     };
   }, [socket, quill]);
-
-  useEffect(() => {
-    console.log(users);
-  }, [users]);
 
   const projectDetails = useSelector((state) => state.projectDetails);
   const { project: mainProjectList } = projectDetails;
@@ -562,7 +571,6 @@ function TextEditorTwo({
   useEffect(() => {
     if (socket == null || quill.current == null) return;
     socket.once("load-document", ({ document, user }) => {
-      socket.emit("joinLobby", userInfo.email);
       setQuillLength(quill.current.scroll.length());
       if (typeof document === "string") {
         setHtmlData(document);
@@ -577,11 +585,34 @@ function TextEditorTwo({
         quill.current.enable();
       }
     });
+    // socket.emit("join-lobby", userInfo.email);
     socket.emit("get-document", {
       documentId: tab._id,
-      user: userInfo,
+      user: userInfo.name,
     });
   }, [socket, quill, tab, value]);
+
+  useEffect(() => {
+    if (socket == null || quill.current == null) return;
+
+    socket.on("userJoined", (user) => {
+      console.log(user);
+    });
+
+    socket.on("userLeft", (user) => {
+      console.log(user);
+      // setUsers((prevUsers) => prevUsers.filter((u) => u !== user));
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [socket, quill]);
+
+  // useEffect(() => {
+  //   if (socket == null || quill.current == null) return;
+  //   socket.emit("get_users_in_room", {});
+  // }, [socket, quill]);
 
   const [details, setDetails] = useState(false);
   const [deleteEnt, setDelete] = useState(false);
@@ -1773,6 +1804,20 @@ function TextEditorTwo({
                   )}
                 </Popover> */}
               </Popover.Group>
+              <>
+                <div className="flex -space-x-2 overflow-hidden">
+                  {tab.isEdit &&
+                    users &&
+                    users.length > 0 &&
+                    users.map((u) => (
+                      <img
+                        className="inline-block h-10 w-10 rounded-full ring-2 ring-white"
+                        src={userAvatar(u)}
+                        alt=""
+                      />
+                    ))}
+                </div>
+              </>
               <div className="flex items-center md:ml-12">
                 {tab.isEdit ? (
                   <>
@@ -1817,7 +1862,6 @@ function TextEditorTwo({
                             />{" "}
                           </g>
                         </svg>
-                        {users && users.map((u) => <p>{u}</p>)}
                       </p>
                     )}
                   </>
