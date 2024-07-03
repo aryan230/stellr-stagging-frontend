@@ -203,9 +203,7 @@ function TextEditorTwo({
     };
 
     axios(config)
-      .then(async function(response) {
-        toast.success(response.data.a);
-      })
+      .then(async function(response) {})
       .catch(function(error) {});
   };
 
@@ -467,6 +465,25 @@ function TextEditorTwo({
     }
   }, [document.querySelectorAll('a[href*="custom"]'), quill]);
 
+  useEffect(() => {
+    if (document.querySelectorAll("div.user-avatar-main")) {
+      let elements = document.querySelectorAll("div.user-avatar-main");
+      if (elements) {
+        elements.forEach((e) => {
+          console.log(e);
+
+          e.addEventListener("mouseover", (el) => {
+            if (e.getAttribute("d")) {
+              // window.open(e.getAttribute("href").split("#")[3], "_blank");
+            } else {
+              el.preventDefault();
+            }
+          });
+        });
+      }
+    }
+  }, [document.querySelectorAll("div.user-avatar-main"), quill]);
+
   var tribute;
 
   useEffect(() => {
@@ -547,9 +564,7 @@ function TextEditorTwo({
             userName: userInfo.name,
             userEmail: userInfo.email,
           });
-          socket.on("receive-vc-update", (data) => {
-            toast.success(data);
-          });
+          socket.on("receive-vc-update", (data) => {});
         }
       }, SAVE_INTERVAL_MS);
       return () => {
@@ -1804,7 +1819,7 @@ function TextEditorTwo({
                   )}
                 </Popover> */}
               </Popover.Group>
-              <>
+              {/* <>
                 <div className="flex -space-x-2 overflow-hidden">
                   {tab.isEdit &&
                     users &&
@@ -1815,6 +1830,50 @@ function TextEditorTwo({
                         src={userAvatar(u)}
                         alt=""
                       />
+                    ))}
+                </div>
+              </> */}
+              <>
+                <div className="px-6 flex items-center flex-no-wrap">
+                  {tab.isEdit &&
+                    users &&
+                    users.length > 0 &&
+                    users.map((u) => (
+                      <Menu
+                        as="div"
+                        className="relative inline-block text-left"
+                      >
+                        <div>
+                          <Menu.Button className="">
+                            <div className="w-10 h-10 bg-cover bg-center rounded-md user-avatar-main relative">
+                              <img
+                                src={userAvatar(u)}
+                                alt
+                                className="h-full w-full overflow-hidden object-cover rounded-full border-2 border-white shadow"
+                              />
+                            </div>
+                          </Menu.Button>
+                        </div>
+
+                        <Transition
+                          as={Fragment}
+                          enter="transition ease-out duration-100"
+                          enterFrom="transform opacity-0 scale-95"
+                          enterTo="transform opacity-100 scale-100"
+                          leave="transition ease-in duration-75"
+                          leaveFrom="transform opacity-100 scale-100"
+                          leaveTo="transform opacity-0 scale-95"
+                        >
+                          <Menu.Items className="absolute right-0 z-10 mt-0 w-56 origin-bottom-left divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                            <div className="px-4 py-3">
+                              <p className="text-sm">Signed in as</p>
+                              <p className="truncate text-sm font-medium text-gray-900">
+                                {u}
+                              </p>
+                            </div>
+                          </Menu.Items>
+                        </Transition>
+                      </Menu>
                     ))}
                 </div>
               </>

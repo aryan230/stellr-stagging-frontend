@@ -22,6 +22,7 @@ function EntryVersionHistory({ open, setOpen, tab, project }) {
   //The status of the entity
   //The entry was submitted for approval
   //Changed the status of the Entry
+
   return (
     <Transition.Root show={open} as={Fragment}>
       <Dialog
@@ -113,9 +114,225 @@ function EntryVersionHistory({ open, setOpen, tab, project }) {
                     </div>
                   </div>
                   <div className="relative flex-1 pb-6 px-4 sm:px-6 h-full overflow-y-auto">
-                    <div ref={pdfRef}>
-                      {/*<!-- Component: User feed --> */}
-                      <ul
+                    <div ref={pdfRef} className="w-full">
+                      {/* <div className="px-4 sm:px-6 lg:px-8 w-[100%]">
+                       
+                        <div className="mt-8 flex flex-col w-[100%]">
+                          <div className="-my-2 -mx-4 sm:-mx-6 lg:-mx-8 w-[100%]">
+                            <div className="inline-block py-2 align-middle w-[100%]">
+                              <div className="shadow-sm ring-1 ring-black ring-opacity-5 w-[100%]">
+                                <table
+                                  className="w-[100%] border-separate"
+                                  style={{ borderSpacing: 0 }}
+                                >
+                                  <thead className="bg-gray-50">
+                                    <tr>
+                                      <th
+                                        scope="col"
+                                        className="sticky top-0 z-10 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8"
+                                      >
+                                        Name
+                                      </th>
+                                      <th
+                                        scope="col"
+                                        className="sticky top-0 z-10 hidden border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:table-cell"
+                                      >
+                                        Title
+                                      </th>
+                                      <th
+                                        scope="col"
+                                        className="sticky top-0 z-10 hidden border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter lg:table-cell"
+                                      >
+                                        Email
+                                      </th>
+                                      <th
+                                        scope="col"
+                                        className="sticky top-0 z-10 border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter"
+                                      >
+                                        Role
+                                      </th>
+                                      <th
+                                        scope="col"
+                                        className="sticky top-0 z-10 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 pr-4 pl-3 backdrop-blur backdrop-filter sm:pr-6 lg:pr-8"
+                                      >
+                                        <span className="sr-only">Edit</span>
+                                      </th>
+                                    </tr>
+                                  </thead>
+                                  <tbody className="bg-white">
+                                    {data
+                                      .filter((str) =>
+                                        strings.some((term) =>
+                                          str.message.includes(term)
+                                        )
+                                      )
+                                      .sort(function(a, b) {
+                                        return (
+                                          new Date(b.date) - new Date(a.date)
+                                        );
+                                      })
+                                      .map((d, index) => (
+                                        <tr key={d.email}>
+                                          <td
+                                            className={classNames(
+                                              index !==
+                                                data.filter((str) =>
+                                                  strings.some((term) =>
+                                                    str.message.includes(term)
+                                                  )
+                                                ).length -
+                                                  1
+                                                ? "border-b border-gray-200"
+                                                : "",
+                                              "whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 lg:pl-8"
+                                            )}
+                                          >
+                                            d.name
+                                          </td>
+                                          <td
+                                            className={classNames(
+                                              index !==
+                                                data.filter((str) =>
+                                                  strings.some((term) =>
+                                                    str.message.includes(term)
+                                                  )
+                                                ).length -
+                                                  1
+                                                ? "border-b border-gray-200"
+                                                : "",
+                                              "whitespace-nowrap px-3 py-4 text-sm text-gray-500 hidden sm:table-cell"
+                                            )}
+                                          >
+                                            {d.message}
+                                          </td>
+                                          <td
+                                            className={classNames(
+                                              index !==
+                                                data.filter((str) =>
+                                                  strings.some((term) =>
+                                                    str.message.includes(term)
+                                                  )
+                                                ).length -
+                                                  1
+                                                ? "border-b border-gray-200"
+                                                : "",
+                                              "whitespace-nowrap px-3 py-4 text-sm text-gray-500 hidden lg:table-cell"
+                                            )}
+                                          >
+                                            d.email
+                                          </td>
+                                          <td
+                                            className={classNames(
+                                              index !==
+                                                data.filter((str) =>
+                                                  strings.some((term) =>
+                                                    str.message.includes(term)
+                                                  )
+                                                ).length -
+                                                  1
+                                                ? "border-b border-gray-200"
+                                                : "",
+                                              "whitespace-nowrap px-3 py-4 text-sm text-gray-500"
+                                            )}
+                                          >
+                                            d.role
+                                          </td>
+                                          <td
+                                            className={classNames(
+                                              index !==
+                                                data.filter((str) =>
+                                                  strings.some((term) =>
+                                                    str.message.includes(term)
+                                                  )
+                                                ).length -
+                                                  1
+                                                ? "border-b border-gray-200"
+                                                : "",
+                                              "relative whitespace-nowrap py-4 pr-4 pl-3 text-right text-sm font-medium sm:pr-6 lg:pr-8"
+                                            )}
+                                          >
+                                            <a
+                                              href="#"
+                                              className="text-indigo-600 hover:text-indigo-900"
+                                            >
+                                              Edit
+                                              <span className="sr-only">
+                                                , d.namea
+                                              </span>
+                                            </a>
+                                          </td>
+                                        </tr>
+                                      ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div> */}
+                      <div className="w-full">
+                        <div className="lg:pr-6 w-full px-4">
+                          <div className="border rounded-lg border pb-8 border-gray-200">
+                            <div className="flex items-center border-b border-gray-200 pt-10 justify-between px-6 py-3">
+                              <p className="text-sm lg:text-xl font-semibold leading-tight text-gray-800">
+                                Version History
+                              </p>
+                              <div className="flex cursor-pointer items-center justify-center px-3 py-2.5 border rounded border-gray-100"></div>
+                            </div>
+                            <div className="px-6 pt-8">
+                              {data
+                                .filter((str) =>
+                                  strings.some((term) =>
+                                    str.message.includes(term)
+                                  )
+                                )
+                                .sort(function(a, b) {
+                                  return new Date(b.date) - new Date(a.date);
+                                })
+                                .map((d, index) => (
+                                  <div
+                                    className={`${index === 0 ? "" : "pt-8"}`}
+                                  >
+                                    <div className="flex items-center justify-between">
+                                      <div className="flex items-center">
+                                        <p className="text-xs md:text-sm font-semibold leading-none text-gray-800">
+                                          {d.userName}
+                                        </p>
+                                        <p className="text-xs md:text-sm leading-none text-indigo-500 pl-3">
+                                          {d.userEmail}
+                                        </p>
+                                      </div>
+                                      <div>
+                                        <p className="text-xs md:text-sm leading-none text-right text-gray-600">
+                                          {addTime(d.date)}
+                                        </p>
+                                      </div>
+                                    </div>
+                                    <div className="py-2">
+                                      <p className="max-w-[80%] text-xs md:text-sm leading-tight text-gray-600">
+                                        {d.message}
+                                      </p>
+                                    </div>
+                                    <div>
+                                      {d.anyData &&
+                                        d.anyData != "null" &&
+                                        JSON.parse(d.anyData) && (
+                                          <>
+                                            <img
+                                              className="w-32 mb-2"
+                                              src={JSON.parse(d.anyData).sign}
+                                              alt=""
+                                            />
+                                          </>
+                                        )}
+                                    </div>
+                                  </div>
+                                ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      {/* <ul
                         aria-label="User feed"
                         role="feed"
                         className="relative flex flex-col gap-12 py-12 pl-8 before:absolute before:top-0 before:left-8 before:h-full before:-translate-x-1/2 before:border before:border-dashed before:border-slate-200 after:absolute after:top-6 after:left-8 after:bottom-6 after:-translate-x-1/2 after:border after:border-slate-200 "
@@ -146,10 +363,7 @@ function EntryVersionHistory({ open, setOpen, tab, project }) {
                                 <h4 className="flex flex-col items-start text-lg font-medium leading-8 text-slate-700 md:flex-row lg:items-center">
                                   <span className="flex-1">
                                     {d.userName}
-                                    {/* <span className="text-base font-normal text-slate-500">
-                                  {" "}
-                                  created a new thread
-                                </span> */}
+                                    
                                   </span>
                                   <span className="text-sm font-normal text-slate-400">
                                     {" "}
@@ -171,8 +385,7 @@ function EntryVersionHistory({ open, setOpen, tab, project }) {
                               </div>
                             </li>
                           ))}
-                      </ul>
-                      {/*<!-- End User feed --> */}
+                      </ul> */}
                     </div>
 
                     {/* /End replace */}
