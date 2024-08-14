@@ -25,7 +25,7 @@ function CDEntries({ setOpen, open, doc, setCDUpdate }) {
       reader.readAsDataURL(blob);
     });
   }
-
+  const read = false;
   const sketchContainerRef = useRef();
   const structServiceProvider = new StandaloneStructServiceProvider();
   const [value, setValue] = useState();
@@ -143,13 +143,26 @@ function CDEntries({ setOpen, open, doc, setCDUpdate }) {
             share={doc.share}
             setUpdate={setCDUpdate}
           />
-          {doc.data && (
+          {doc.data && read ? (
+            <div className="w-full min-h-[400px] bg-white">
+              <div className="w-full h-full flex items-center justify-center">
+                <img
+                  src={doc.data[0].image && doc.data[0].image}
+                  className="w-auto max-h-[200px]"
+                />
+              </div>
+            </div>
+          ) : (
             <Editor
               ref={sketchContainerRef}
               height={100}
+              className="absolute customclassname"
               staticResourcesUrl={""}
               structServiceProvider={structServiceProvider}
               options={{}}
+              config={{
+                readOnly: true, // Disables all editing features
+              }}
               onInit={async (ketcher) => {
                 window.ketcher = ketcher;
                 const initialData = doc.data[0].block;

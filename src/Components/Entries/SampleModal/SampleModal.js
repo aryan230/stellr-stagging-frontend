@@ -29,6 +29,9 @@ function SampleModal({
   const [isDrawerVersion, setIsDrawerVersion] = useState(false);
   let { loading, error, userInfo } = userLogin;
   const [logs, setLogs] = useState(false);
+
+  console.log(doc);
+
   return (
     <div className="modal">
       {doc.access && doc.access === "view" ? (
@@ -40,6 +43,7 @@ function SampleModal({
           id={doc._id}
           share={doc.share}
           setUpdate={setSampleUpdate}
+          events={Object.keys(insideData)}
         />
       )}
 

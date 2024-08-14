@@ -2,12 +2,23 @@ import React, { useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { Eye, Share2 } from "lucide-react";
 import ShareSidebar from "./ShareSidebar";
+import AdvancedShareSettings from "../AdvancedShareSettings/AdvancedShareSettings";
 
-function ShareMain({ styles, type, id, share, setUpdate }) {
+function ShareMain({
+  styles,
+  type,
+  id,
+  share,
+  setUpdate,
+  events,
+  customCollabs,
+}) {
   const [menu, setMenu] = useState(false);
   const [shareData, setShareData] = useState(share);
+
   return (
     <div className={styles}>
+      {/* {<AdvancedShareSettings open={advShare} setOpen={setAdvShare} />} */}
       <ShareSidebar
         open={menu}
         setOpen={setMenu}
@@ -16,6 +27,8 @@ function ShareMain({ styles, type, id, share, setUpdate }) {
         share={shareData}
         setUpdate={setUpdate}
         setShareData={setShareData}
+        events={events}
+        customCollabs={customCollabs}
       />
       <Menu as="div" className="relative inline-block text-left">
         <div>

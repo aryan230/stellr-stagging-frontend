@@ -28,6 +28,7 @@ import SecondInsideLoader from "../Loader/SecondInsideLoader";
 import SpinnerLoader from "../Loaders/SpinnerLoader";
 import MainLoaderWithText from "../Loaders/MainLoaderWithText";
 import CompleteLoader from "../Loaders/CompleteLoader";
+import AdvancedShareSettings from "../AdvancedShareSettings/AdvancedShareSettings";
 function ShareSidebar({
   open,
   setOpen,
@@ -36,11 +37,14 @@ function ShareSidebar({
   share,
   setUpdate,
   setShareData,
+  events,
+  customCollabs,
 }) {
   const value = "650b013f2bc72230ddaff4be";
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [advShare, setAdvShare] = useState(false);
 
   const [ownerUserData, setOwnerUserData] = useState();
   const [loader, setLoader] = useState(false);
@@ -143,6 +147,22 @@ function ShareSidebar({
         onClose={setOpen}
       >
         <div className="absolute inset-0 overflow-hidden">
+          <AdvancedShareSettings
+            open={advShare}
+            setOpen={setAdvShare}
+            findOrg={findOrg}
+            userInfo={userInfo}
+            ownerUserData={ownerUserData}
+            share={
+              share && JSON.parse(share) && JSON.parse(share).value === value
+                ? JSON.parse(share)
+                : null
+            }
+            updateShare={updateShare}
+            typeFrom={type}
+            events={events}
+            customCollabs={customCollabs}
+          />
           <Dialog.Overlay className="absolute inset-0" />
 
           <div className="fixed inset-y-0 pl-16 max-w-full right-0 flex">
@@ -241,6 +261,15 @@ function ShareSidebar({
                     >
                       Cancel
                     </button>
+                    {/* <button
+                      type="button"
+                      onClick={() => {
+                        setAdvShare(true);
+                      }}
+                      className="ml-4 inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                    >
+                      Advanced share settings
+                    </button> */}
                   </div>
                 </form>
               </div>

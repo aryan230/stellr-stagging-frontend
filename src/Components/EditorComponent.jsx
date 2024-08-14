@@ -448,6 +448,7 @@ function EditorComponent({ expire, setExpire }) {
       )}
       {protocolModal && (
         <ProtocolModal
+          protocolModal={protocolModal}
           setProtocolModal={setProtocolModal}
           doc={protocolContent}
           setWhichTabisActive={setWhichTabisActive}

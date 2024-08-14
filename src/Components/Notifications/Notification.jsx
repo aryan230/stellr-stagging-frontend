@@ -162,7 +162,7 @@ function Notification() {
 
       <div>
         <Menu.Button
-          className="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
+          className="inline-flex justify-center w-full rounded-full border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
           onClick={(e) => {
             const newData = data.map((d) => {
               return {
@@ -240,41 +240,11 @@ function Notification() {
                       </div>
                     </div>
                   </div>
-                  // <div
-                  //   className="flex items-center p-4 text-sm text-gray-800 border-gray-300 rounded-lg bg-gray-50"
-                  //   role="alert"
-                  // >
-                  //   <svg
-                  //     className="flex-shrink-0 inline w-4 h-4 mr-3"
-                  //     aria-hidden="true"
-                  //     xmlns="http://www.w3.org/2000/svg"
-                  //     fill="currentColor"
-                  //     viewBox="0 0 20 20"
-                  //   >
-                  //     <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
-                  //   </svg>
-                  //   <span className="sr-only">Info</span>
-                  //   <div>{JSON.parse(n.data).subject}</div>
-                  //   <div>
-                  //     {JSON.parse(n.data).date &&
-                  //       moment(JSON.parse(n.data).date).fromNow()}
-                  //   </div>
-                  // </div>
                 ))}
           </div>
         </Menu.Items>
       </Transition>
     </Menu>
-    // <div className="fixed top-5 right-8 z-[9999999999]">
-    //   {" "}
-    //   <div className="relative bg-white rounded-full p-3 flex items-center justify-center drop-shadow-md">
-    //     <p className="absolute w-5 h-5 -top-1 -right-1 bg-indigo-700 rounded-full p-2 text-white text-md items-center flex justify-center">
-    //       2
-    //     </p>
-    //     <Bell size={18} />
-    //   </div>
-
-    // </div>
   );
 }
 

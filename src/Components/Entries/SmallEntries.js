@@ -20,6 +20,8 @@ import {
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import { toast } from "sonner";
+import { entityRoleEvaluate } from "../Functions/entityRoleEvaluate";
 
 function SmallEntries({
   doc,
@@ -53,6 +55,7 @@ function SmallEntries({
   const userLogin = useSelector((state) => state.userLogin);
   let { loading, error, userInfo } = userLogin;
   const [userRole, setUserRole] = useState();
+  const [eventRole, setEventRole] = useState();
   const findOwner = project && project.user === userInfo._id && "owner";
   const findOrg =
     orgs && orgs.length > 0
@@ -75,6 +78,26 @@ function SmallEntries({
 
     setUserRole(newRole);
   };
+
+  const shareChecker = async () => {
+    if (doc.share) {
+      const role = await entityRoleEvaluate(doc, userInfo._id);
+      if (role) {
+        console.log(role, doc.name);
+        if (role === "view") {
+          setEventRole("Read");
+        } else {
+          setEventRole(role);
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (doc) {
+      shareChecker();
+    }
+  }, [doc]);
   useEffect(() => {
     if (userType) {
       if (!userRole) {
@@ -128,7 +151,7 @@ function SmallEntries({
                 addToCart({
                   doc,
                   project,
-                  userType: userRole,
+                  userType: eventRole ? eventRole : userRole,
                 })
               );
               setTabId(doc._id);

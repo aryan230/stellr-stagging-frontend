@@ -3,14 +3,14 @@ import React from "react";
 import { Fragment, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { ExclamationIcon } from "@heroicons/react/outline";
-function MainModalEntity({ children, open, setOpen, width }) {
+function MainModalEntity({ children, open, setOpen, width, custom }) {
   const cancelButtonRef = useRef(null);
 
   return (
     <Transition.Root show={open} as={Fragment}>
       <Dialog
         as="div"
-        className="fixed z-[9999999] inset-0 overflow-y-auto"
+        className="fixed z-[999999999] inset-0 overflow-y-auto"
         initialFocus={cancelButtonRef}
         onClose={setOpen}
       >
@@ -44,7 +44,9 @@ function MainModalEntity({ children, open, setOpen, width }) {
             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
           >
             <div
-              className={`font-body inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl w-[80vw] transform transition-all sm:my-8 sm:align-middle ${
+              className={`font-body inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left ${
+                custom ? "" : "overflow-hidden"
+              } shadow-xl w-[80vw] transform transition-all sm:my-8 sm:align-middle ${
                 width ? width : "sm:max-w-4xl sm:w-full"
               }  sm:p-6`}
             >

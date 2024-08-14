@@ -315,6 +315,7 @@ function ProjectSettings({
         setUpdateUserId={setUpdateUserId}
         setSettingsModal={setSettingsModal}
         setEmail={setEmail}
+        ownerUser={ownerUserData}
         submitAddnewCollab={submitHandler}
         submitDeleteCollab={deleteHandlerCollab}
         data={{

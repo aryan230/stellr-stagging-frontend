@@ -43,6 +43,7 @@ function ProjectSettingsNew({
   handleDelete,
   deleteTask,
   setDelete,
+  ownerUser,
 }) {
   const people = [
     {
@@ -75,6 +76,7 @@ function ProjectSettingsNew({
   ];
 
   const [activeTab, setActiveTab] = useState(data.tabs.find((t) => t.current));
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [automaticTimezoneEnabled, setAutomaticTimezoneEnabled] = useState(
     true
@@ -315,6 +317,78 @@ function ProjectSettingsNew({
                                           role="list"
                                           className="mt-4 border-t border-b border-gray-200 divide-y divide-gray-200"
                                         >
+                                          {ownerUser && (
+                                            <li
+                                              key={ownerUser._id}
+                                              className="py-4 flex items-center justify-between space-x-3"
+                                            >
+                                              <div className="min-w-0 flex-1 flex items-center space-x-3">
+                                                <div className="flex-shrink-0">
+                                                  <img
+                                                    className="h-10 w-10 rounded-full"
+                                                    src={`https://api.dicebear.com/7.x/thumbs/svg?seed=${ownerUser.name}`}
+                                                    alt=""
+                                                  />
+                                                </div>
+                                                <div className="min-w-0 flex-1">
+                                                  <p className="text-sm font-medium text-gray-900 truncate">
+                                                    {ownerUser.name}
+                                                  </p>
+                                                  <p className="text-sm font-medium text-gray-500 truncate">
+                                                    Owner
+                                                  </p>
+                                                </div>
+                                              </div>
+                                              <div className="flex-shrink-0">
+                                                {/* <button
+                                                  type="button"
+                                                  onClick={(e) => {
+                                                    setUpdateUserId(
+                                                      person.user
+                                                    );
+                                                    setSettingsModal(true);
+                                                  }}
+                                                  className="inline-flex items-center py-2 px-3 border border-transparent rounded-full bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-2"
+                                                >
+                                                  <PencilIcon
+                                                    className="-ml-1 mr-0.5 h-5 w-5 text-gray-400"
+                                                    aria-hidden="true"
+                                                  />
+                                                  <span className="text-sm font-medium text-gray-900">
+                                                    {" "}
+                                                    Change Role{" "}
+                                                    <span className="sr-only">
+                                                      {person.name}
+                                                    </span>{" "}
+                                                  </span>
+                                                </button>
+                                                <button
+                                                  type="button"
+                                                  onClick={(e) => {
+                                                    e.preventDefault();
+                                                    submitDeleteCollab(
+                                                      person.user,
+                                                      person.userEmail
+                                                    );
+                                                  }}
+                                                  className="inline-flex items-center py-2 px-3 border border-transparent rounded-full bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                                >
+                                                  <MinusIcon
+                                                    className="-ml-1 mr-0.5 h-5 w-5 text-gray-400"
+                                                    aria-hidden="true"
+                                                  />
+                                                  <span className="text-sm font-medium text-gray-900">
+                                                    {" "}
+                                                    Remove{" "}
+                                                    <span className="sr-only">
+                                                      {person.name}
+                                                    </span>{" "}
+                                                  </span>
+                                                </button> */}
+                                              </div>
+                                            </li>
+                                          )}
+
                                           {d.collabData.map(
                                             (person, personIdx) => (
                                               <li

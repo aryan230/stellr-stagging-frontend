@@ -19,6 +19,7 @@ import {
   GitPullRequest,
   Info,
   Pen,
+  ShieldPlus,
   SquareGanttIcon,
   SquareStack,
   Trash,
@@ -91,6 +92,7 @@ import EntryVersionHistory from "./Drawer/EntryVersionHistory";
 import EntryVersionControl from "./Drawer/EntryVersionControl";
 import ViewVersionControl from "./Drawer/ViewVersionControl";
 import { userAvatar } from "../Functions/userAvatar";
+import RequestCustomRole from "../RequestCustomRole/RequestCustomRole";
 
 const zip = new JSZip();
 
@@ -130,7 +132,7 @@ function TextEditorTwo({
   const [originalContent, setOriginalContent] = useState();
   const [warningModal, setWarningModal] = useState(false);
   const [mainLoader, setMainLoader] = useState(true);
-  const [users, setUsers] = useState(["Aryan"]);
+  const [users, setUsers] = useState([]);
   const [chemicalDrawing, setChemicalDrawing] = useState(false);
   const [insertFile, setInsertFile] = useState(false);
   const [logs, setLogs] = useState(false);
@@ -144,6 +146,7 @@ function TextEditorTwo({
   const [versionControl, setVersionControl] = useState(false);
   const [viewCurrentV, setViewCurrentV] = useState(false);
   const [currenVData, setCurrentVData] = useState();
+  const [requestRole, setRequestRole] = useState(false);
   const sampleListMy = useSelector((state) => state.sampleListMy);
   const {
     samples,
@@ -599,13 +602,18 @@ function TextEditorTwo({
       } else {
         quill.current.enable();
       }
+      if (userType && userType === "Read") {
+        quill.current.enable(false);
+      } else {
+        quill.current.enable();
+      }
     });
     // socket.emit("join-lobby", userInfo.email);
     socket.emit("get-document", {
       documentId: tab._id,
       user: userInfo.name,
     });
-  }, [socket, quill, tab, value]);
+  }, [socket, quill, tab, value, userType]);
 
   useEffect(() => {
     if (socket == null || quill.current == null) return;
@@ -633,26 +641,31 @@ function TextEditorTwo({
   const [deleteEnt, setDelete] = useState(false);
   const modules = 1;
   const handleDelete = async (id) => {
-    var config = {
-      method: "delete",
-      url: `${URL[0]}api/entries/p/${id}`,
-      headers: {
-        Authorization: `Bearer ${userInfo.token}`,
-      },
-    };
+    if (userType === "owner" || userType === "Admin") {
+      var config = {
+        method: "delete",
+        url: `${URL[0]}api/entries/p/${id}`,
+        headers: {
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      };
 
-    axios(config)
-      .then(function(response) {
-        console.log(JSON.stringify(response.data));
-        toast.success("Entry Deleted");
-        setDelete(false);
-        setEntryUpdate(true);
-        setWhichTabisActive("listProjects");
-        dispatch({ type: CART_RESET });
-      })
-      .catch(function(error) {
-        console.log(error);
-      });
+      axios(config)
+        .then(function(response) {
+          console.log(JSON.stringify(response.data));
+          toast.success("Entry Deleted");
+          setDelete(false);
+          setEntryUpdate(true);
+          setWhichTabisActive("listProjects");
+          dispatch({ type: CART_RESET });
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    } else {
+      setDelete(false);
+      toast.error("You don't have permission to delete this entry");
+    }
   };
 
   const [approval, setApproval] = useState(false);
@@ -817,6 +830,7 @@ function TextEditorTwo({
           setCurrentVData={setCurrentVData}
         />
       }
+
       {
         <DetailSlideOver
           open={details}
@@ -869,6 +883,7 @@ function TextEditorTwo({
           setHtmlData={setHtmlData}
         />
       }
+      {<RequestCustomRole open={requestRole} setOpen={setRequestRole} />}
       {
         <ViewDetails
           open={approvalDetails}
@@ -1292,6 +1307,30 @@ function TextEditorTwo({
                         </Menu.Item>
                       </div> */}
                       <div className="py-1">
+                        {/* <Menu.Item>
+                          {({ active }) => (
+                            <a
+                              href="#"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                // setIsDrawerOpen(true);
+                                setRequestRole(true);
+                              }}
+                              className={classNames(
+                                active
+                                  ? "bg-gray-100 text-gray-900"
+                                  : "text-gray-700",
+                                "group flex items-center px-4 py-2 text-base"
+                              )}
+                            >
+                              <ShieldPlus
+                                className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                                aria-hidden="true"
+                              />
+                              Request Role
+                            </a>
+                          )}
+                        </Menu.Item> */}
                         <Menu.Item>
                           {({ active }) => (
                             <a
@@ -1960,19 +1999,22 @@ function TextEditorTwo({
                     Check Status
                   </a>
                 ) : (
-                  <a
-                    href="#"
-                    onClick={async (e) => {
-                      e.preventDefault();
-                      window.setTimeout(() => {
-                        setApproval(true);
-                      }, Math.floor(Math.random() * 3) + 1);
-                    }}
-                    className="ml-5 font-karla flex items-center text-sm justify-center bg-indigo-600 text-white py-3 px-5 rounded-lg"
-                  >
-                    <ClipboardCheck className="mr-2" size={16} />
-                    Submit for Approval
-                  </a>
+                  userType &&
+                  userType != "Read" && (
+                    <a
+                      href="#"
+                      onClick={async (e) => {
+                        e.preventDefault();
+                        window.setTimeout(() => {
+                          setApproval(true);
+                        }, Math.floor(Math.random() * 3) + 1);
+                      }}
+                      className="ml-5 font-karla flex items-center text-sm justify-center bg-indigo-600 text-white py-3 px-5 rounded-lg"
+                    >
+                      <ClipboardCheck className="mr-2" size={16} />
+                      Submit for Approval
+                    </a>
+                  )
                 )}
 
                 {/* {users &&
@@ -2078,9 +2120,9 @@ function TextEditorTwo({
             </Popover.Panel>
           </Transition>
         </Popover>
-        {userType && userType === "Read" && (
+        {/* {userType && userType === "Read" && (
           <div className="absolute -translate-x-1/2 -translate-y-1/2 top-2/4 left-1/2 w-[100%] overflow-y-auto h-[100%] bg-white bg-opacity-50 flex items-center justify-center z-[999999]"></div>
-        )}
+        )} */}
 
         {userType && userType != "Read" ? (
           <ShareMain
@@ -2089,6 +2131,7 @@ function TextEditorTwo({
             id={tab._id}
             share={tab.share}
             setUpdate={setEntryUpdate}
+            customCollabs={project && project.collaborators}
           />
         ) : (
           <ViewOnly />
