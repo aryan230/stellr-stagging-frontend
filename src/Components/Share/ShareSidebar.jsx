@@ -1,13 +1,28 @@
 import React, { useEffect } from "react";
 import { Fragment, useState } from "react";
-import { Dialog, Transition } from "@headlessui/react";
-import { XIcon } from "@heroicons/react/outline";
+import { Dialog, Switch, Transition } from "@headlessui/react";
+import { FireIcon, XIcon } from "@heroicons/react/outline";
 import {
   LinkIcon,
   PlusSmIcon,
   QuestionMarkCircleIcon,
 } from "@heroicons/react/solid";
-import { PlusIcon } from "lucide-react";
+import {
+  Banknote,
+  BellIcon,
+  BookMarkedIcon,
+  ChevronLeftIcon,
+  CogIcon,
+  ExternalLink,
+  HomeIcon,
+  InboxIcon,
+  KeyIcon,
+  Magnet,
+  MessageSquarePlus,
+  PlusIcon,
+  Share,
+  UserIcon,
+} from "lucide-react";
 import ShareUser from "./ShareUser";
 import ShareLinks from "./ShareLinks";
 import {
@@ -29,6 +44,40 @@ import SpinnerLoader from "../Loaders/SpinnerLoader";
 import MainLoaderWithText from "../Loaders/MainLoaderWithText";
 import CompleteLoader from "../Loaders/CompleteLoader";
 import AdvancedShareSettings from "../AdvancedShareSettings/AdvancedShareSettings";
+import AdvancedSecuritySettings from "../AdvancedSecuritySettings/AdvancedSecuritySettings";
+import { addNotification } from "../Functions/addNotification";
+
+const subNavigation = [
+  {
+    name: "Share",
+    description:
+      "Allows users to grant access to others for collaborating on specific projects or entities.",
+    href: "#",
+    icon: ExternalLink,
+    current: true,
+  },
+  {
+    name: "Notifications",
+    description:
+      "Sends real-time alerts when a project or entity is shared or access permissions are modified.",
+    href: "#",
+    icon: BellIcon,
+    current: false,
+  },
+  {
+    name: "Security",
+    description:
+      " Provides controls to manage who can share, restrict sharing to certain roles, and set access expiration rules for enhanced security.",
+    href: "#",
+    icon: KeyIcon,
+    current: false,
+  },
+];
+
+function classNames(...classes) {
+  return classes.filter(Boolean).join(" ");
+}
+
 function ShareSidebar({
   open,
   setOpen,
@@ -41,13 +90,19 @@ function ShareSidebar({
   customCollabs,
 }) {
   const value = "650b013f2bc72230ddaff4be";
-
+  console.log(type);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [advShare, setAdvShare] = useState(false);
-
+  const [security, setSecurity] = useState(false);
+  const [availableToHire, setAvailableToHire] = useState(true);
+  const [privateAccount, setPrivateAccount] = useState(false);
+  const [allowCommenting, setAllowCommenting] = useState(true);
+  const [allowMentions, setAllowMentions] = useState(true);
   const [ownerUserData, setOwnerUserData] = useState();
   const [loader, setLoader] = useState(false);
+  const [actIndex, setActIndex] = useState(0);
+  const [sharePrivate, setSharePrivate] = useState(0);
 
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
@@ -116,7 +171,7 @@ function ShareSidebar({
     }
   }, [ownerUserData, findOrg]);
 
-  const updateShare = async (newData) => {
+  const updateShare = async (newData, user, role) => {
     setLoader(true);
     var config = {
       method: "put",
@@ -129,6 +184,23 @@ function ShareSidebar({
     };
     axios(config)
       .then(async function(response) {
+        await addNotification({
+          id: user,
+          type: "Not read",
+
+          value: JSON.stringify({
+            t: "new",
+            e: type,
+            user: userInfo.name,
+            email: userInfo.email,
+            subject:
+              "You have been given access to " + role + " by " + userInfo.name,
+            date: new Date(),
+            entity: id,
+          }),
+          token: userInfo.token,
+        });
+        setAdvShare(false);
         setShareData(response.data.share);
         setUpdate(true);
         setLoader(false);
@@ -147,6 +219,22 @@ function ShareSidebar({
         onClose={setOpen}
       >
         <div className="absolute inset-0 overflow-hidden">
+          <AdvancedSecuritySettings
+            open={security}
+            setOpen={setSecurity}
+            findOrg={findOrg}
+            userInfo={userInfo}
+            ownerUserData={ownerUserData}
+            share={
+              share && JSON.parse(share) && JSON.parse(share).value === value
+                ? JSON.parse(share)
+                : null
+            }
+            updateShare={updateShare}
+            typeFrom={type}
+            events={events}
+            customCollabs={customCollabs}
+          />
           <AdvancedShareSettings
             open={advShare}
             setOpen={setAdvShare}
@@ -175,103 +263,451 @@ function ShareSidebar({
               leaveFrom="translate-x-0"
               leaveTo="translate-x-full"
             >
-              <div className="w-screen max-w-3xl font-dmsans">
-                <form className="h-full divide-y divide-gray-200 flex flex-col bg-white shadow-xl">
-                  <div className="flex-1 h-0 overflow-y-auto">
-                    <div className="py-6 px-4 bg-indigo-700 sm:px-6">
-                      <div className="flex items-center justify-between">
-                        <Dialog.Title className="text-lg font-medium text-white">
-                          Share
-                        </Dialog.Title>
-                        <div className="ml-3 h-7 flex items-center">
-                          <button
-                            type="button"
-                            className="bg-indigo-700 rounded-md text-indigo-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
-                            onClick={() => setOpen(false)}
-                          >
-                            <span className="sr-only">Close panel</span>
-                            <XIcon className="h-6 w-6" aria-hidden="true" />
-                          </button>
-                        </div>
+              <div className="w-screen max-w-7xl font-dmsans shadow-2xl">
+                <main className="flex flex-1 bg-white h-full">
+                  <div className="flex flex-1 flex-col h-full">
+                    {/* Breadcrumb */}
+                    <nav
+                      aria-label="Breadcrumb"
+                      className="border-b border-blue-gray-200 bg-white xl:hidden"
+                    >
+                      <div className="mx-auto flex max-w-3xl items-start py-3 px-4 sm:px-6 lg:px-8">
+                        <a
+                          href="#"
+                          className="-ml-1 inline-flex items-center space-x-3 text-sm font-medium text-blue-gray-900"
+                        >
+                          <ChevronLeftIcon
+                            className="h-5 w-5 text-blue-gray-400"
+                            aria-hidden="true"
+                          />
+                          <span>Settings</span>
+                        </a>
                       </div>
-                      <div className="mt-1">
-                        <p className="text-sm text-indigo-300">
-                          Get started by sharing your {type} to organization
-                          members.
-                          <br />
-                          Data-ID: {id}
-                        </p>
+                    </nav>
+
+                    <div className="flex flex-1 h-full">
+                      {/* Secondary sidebar */}
+                      <nav
+                        aria-label="Sections"
+                        className="hidden w-96 flex-shrink-0 border-r border-blue-gray-200 bg-white xl:flex xl:flex-col"
+                      >
+                        <div className="flex h-16 flex-shrink-0 items-center border-b border-blue-gray-200 px-6">
+                          <p className="text-lg font-medium text-blue-gray-900">
+                            Settings
+                          </p>
+                        </div>
+                        <div className="min-h-0 flex-1 overflow-y-auto">
+                          {subNavigation.map((item, index) => (
+                            <a
+                              key={item.name}
+                              href={item.href}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                setActIndex(index);
+                              }}
+                              className={classNames(
+                                index === actIndex
+                                  ? "bg-indigo-50 bg-opacity-50"
+                                  : "hover:bg-indigo-50 hover:bg-opacity-50",
+                                "flex p-6 border-b border-blue-gray-200"
+                              )}
+                              aria-current={item.current ? "page" : undefined}
+                            >
+                              <item.icon
+                                className="-mt-0.5 h-6 w-6 flex-shrink-0 text-blue-gray-400"
+                                aria-hidden="true"
+                              />
+                              <div className="ml-3 text-sm">
+                                <p className="font-medium text-blue-gray-900">
+                                  {item.name}
+                                </p>
+                                <p className="mt-1 text-blue-gray-500">
+                                  {item.description}
+                                </p>
+                              </div>
+                            </a>
+                          ))}
+                        </div>
+                      </nav>
+
+                      {/* Main content */}
+                      <div className="flex-1 overflow-y-auto h-full">
+                        {actIndex === 2 && (
+                          <div className="mx-auto max-w-3xl py-10 px-4 sm:px-6 lg:py-12 lg:px-8">
+                            <h1 className="text-3xl font-bold tracking-tight text-blue-gray-900">
+                              Security settings
+                            </h1>
+
+                            <form className="divide-y-blue-gray-200 mt-6 space-y-8 divide-y">
+                              {" "}
+                              {findOrg ? (
+                                <>
+                                  {loader ? (
+                                    <CompleteLoader />
+                                  ) : (
+                                    <>
+                                      <div className="divide-y divide-gray-200 pt-6">
+                                        <div className="px-4 sm:px-6">
+                                          <div>
+                                            <h2 className="text-lg font-medium leading-6 text-gray-900">
+                                              Privacy
+                                            </h2>
+                                            <p className="mt-1 text-sm text-gray-500">
+                                              Manage who can view, edit, and
+                                              share your documents with
+                                              customizable privacy settings,
+                                              including role-based access,
+                                              expiration controls, and
+                                              permission requests.
+                                            </p>
+                                          </div>
+                                          <div className="mt-5">
+                                            <label
+                                              htmlFor="location"
+                                              className="block text-sm font-medium text-gray-700"
+                                            >
+                                              Select role
+                                            </label>
+                                            <select
+                                              id="location"
+                                              name="location"
+                                              className="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                                              defaultValue={sharePrivate}
+                                              onChange={(e) => {
+                                                setSharePrivate(e.target.value);
+                                              }}
+                                            >
+                                              <option value={0}>Read</option>
+                                              <option value={1}>Write</option>
+                                              <option value={2}>Admin</option>
+                                            </select>
+                                          </div>
+                                          <ul
+                                            role="list"
+                                            className="mt-2 divide-y divide-gray-200"
+                                          >
+                                            <Switch.Group
+                                              as="li"
+                                              className="flex items-center justify-between py-4"
+                                            >
+                                              <div className="flex flex-col">
+                                                <Switch.Label
+                                                  as="p"
+                                                  className="text-sm font-medium text-gray-900"
+                                                  passive
+                                                >
+                                                  Allowed to view logs
+                                                </Switch.Label>
+                                                <Switch.Description className="text-sm text-gray-500">
+                                                  Grants users permission to
+                                                  access activity logs and track
+                                                  actions taken within the
+                                                  entity.
+                                                </Switch.Description>
+                                              </div>
+                                              <Switch
+                                                checked={
+                                                  sharePrivate == 0
+                                                    ? true
+                                                    : false
+                                                }
+                                                onChange={setAvailableToHire}
+                                                className={classNames(
+                                                  availableToHire
+                                                    ? "bg-indigo-500"
+                                                    : "bg-gray-200",
+                                                  "relative ml-4 inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
+                                                )}
+                                              >
+                                                <span
+                                                  aria-hidden="true"
+                                                  className={classNames(
+                                                    availableToHire
+                                                      ? "translate-x-5"
+                                                      : "translate-x-0",
+                                                    "inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                                                  )}
+                                                />
+                                              </Switch>
+                                            </Switch.Group>
+                                            <Switch.Group
+                                              as="li"
+                                              className="flex items-center justify-between py-4"
+                                            >
+                                              <div className="flex flex-col">
+                                                <Switch.Label
+                                                  as="p"
+                                                  className="text-sm font-medium text-gray-900"
+                                                  passive
+                                                >
+                                                  Allowed to edit
+                                                </Switch.Label>
+                                                <Switch.Description className="text-sm text-gray-500">
+                                                  Enables users to modify
+                                                  content, settings, or data
+                                                  within specific areas of the
+                                                  entity based on their role.
+                                                </Switch.Description>
+                                              </div>
+                                              <Switch
+                                                checked={privateAccount}
+                                                onChange={setPrivateAccount}
+                                                className={classNames(
+                                                  privateAccount
+                                                    ? "bg-indigo-500"
+                                                    : "bg-gray-200",
+                                                  "relative ml-4 inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
+                                                )}
+                                              >
+                                                <span
+                                                  aria-hidden="true"
+                                                  className={classNames(
+                                                    privateAccount
+                                                      ? "translate-x-5"
+                                                      : "translate-x-0",
+                                                    "inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                                                  )}
+                                                />
+                                              </Switch>
+                                            </Switch.Group>
+                                            <Switch.Group
+                                              as="li"
+                                              className="flex items-center justify-between py-4"
+                                            >
+                                              <div className="flex flex-col">
+                                                <Switch.Label
+                                                  as="p"
+                                                  className="text-sm font-medium text-gray-900"
+                                                  passive
+                                                >
+                                                  Allowed to open notifications
+                                                </Switch.Label>
+                                                <Switch.Description className="text-sm text-gray-500">
+                                                  Allows users to access and
+                                                  view notifications regarding
+                                                  updates, alerts, and changes
+                                                  in the entity.
+                                                </Switch.Description>
+                                              </div>
+                                              <Switch
+                                                checked={allowCommenting}
+                                                onChange={setAllowCommenting}
+                                                className={classNames(
+                                                  allowCommenting
+                                                    ? "bg-indigo-500"
+                                                    : "bg-gray-200",
+                                                  "relative ml-4 inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
+                                                )}
+                                              >
+                                                <span
+                                                  aria-hidden="true"
+                                                  className={classNames(
+                                                    allowCommenting
+                                                      ? "translate-x-5"
+                                                      : "translate-x-0",
+                                                    "inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                                                  )}
+                                                />
+                                              </Switch>
+                                            </Switch.Group>
+                                            <Switch.Group
+                                              as="li"
+                                              className="flex items-center justify-between py-4"
+                                            >
+                                              <div className="flex flex-col">
+                                                <Switch.Label
+                                                  as="p"
+                                                  className="text-sm font-medium text-gray-900"
+                                                  passive
+                                                >
+                                                  Allowed to Archive
+                                                </Switch.Label>
+                                                <Switch.Description className="text-sm text-gray-500">
+                                                  Grants users permission to
+                                                  archive entity.
+                                                </Switch.Description>
+                                              </div>
+                                              <Switch
+                                                checked={allowMentions}
+                                                onChange={setAllowMentions}
+                                                className={classNames(
+                                                  allowMentions
+                                                    ? "bg-indigo-500"
+                                                    : "bg-gray-200",
+                                                  "relative ml-4 inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
+                                                )}
+                                              >
+                                                <span
+                                                  aria-hidden="true"
+                                                  className={classNames(
+                                                    allowMentions
+                                                      ? "translate-x-5"
+                                                      : "translate-x-0",
+                                                    "inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                                                  )}
+                                                />
+                                              </Switch>
+                                            </Switch.Group>
+                                            <Switch.Group
+                                              as="li"
+                                              className="flex items-center justify-between py-4"
+                                            >
+                                              <div className="flex flex-col">
+                                                <Switch.Label
+                                                  as="p"
+                                                  className="text-sm font-medium text-gray-900"
+                                                  passive
+                                                >
+                                                  Allowed to Open Share Settings
+                                                </Switch.Label>
+                                                <Switch.Description className="text-sm text-gray-500">
+                                                  Permits users to access and
+                                                  manage sharing options,
+                                                  including modifying access
+                                                  permissions and sharing
+                                                  preferences for projects or
+                                                  entities.
+                                                </Switch.Description>
+                                              </div>
+                                              <Switch
+                                                checked={allowMentions}
+                                                onChange={setAllowMentions}
+                                                className={classNames(
+                                                  allowMentions
+                                                    ? "bg-indigo-500"
+                                                    : "bg-gray-200",
+                                                  "relative ml-4 inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
+                                                )}
+                                              >
+                                                <span
+                                                  aria-hidden="true"
+                                                  className={classNames(
+                                                    allowMentions
+                                                      ? "translate-x-5"
+                                                      : "translate-x-0",
+                                                    "inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                                                  )}
+                                                />
+                                              </Switch>
+                                            </Switch.Group>
+                                          </ul>
+                                        </div>
+                                      </div>
+                                    </>
+                                  )}{" "}
+                                </>
+                              ) : (
+                                <SecondLoaderWithText />
+                              )}
+                              <div className="flex-shrink-0 px-4 py-4 flex justify-end">
+                                <button
+                                  type="button"
+                                  className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                  onClick={() => setOpen(false)}
+                                >
+                                  Cancel
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setSecurity(true);
+                                  }}
+                                  className="ml-4 inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                                >
+                                  Advanced security settings
+                                </button>
+                              </div>
+                            </form>
+                          </div>
+                        )}
+                        {actIndex === 0 && (
+                          <div className="mx-auto max-w-3xl py-10 px-4 sm:px-6 lg:py-12 lg:px-8">
+                            <h1 className="text-3xl font-bold tracking-tight text-blue-gray-900">
+                              Share settings
+                            </h1>
+
+                            <form className="divide-y-blue-gray-200 mt-6 space-y-8 divide-y">
+                              {" "}
+                              {findOrg ? (
+                                <>
+                                  {loader ? (
+                                    <CompleteLoader />
+                                  ) : (
+                                    <>
+                                      <ShareUser
+                                        findOrg={findOrg}
+                                        updateShare={updateShare}
+                                        type={type}
+                                        id={id}
+                                        share={
+                                          share &&
+                                          JSON.parse(share) &&
+                                          JSON.parse(share).value === value
+                                            ? JSON.parse(share)
+                                            : null
+                                        }
+                                        userInfo={userInfo}
+                                        ownerUserData={ownerUserData}
+                                        customCollabs={customCollabs}
+                                      />
+
+                                      <ShareLinks
+                                        findOrg={findOrg}
+                                        updateShare={updateShare}
+                                        share={
+                                          share &&
+                                          JSON.parse(share) &&
+                                          JSON.parse(share).value === value
+                                            ? JSON.parse(share)
+                                            : null
+                                        }
+                                        setLoader={setLoader}
+                                        type={type}
+                                        id={id}
+                                        setOpen={setOpen}
+                                      />
+                                    </>
+                                  )}{" "}
+                                </>
+                              ) : (
+                                <SecondLoaderWithText />
+                              )}
+                              <div className="flex-shrink-0 px-4 py-4 flex justify-end">
+                                <button
+                                  type="button"
+                                  className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                  onClick={() => setOpen(false)}
+                                >
+                                  Cancel
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setAdvShare(true);
+                                  }}
+                                  className="ml-4 inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                                >
+                                  Advanced share settings
+                                </button>
+                              </div>
+                            </form>
+                          </div>
+                        )}
+                        {actIndex === 1 && (
+                          <div className="mx-auto max-w-3xl py-10 px-4 sm:px-6 lg:py-12 lg:px-8">
+                            <h1 className="text-3xl font-bold tracking-tight text-blue-gray-900">
+                              Notification settings
+                            </h1>
+
+                            <form className="divide-y-blue-gray-200 mt-6 space-y-8 divide-y">
+                              {" "}
+                            </form>
+                          </div>
+                        )}
                       </div>
                     </div>
-
-                    {/*  */}
-                    {findOrg ? (
-                      <>
-                        {loader ? (
-                          <CompleteLoader />
-                        ) : (
-                          <>
-                            <ShareUser
-                              findOrg={findOrg}
-                              updateShare={updateShare}
-                              share={
-                                share &&
-                                JSON.parse(share) &&
-                                JSON.parse(share).value === value
-                                  ? JSON.parse(share)
-                                  : null
-                              }
-                              userInfo={userInfo}
-                              ownerUserData={ownerUserData}
-                            />
-                            <div className="inline-flex items-center justify-center w-full">
-                              <hr className="w-64 h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
-                              <span className="absolute px-3 font-medium text-gray-900 -translate-x-1/2 bg-white left-1/2 dark:text-white dark:bg-gray-900">
-                                or
-                              </span>
-                            </div>
-
-                            <ShareLinks
-                              findOrg={findOrg}
-                              updateShare={updateShare}
-                              share={
-                                share &&
-                                JSON.parse(share) &&
-                                JSON.parse(share).value === value
-                                  ? JSON.parse(share)
-                                  : null
-                              }
-                              setLoader={setLoader}
-                              type={type}
-                              id={id}
-                              setOpen={setOpen}
-                            />
-                          </>
-                        )}{" "}
-                      </>
-                    ) : (
-                      <SecondLoaderWithText />
-                    )}
                   </div>
-                  <div className="flex-shrink-0 px-4 py-4 flex justify-end">
-                    <button
-                      type="button"
-                      className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                      onClick={() => setOpen(false)}
-                    >
-                      Cancel
-                    </button>
-                    {/* <button
-                      type="button"
-                      onClick={() => {
-                        setAdvShare(true);
-                      }}
-                      className="ml-4 inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
-                    >
-                      Advanced share settings
-                    </button> */}
-                  </div>
-                </form>
+                </main>
               </div>
             </Transition.Child>
           </div>

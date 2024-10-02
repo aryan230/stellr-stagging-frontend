@@ -1,7 +1,7 @@
 import { toast } from "sonner";
 import { addTime } from "./addTime";
 
-export const entityRoleEvaluate = async (entity, userId) => {
+export const entityDataEvaluate = async (entity, userId) => {
   if (entity.share) {
     if (JSON.parse(entity.share)) {
       const share = JSON.parse(entity.share);
@@ -10,11 +10,13 @@ export const entityRoleEvaluate = async (entity, userId) => {
         if (check) {
           if (check.expiry) {
             if (addTime(check.expiry) >= addTime(Date.now())) {
-              let iData = check.iData ? check.iData : null;
+              if (check.iData) {
+                console.log(check);
+              }
               //   setLoader(false);
               //   entity.access = check.access;
               //   showEntity(type, entity);
-              return check.access;
+              return null;
             } else {
               //   setLoader(false);
               //   toast.error(
@@ -29,11 +31,12 @@ export const entityRoleEvaluate = async (entity, userId) => {
               if (event.filter) {
                 if (event.filter.condition == "equals") {
                   if (entity[event.filter.field] === event.filter.value) {
-                    let iData = check.iData ? check.iData : null;
+                    if (check.iData) {
+                      return check.iData;
+                    }
                     // setLoader(false);
                     // entity.access = check.access;
                     // showEntity(type, entity);
-                    return check.access;
                   } else {
                     // setLoader(false);
                     // toast.error("You can't access this entity(1)");

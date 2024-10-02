@@ -78,7 +78,7 @@ function ListProtocolsAll({
           setProtocolContent(docTwo);
           setProtocolModal(true);
         }}
-        className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2"
+        className="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4  font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2"
       >
         View
       </button>

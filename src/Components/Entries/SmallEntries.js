@@ -22,6 +22,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { toast } from "sonner";
 import { entityRoleEvaluate } from "../Functions/entityRoleEvaluate";
+import { entityDataEvaluate } from "../Functions/getIData";
 
 function SmallEntries({
   doc,
@@ -56,6 +57,7 @@ function SmallEntries({
   let { loading, error, userInfo } = userLogin;
   const [userRole, setUserRole] = useState();
   const [eventRole, setEventRole] = useState();
+  const [iDataMain, setIData] = useState();
   const findOwner = project && project.user === userInfo._id && "owner";
   const findOrg =
     orgs && orgs.length > 0
@@ -82,6 +84,10 @@ function SmallEntries({
   const shareChecker = async () => {
     if (doc.share) {
       const role = await entityRoleEvaluate(doc, userInfo._id);
+      const iData2 = await entityDataEvaluate(doc, userInfo._id);
+      if (iData2) {
+        setIData(iData2);
+      }
       if (role) {
         console.log(role, doc.name);
         if (role === "view") {
@@ -152,6 +158,7 @@ function SmallEntries({
                   doc,
                   project,
                   userType: eventRole ? eventRole : userRole,
+                  iData3: iDataMain && iDataMain,
                 })
               );
               setTabId(doc._id);
@@ -168,7 +175,9 @@ function SmallEntries({
             <FileText size={16} color="#2563eb" strokeWidth={1.5} />
           )}
         </span>
-        <span className="ml-2 text-sm tracking-wide truncate">{doc.name}</span>
+        <span className="ml-2 text-sm tracking-wide truncate font-dmsans">
+          {doc.name}
+        </span>
 
         {/* <span className="px-2 py-0.5 ml-auto text-xs font-medium tracking-wide rounded-full">
           <SlidersHorizontal size={16} color="#5e00d1" />

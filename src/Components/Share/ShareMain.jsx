@@ -12,6 +12,7 @@ function ShareMain({
   setUpdate,
   events,
   customCollabs,
+  access,
 }) {
   const [menu, setMenu] = useState(false);
   const [shareData, setShareData] = useState(share);

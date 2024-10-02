@@ -93,6 +93,7 @@ import EntryVersionControl from "./Drawer/EntryVersionControl";
 import ViewVersionControl from "./Drawer/ViewVersionControl";
 import { userAvatar } from "../Functions/userAvatar";
 import RequestCustomRole from "../RequestCustomRole/RequestCustomRole";
+import { entityDataEvaluate } from "../Functions/getIData";
 
 const zip = new JSZip();
 
@@ -108,7 +109,10 @@ function TextEditorTwo({
   setEntryUpdate,
   setWhichTabisActive,
   setCreateDrawingModal,
+  iData3,
+  mainTab,
 }) {
+  console.log(mainTab);
   const [text, setText] = useState("");
   const quill = useRef(null);
   const [value, setValue] = useState();
@@ -148,6 +152,7 @@ function TextEditorTwo({
   const [currenVData, setCurrentVData] = useState();
   const [requestRole, setRequestRole] = useState(false);
   const sampleListMy = useSelector((state) => state.sampleListMy);
+
   const {
     samples,
     loading: loadingSamples,
@@ -1072,7 +1077,19 @@ function TextEditorTwo({
                               onClick={(e) => {
                                 e.preventDefault();
                                 const editor = quill.current.editor;
-                                setEditName(true);
+                                if (iData3) {
+                                  if (iData3.edit) {
+                                    setEditName(true);
+                                  } else {
+                                    toast.error(
+                                      "You dont have permission to edit."
+                                    );
+                                  }
+                                } else {
+                                  setEditName(true);
+                                }
+
+                                //
                                 //
                                 // const imageUrl =
                                 //   "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885_1280.jpg";
@@ -1337,8 +1354,15 @@ function TextEditorTwo({
                               href="#"
                               onClick={(e) => {
                                 e.preventDefault();
-                                // setIsDrawerOpen(true);
-                                setCustomLogs(true);
+                                if (mainTab.iData3) {
+                                  if (mainTab.iData3.logs) {
+                                    setCustomLogs(true);
+                                  } else {
+                                    toast.error("You dont have permission.");
+                                  }
+                                } else {
+                                  setCustomLogs(true);
+                                }
                               }}
                               className={classNames(
                                 active
@@ -1361,7 +1385,17 @@ function TextEditorTwo({
                               href="#"
                               onClick={(e) => {
                                 e.preventDefault();
-                                setDelete(true);
+                                if (mainTab.iData3) {
+                                  if (mainTab.iData3.archive) {
+                                    setDelete(true);
+                                  } else {
+                                    toast.error(
+                                      "You dont have permission to archive this entry"
+                                    );
+                                  }
+                                } else {
+                                  setDelete(true);
+                                }
                               }}
                               className={classNames(
                                 active

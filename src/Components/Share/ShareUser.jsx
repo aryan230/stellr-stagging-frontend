@@ -1,8 +1,18 @@
 import { PlusIcon, User, UserX } from "lucide-react";
 import React, { useState } from "react";
 import ShareUserRole from "./ShareUserRole";
+import { addNotification } from "../Functions/addNotification";
 
-function ShareUser({ findOrg, updateShare, share, userInfo, ownerUserData }) {
+function ShareUser({
+  findOrg,
+  updateShare,
+  share,
+  userInfo,
+  ownerUserData,
+  type,
+  customCollabs,
+  id,
+}) {
   const [user, setUser] = useState();
   const [role, setRole] = useState("view");
   const [roleModal, setRoleModal] = useState(false);
@@ -11,38 +21,87 @@ function ShareUser({ findOrg, updateShare, share, userInfo, ownerUserData }) {
     if (share) {
       if (share.users) {
         let old = share;
-        let u = findOrg.collaborators.find((c) => c.user === user);
-        u.access = role;
-        old.users.push(u);
-        var Newdata = JSON.stringify({
-          share: JSON.stringify(old),
-        });
+        let u1 =
+          (await findOrg) && findOrg.collaborators.find((c) => c.user === user);
+        let u2 =
+          (await customCollabs) && customCollabs.find((c) => c.user === user);
+        if (u1) {
+          let u = u1;
+          u.access = role;
+          old.users.push(u);
+          var Newdata = JSON.stringify({
+            share: JSON.stringify(old),
+          });
 
-        updateShare(Newdata);
+          updateShare(Newdata, u.user, role);
+        } else {
+          let u = u2;
+          u.access = role;
+          old.users.push(u);
+          var Newdata = JSON.stringify({
+            share: JSON.stringify(old),
+          });
+
+          updateShare(Newdata, u.user, role);
+        }
       } else {
         let old = share;
-        let u = findOrg.collaborators.find((c) => c.user === user);
-        u.access = role;
-        old.users.push(u);
-        var Newdata = JSON.stringify({
-          share: JSON.stringify(old),
-        });
+        let u1 =
+          (await findOrg) && findOrg.collaborators.find((c) => c.user === user);
+        let u2 =
+          (await customCollabs) && customCollabs.find((c) => c.user === user);
+        if (u1) {
+          let u = u1;
+          u.access = role;
+          old.users.push(u);
+          var Newdata = JSON.stringify({
+            share: JSON.stringify(old),
+          });
 
-        updateShare(Newdata);
+          updateShare(Newdata, u.user, role);
+        } else {
+          let u = u2;
+          u.access = role;
+          old.users.push(u);
+          var Newdata = JSON.stringify({
+            share: JSON.stringify(old),
+          });
+
+          updateShare(Newdata, u.user, role);
+        }
       }
     } else {
-      let u = findOrg.collaborators.find((c) => c.user === user);
-      u.access = role;
-      let newData = {
-        value: "650b013f2bc72230ddaff4be",
-        users: [u],
-        links: [],
-      };
-      var Newdata = JSON.stringify({
-        share: JSON.stringify(newData),
-      });
+      let u1 =
+        (await findOrg) && findOrg.collaborators.find((c) => c.user === user);
+      let u2 =
+        (await customCollabs) && customCollabs.find((c) => c.user === user);
+      if (u1) {
+        let u = u1;
+        u.access = role;
+        let newData = {
+          value: "650b013f2bc72230ddaff4be",
+          users: [u],
+          links: [],
+        };
+        var Newdata = JSON.stringify({
+          share: JSON.stringify(newData),
+        });
 
-      updateShare(Newdata);
+        updateShare(Newdata, u.user, role);
+      } else {
+        let u = u2;
+        u.access = role;
+        let newData = {
+          value: "650b013f2bc72230ddaff4be",
+          users: [u],
+          links: [],
+        };
+        var Newdata = JSON.stringify({
+          share: JSON.stringify(newData),
+        });
+
+        updateShare(Newdata, u.user, role);
+      }
     }
   };
   return (
@@ -78,7 +137,11 @@ function ShareUser({ findOrg, updateShare, share, userInfo, ownerUserData }) {
                 <option selected disabled>
                   -- select user --
                 </option>
-                {ownerUserData && share
+                {type === "entries"
+                  ? customCollabs.map((c) => (
+                      <option value={c.user}>{c.userName}</option>
+                    ))
+                  : ownerUserData && share
                   ? findOrg.collaborators
                       .filter(
                         (elem) =>

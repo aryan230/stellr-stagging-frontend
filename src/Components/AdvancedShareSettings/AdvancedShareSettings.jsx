@@ -27,10 +27,11 @@ function AdvancedShareSettings({
   const [selected, setSelected] = useState("email");
   const [assigned, setAssigned] = useState();
   const [collabs, setCollabs] = useState(
-    findOrg.collaborators.map(({ user: value, userName: label }) => ({
-      value,
-      label,
-    }))
+    findOrg &&
+      findOrg.collaborators.map(({ user: value, userName: label }) => ({
+        value,
+        label,
+      }))
   );
   const [customColl, setCustomColl] = useState(
     customCollabs
@@ -47,6 +48,8 @@ function AdvancedShareSettings({
   const [type, setType] = useState(
     typeFrom && _.startCase(_.toLower(typeFrom))
   );
+
+  console.log(type);
   const [filter, setFilter] = useState({
     value: "",
     condition: "contains",
@@ -130,7 +133,7 @@ function AdvancedShareSettings({
       ],
     },
     {
-      name: "SOPS",
+      name: "Sops",
       fields: ["_id", "title", "updatedAt", "createdAt"],
       charts: [
         {
@@ -245,12 +248,15 @@ function AdvancedShareSettings({
         let u = findOrg.collaborators.find((c) => c.user === user);
         u.access = role;
         u.expiry = expiry;
+        if (old.users.find((c) => c.user === u.user)) {
+          old.users.filter((c) => c.user != u.user);
+        }
         old.users.push(u);
         var Newdata = JSON.stringify({
           share: JSON.stringify(old),
         });
 
-        updateShare(Newdata);
+        updateShare(Newdata, u.user, role);
       } else {
         let old = share;
         let u = findOrg.collaborators.find((c) => c.user === user);
@@ -261,7 +267,7 @@ function AdvancedShareSettings({
           share: JSON.stringify(old),
         });
 
-        updateShare(Newdata);
+        updateShare(Newdata, u.user, role);
       }
     } else {
       let u = findOrg.collaborators.find((c) => c.user === user);
@@ -276,7 +282,7 @@ function AdvancedShareSettings({
         share: JSON.stringify(newData),
       });
 
-      updateShare(Newdata);
+      updateShare(Newdata, u.user, role);
     }
   };
 
@@ -284,22 +290,42 @@ function AdvancedShareSettings({
     if (share) {
       if (share.users) {
         let old = share;
-        let u1 = await findOrg.collaborators.find((c) => c.user === user);
-        let u2 = await customCollabs.find((c) => c.user === user);
+        let u1 =
+          (await findOrg) && findOrg.collaborators.find((c) => c.user === user);
+        let u2 =
+          (await customCollabs) && customCollabs.find((c) => c.user === user);
         if (u1) {
           let u = u1;
-          u.access = role;
-          let e = {
-            fields,
-            filter,
-          };
-          u.events = [e];
-          old.users.push(u);
-          var Newdata = JSON.stringify({
-            share: JSON.stringify(old),
-          });
+          let users = old.users;
+          if (users.find((c) => c.user === u.user)) {
+            users = users.filter((item) => item.user !== u.user);
+            u.access = role;
+            let e = {
+              fields,
+              filter,
+            };
+            u.events = [e];
+            users.push(u);
+            old.users = users;
+            var Newdata = JSON.stringify({
+              share: JSON.stringify(old),
+            });
 
-          updateShare(Newdata);
+            updateShare(Newdata, u.user, role);
+          } else {
+            u.access = role;
+            let e = {
+              fields,
+              filter,
+            };
+            u.events = [e];
+            old.users.push(u);
+            var Newdata = JSON.stringify({
+              share: JSON.stringify(old),
+            });
+
+            updateShare(Newdata, u.user, role);
+          }
         } else {
           let u = u2;
           u.access = role;
@@ -313,11 +339,12 @@ function AdvancedShareSettings({
             share: JSON.stringify(old),
           });
 
-          updateShare(Newdata);
+          updateShare(Newdata, u.user, role);
         }
       } else {
         let old = share;
-        let u = findOrg.collaborators.find((c) => c.user === user);
+        let u =
+          (await findOrg) && findOrg.collaborators.find((c) => c.user === user);
         u.access = role;
         let e = {
           fields,
@@ -329,11 +356,13 @@ function AdvancedShareSettings({
           share: JSON.stringify(old),
         });
 
-        updateShare(Newdata);
+        updateShare(Newdata, u.user, role);
       }
     } else {
-      let u1 = findOrg.collaborators.find((c) => c.user === user);
-      let u2 = customCollabs.find((c) => c.user === user);
+      let u1 =
+        (await findOrg) && findOrg.collaborators.find((c) => c.user === user);
+      let u2 =
+        (await customCollabs) && customCollabs.find((c) => c.user === user);
       if (u1) {
         let u = u1;
         u.access = role;
@@ -351,7 +380,7 @@ function AdvancedShareSettings({
           share: JSON.stringify(newData),
         });
 
-        updateShare(Newdata);
+        updateShare(Newdata, u.user, role);
       } else {
         let u = u2;
         u.access = role;
@@ -369,7 +398,7 @@ function AdvancedShareSettings({
           share: JSON.stringify(newData),
         });
 
-        updateShare(Newdata);
+        updateShare(Newdata, u.user, role);
       }
     }
   };
@@ -517,12 +546,7 @@ function AdvancedShareSettings({
               <Select
                 // isMulti
                 name="colors"
-                options={findOrg.collaborators.map(
-                  ({ user: value, userName: label }) => ({
-                    value,
-                    label,
-                  })
-                )}
+                options={_.unionBy(collabs, customColl, "value")}
                 className="basic-multi-select"
                 classNamePrefix="select"
                 placeholder="Assigned To"
@@ -746,10 +770,13 @@ function AdvancedShareSettings({
                         name="location"
                         className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
                         defaultValue="Canada"
+                        onChange={(e) => {
+                          setRole(e.target.value);
+                        }}
                       >
-                        <option>Read</option>
-                        <option>Write</option>
-                        <option>Admin</option>
+                        <option value="Read">Read</option>
+                        <option value="Write">Write</option>
+                        <option value="Admin">Admin</option>
                       </select>
                     </div>
                   </div>

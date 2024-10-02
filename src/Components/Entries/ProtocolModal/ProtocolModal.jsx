@@ -77,6 +77,7 @@ function ProtocolModal({
   protocolModal,
 }) {
   const dispatch = useDispatch();
+  console.log(doc);
   const [insideData, setInsideData] = useState(
     doc.data ? Object.entries(JSON.parse(doc.data)) : []
   );
@@ -167,7 +168,15 @@ function ProtocolModal({
       current: false,
       onClick: (e) => {
         e.preventDefault();
-        setLogs(true);
+        if (doc.iData) {
+          if (doc.iData.logs) {
+            setLogs(true);
+          } else {
+            toast.error("You dont have permission.");
+          }
+        } else {
+          setLogs(true);
+        }
       },
     },
     {
@@ -176,7 +185,15 @@ function ProtocolModal({
       current: false,
       onClick: (e) => {
         e.preventDefault();
-        setUpdateProtocolModal(true);
+        if (doc.iData) {
+          if (doc.iData.edit) {
+            setUpdateProtocolModal(true);
+          } else {
+            toast.error("You dont have permission.");
+          }
+        } else {
+          setUpdateProtocolModal(true);
+        }
       },
     },
     {
@@ -185,6 +202,7 @@ function ProtocolModal({
       current: false,
       onClick: (e) => {
         e.preventDefault();
+
         setShare(true);
       },
     },
@@ -194,7 +212,15 @@ function ProtocolModal({
       current: false,
       onClick: (e) => {
         e.preventDefault();
-        setDelete(true);
+        if (doc.iData) {
+          if (doc.iData.edit) {
+            setDelete(true);
+          } else {
+            toast.error("You dont have permission.");
+          }
+        } else {
+          setDelete(true);
+        }
       },
     },
   ];
@@ -258,7 +284,16 @@ function ProtocolModal({
       </Drawer>
       <div className="min-h-full">
         {doc.access && doc.access === "view" ? (
-          <></>
+          <div className="absolute bottom-10 right-10 z-[9999999]">
+            <Menu as="div" className="relative inline-block text-left">
+              <div>
+                <Menu.Button className="flex items-center justify-center w-full rounded-md p-3 border border-gray-300 shadow-sm bg-indigo-600 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500">
+                  <Eye size={16} className="mr-2" />
+                  View Only
+                </Menu.Button>
+              </div>
+            </Menu>
+          </div>
         ) : (
           <ShareMain
             styles="absolute bottom-10 right-10 z-[9999999] mr-4"
@@ -303,13 +338,25 @@ function ProtocolModal({
                   </div>
                   <div className="hidden md:block">
                     <div className="ml-4 flex items-center md:ml-6">
-                      <button
-                        type="button"
-                        className="rounded-full bg-indigo-600 p-1 text-indigo-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600"
-                      >
-                        <span className="sr-only">View notifications</span>
-                        <BellIcon className="h-6 w-6" aria-hidden="true" />
-                      </button>
+                      {doc.access && doc.access === "view" ? (
+                        <div
+                          as="div"
+                          className="relative inline-block text-left"
+                        >
+                          <div className="flex items-center justify-center w-full rounded-md p-3 border border-gray-300 shadow-sm bg-indigo-600 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500">
+                            <Eye size={16} className="mr-2" />
+                            View Only
+                          </div>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          className="rounded-full bg-indigo-600 p-1 text-indigo-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600"
+                        >
+                          <span className="sr-only">View notifications</span>
+                          <BellIcon className="h-6 w-6" aria-hidden="true" />
+                        </button>
+                      )}
 
                       {/* Profile dropdown */}
                       {/* <Menu as="div" className="relative ml-3">

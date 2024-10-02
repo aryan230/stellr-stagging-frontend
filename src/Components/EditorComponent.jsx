@@ -421,7 +421,16 @@ function EditorComponent({ expire, setExpire }) {
         />
       </Routes>
       <MainToast />
-      <Toaster position="top-center" reverseOrder={true} />
+      <Toaster
+        position="top-center"
+        reverseOrder={true}
+        toastOptions={{
+          style: {
+            zIndex: 9999999999999,
+          },
+          className: "class",
+        }}
+      />
       {CDModal && (
         <CDEntries
           setOpen={setCDModal}
@@ -457,6 +466,7 @@ function EditorComponent({ expire, setExpire }) {
       )}
       {sopModal && (
         <SopModal
+          sopModal={sopModal}
           setSopModal={setSopModal}
           doc={sopContent}
           setWhichTabisActive={setWhichTabisActive}
@@ -515,7 +525,7 @@ function EditorComponent({ expire, setExpire }) {
         CDUpdate={CDUpdate}
         setCDUpdate={setCDUpdate}
       />
-      <Notification />
+      <Notification setWhichTabisActive={setWhichTabisActive} />
       <div className="main-content">
         {showBanner && <Banner setShowBanner={setShowBanner} />}
         {/* {showBannerOrg && (
@@ -1114,6 +1124,7 @@ function EditorComponent({ expire, setExpire }) {
                             tab.userType == "Write" ||
                             tab.userType == "owner" ? (
                               <TextEditorTwo
+                                mainTab={tab}
                                 tab={tab.doc}
                                 active={tab.doc._id == tabID ? true : false}
                                 project={tab.project}

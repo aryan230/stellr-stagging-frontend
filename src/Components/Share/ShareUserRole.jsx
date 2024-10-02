@@ -31,8 +31,9 @@ function ShareUserRole({
             }}
             defaultValue="view"
           >
-            <option value="view">View</option>
-            <option value="edit">Edit</option>
+            <option value="Read">Read</option>
+            <option value="Write">Write</option>
+            <option value="Admin">Admin</option>
           </select>
         </div>
         <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mt-5">

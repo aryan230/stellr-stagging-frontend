@@ -13,15 +13,16 @@ import { toast } from "sonner";
 import { encryptData } from "../Functions/Link/Encrypt";
 import moment from "moment";
 import { XIcon } from "@heroicons/react/solid";
+import NotificationModal from "./NotificationModal";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-function Notification() {
+function Notification({ setWhichTabisActive }) {
   const [data, setData] = useState();
   const [socket, setSocket] = useState(null);
-
+  const [NModal, setNModal] = useState(false);
   const audioPlayer = useRef(null);
   const userLogin = useSelector((state) => state.userLogin);
   let { loading, error, userInfo } = userLogin;
@@ -161,8 +162,8 @@ function Notification() {
       <audio ref={audioPlayer} src="./assets/not.mp3" />
 
       <div>
-        <Menu.Button
-          className="inline-flex justify-center w-full rounded-full border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
+        <button
+          className="inline-flex justify-center w-full rounded-full px-4 py-2 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
           onClick={(e) => {
             const newData = data.map((d) => {
               return {
@@ -170,25 +171,45 @@ function Notification() {
                 read: true,
               };
             });
+            setNModal(true);
             setData(newData);
             updateNotificationToRead();
           }}
         >
           <div className="rounded-full flex items-center justify-center">
-            {data &&
+            {/* {data &&
               data.length > 0 &&
               data.filter((i) => !i.read).length > 0 && (
                 <p className="absolute -top-1 -right-1 w-5 h-5 font-sans bg-indigo-700 rounded-full p-3 text-white text-md items-center flex justify-center">
                   {data.filter((i) => !i.read).length}
                 </p>
-              )}
+              )} */}
 
-            <Bell size={18} />
+            {/* <Bell size={18} /> */}
+            <button
+              type="button"
+              className="relative inline-flex items-center p-3 text-sm font-medium text-center text-white shadow-xl bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-xl"
+            >
+              <Bell className="w-6 h-6 stroke-white" />
+              <span className="sr-only">Notifications</span>
+              {data &&
+                data.length > 0 &&
+                data.filter((i) => !i.read).length > 0 && (
+                  <div className="absolute font-dmsans inline-flex items-center justify-center py-0.5 px-1.5 text-xs font-normal text-white bg-red-500 border-2 border-white rounded-full -top-3 -right-4">
+                    {data.filter((i) => !i.read).length}
+                  </div>
+                )}
+            </button>
           </div>
-        </Menu.Button>
+        </button>
       </div>
-
-      <Transition
+      <NotificationModal
+        open={NModal}
+        setOpen={setNModal}
+        data={data}
+        setWhichTabisActive={setWhichTabisActive}
+      />
+      {/* <Transition
         as={Fragment}
         enter="transition ease-out duration-100"
         enterFrom="transform opacity-0 scale-95"
@@ -243,7 +264,7 @@ function Notification() {
                 ))}
           </div>
         </Menu.Items>
-      </Transition>
+      </Transition> */}
     </Menu>
   );
 }

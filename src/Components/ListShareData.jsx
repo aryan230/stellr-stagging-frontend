@@ -545,6 +545,7 @@ function ListShareData({
             if (check.expiry) {
               if (addTime(check.expiry) >= addTime(Date.now())) {
                 setLoader(false);
+                entity.iData = check.iData ? check.iData : null;
                 entity.access = check.access;
                 showEntity(type, entity);
               } else {
@@ -562,6 +563,7 @@ function ListShareData({
                   if (event.filter.condition == "equals") {
                     if (entity[event.filter.field] === event.filter.value) {
                       setLoader(false);
+                      entity.iData = check.iData ? check.iData : null;
                       entity.access = check.access;
                       showEntity(type, entity);
                     } else {
@@ -575,6 +577,7 @@ function ListShareData({
                         .includes(event.filter.value.toLowerCase())
                     ) {
                       setLoader(false);
+                      entity.iData = check.iData ? check.iData : null;
                       entity.access = check.access;
                       showEntity(type, entity);
                     } else {
@@ -588,6 +591,7 @@ function ListShareData({
               }
             } else {
               setLoader(false);
+              entity.iData = check.iData ? check.iData : null;
               entity.access = check.access;
               showEntity(type, entity);
             }
